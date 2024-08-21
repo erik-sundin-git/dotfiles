@@ -41,8 +41,13 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/storagebox/org")
-(setq org-roam-directory "~/storagebox/org-roam/")
-
+(setq org-roam-directory "~/storagebox/org-roam")
+(setq org-roam-dailies-capture-templates
+      '(("d" "daily" plain
+         "%?\n* Sleep\n"
+         :target (file+head "daily/%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n")
+         :unnarrowed t)))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
