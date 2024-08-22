@@ -40,10 +40,11 @@
 ;; Use `:pin' to specify a particular commit to install.
 ;; (package! builtin-package :pin "1a2b3c4d5e")
 (package! ement)
+;;(package! counsel-spotify)
 
 ;; Doom's packages are pinned to a specific commit and updated from release to
-;; release. The `unpin!' macro allows you to unpin single packages...
-;; (unpin! pinned-package)
+; release. The `unpin!' macro allows you to unpin single packages...
+;; (Unpin! pinned-package)
 ;; ...or multiple packages
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
