@@ -42,13 +42,45 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/storagebox/org")
 (setq org-roam-directory "~/storagebox/org-roam")
+
+;; Function to get current time in hh:mm
+(defun my-current-time ()
+  "Return the current time in hh:mm format."
+  (format-time-string "%H:%M"))
+
 (setq org-roam-dailies-capture-templates
       '(("d" "daily" plain
-         "%?\n* Sleep\n"
-         :target (file+head "daily/%<%Y-%m-%d>.org"
-                            "#+title: %<%Y-%m-%d>\n")
+        "\n* Entry %<%H:%M>\n%?"
+        :target (file+head "daily/%<%Y-%m-%d>.org"
+                            "#+title: Daily Journal %<%Y-%m-%d>\n")
+         :unnarrowed t)
+        ("s" "sleep" plain
+         "%?\n* Sleep\n** score\n** notes\n"
+         :target (file+head "sleep/%<%Y-%m-%d>.org"
+                            "#+title: Sleep Log %<%Y-%m-%d>\n")
+         :unnarrowed t)
+        ("t" "tetra" plain
+         "%?\n* Tetra\n
+| typ   | antal |   tid | längd (s) |
+|-------+-------+-------+-----------|
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|       |       |       |           |
+|-------+-------+-------+-----------|
+| Total |       |       |           |
+#+TBLFM: @13$2=vsum(@2$2..@12$2)
+"
+         :target (file+head "tetra/%<%Y-%m-%d>.org"
+                            "#+title: T %<%Y-%m-%d>\n")
          :unnarrowed t)))
-
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
