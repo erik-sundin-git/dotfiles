@@ -22,6 +22,8 @@
 ;; accept. For example:
 ;;
 ;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+(setq doom-font (font-spec :family "Fira Code" :size 24))
+
 ;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
@@ -32,7 +34,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-tokyo-night)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -112,5 +114,21 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+(after! org
+  ;; Define custom agenda commands
+  (setq org-agenda-custom-commands
+        '(("d" "Today’s Schedule"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-agenda-start-on-weekday 0)
+                        (org-agenda-todo-ignore-scheduled 'n)
+                        (org-agenda-overriding-header "Today's Schedule:")
+                        (org-agenda-prefix-format '((agenda . "  %i %-12:c%?-12t% s")))))))
 
+          ("u" "Untagged Tasks"
+           ((tags-todo "-{.*}"
+                       ((org-agenda-overriding-header "Untagged Tasks:")))))
 
+;; New custom view: Tasks Without @scheduled Tag
+          ("n" "Tasks Without @scheduled Tag"
+           ((tags-todo "-scheduled"
+                       ((org-agenda-overriding-header "Tasks Without @scheduled Tag:"))))))))

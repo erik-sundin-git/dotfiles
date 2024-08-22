@@ -21,12 +21,11 @@ FONT_SIZE = 14
 
 desktop = "nixos"
 
-
 @hook.subscribe.startup_once
 def autostart():
-    home = os.path.expanduser("~/.config/qtile/autostart.sh")
-    subprocess.Popen([home])
-
+    with open("/tmp/qtile-autostart.log", "w") as f:
+        f.write("Autostart script triggered\n")
+    subprocess.Popen(['/bin/bash', os.path.expanduser('~/.config/qtile/autostart.sh')])
 
 def get_vendor_info():
     path = "/sys/class/dmi/id/sys_vendor"
@@ -183,7 +182,7 @@ for vt in range(1, 8):
 groups = [
     Group("1"),
     Group("2"),
-    Group("3"),
+    Group("3", label="web"),
     Group("4", matches=Match(wm_class="emacs"), label="emacs"),
     Group(
         "5",
@@ -228,8 +227,8 @@ for i in groups:
 
     keys.extend([
         Key([mod], "m", lazy.group[groups[6].name].toscreen()), # email
-        Key([mod], "e", lazy.group[groups[3].name].toscreen())  # emacs
-
+        Key([mod], "e", lazy.group[groups[3].name].toscreen()),  # emacs
+        Key([mod], "b", lazy.group[groups[2].name].toscreen())  # Browser
     ])
 
 
