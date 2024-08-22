@@ -191,7 +191,7 @@ groups = [
         label="music",
     ),
     Group("6", matches=Match(wm_class="virt-manager"), label="vm"),
-    Group("7"),
+    Group("7", label="email"),
     Group("8"),
     Group("9"),
 ]
@@ -222,6 +222,16 @@ for i in groups:
             ),
         ]
     )
+    #######################
+    ### Group shortcuts ###
+    #######################
+
+    keys.extend([
+        Key([mod], "m", lazy.group[groups[6].name].toscreen()), # email
+        Key([mod], "e", lazy.group[groups[3].name].toscreen())  # emacs
+
+    ])
+
 
 
 layouts = [
