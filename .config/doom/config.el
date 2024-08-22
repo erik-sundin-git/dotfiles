@@ -122,13 +122,15 @@
                         (org-agenda-start-on-weekday 0)
                         (org-agenda-todo-ignore-scheduled 'n)
                         (org-agenda-overriding-header "Today's Schedule:")
-                        (org-agenda-prefix-format '((agenda . "  %i %-12:c%?-12t% s")))))))
+                        (org-agenda-prefix-format '((agenda . "  %i %-30:c%?-20t% s")))))))
 
           ("u" "Untagged Tasks"
            ((tags-todo "-{.*}"
-                       ((org-agenda-overriding-header "Untagged Tasks:")))))
+                       ((org-agenda-overriding-header "Untagged Tasks:")
+                        (org-agenda-prefix-format '((tags . "  %i %-30:c %s")))))))
 
-;; New custom view: Tasks Without @scheduled Tag
+          ;; New custom view: Tasks Without @scheduled Tag
           ("n" "Tasks Without @scheduled Tag"
            ((tags-todo "-scheduled"
-                       ((org-agenda-overriding-header "Tasks Without @scheduled Tag:"))))))))
+                       ((org-agenda-overriding-header "Tasks Without @scheduled Tag:")
+                        (org-agenda-prefix-format '((tags . "  %i %-30:c %s"))))))))))
