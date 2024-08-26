@@ -116,29 +116,13 @@
 ;; they are implemented.
 (after! org
   ;; Define custom agenda commands
-  (setq org-agenda-custom-commands
-        '(("d" "Today’s Schedule"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-start-on-weekday 0)
-                        (org-agenda-todo-ignore-scheduled 'n)
-                        (org-agenda-overriding-header "Today's Schedule:")
-                        (org-agenda-prefix-format '((agenda . "  %i %-30:c%?-20t% s")))))))
-
-          ("u" "Untagged Tasks"
-           ((tags-todo "-{.*}"
-                       ((org-agenda-overriding-header "Untagged Tasks:")
-                        (org-agenda-prefix-format '((tags . "  %i %-30:c %s")))))))
-
-          ;; New custom view: Tasks Without @scheduled Tag
-          ("n" "Tasks Without @scheduled Tag"
-           ((tags-todo "-scheduled"
-                       ((org-agenda-overriding-header "Tasks Without @scheduled Tag:")
-                        (org-agenda-prefix-format '((tags . "  %i %-30:c %s")))))))))
 
   (setq org-capture-templates
         ;; Add entry to inbox
-        ;;
-      '(("t" "Todo" entry (file+headline "~/storagebox/org/Inbox.org" "Tasks")
-         "* TODO %?\n  %i\n")
-     ))
-  )
+        '(("a" "Agenda / Calendar")
+           ("aa" "Add an item to the agenda" entry
+            (file+olp+datetree "~/storagebox/org/agenda.org")
+            "* %?\nSCHEDULED: %^{Time}t\n")
+
+          ("t" "Todo" entry (file+headline "~/storagebox/org/Inbox.org" "Tasks")
+           "* TODO %?\n"))))
