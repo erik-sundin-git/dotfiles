@@ -133,4 +133,12 @@
           ("n" "Tasks Without @scheduled Tag"
            ((tags-todo "-scheduled"
                        ((org-agenda-overriding-header "Tasks Without @scheduled Tag:")
-                        (org-agenda-prefix-format '((tags . "  %i %-30:c %s"))))))))))
+                        (org-agenda-prefix-format '((tags . "  %i %-30:c %s")))))))))
+
+  (setq org-capture-templates
+        ;; Add entry to inbox
+        ;;
+      '(("t" "Todo" entry (file+headline "~/storagebox/org/Inbox.org" "Tasks")
+         "* TODO %?\n  %i\n")
+     ))
+  )
