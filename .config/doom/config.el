@@ -42,8 +42,8 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/storagebox/org")
-(setq org-roam-directory "~/storagebox/org-roam")
+(setq org-directory "/mnt/storagebox/org")
+(setq org-roam-directory "/mnt/storagebox/org-roam")
 
 ;; Function to get current time in hh:mm
 (defun my-current-time ()
