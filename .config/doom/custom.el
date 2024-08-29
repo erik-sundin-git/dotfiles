@@ -24,7 +24,7 @@
                    (org-agenda-prefix-format
                     '((tags . "  %i %-30:c %s")))))))
      ("n" "Tasks Without @scheduled Tag"
-      ((tags-todo "-scheduled"
+      ((tags-todo "-scheduled-config"
                   ((org-agenda-overriding-header "Tasks Without @scheduled Tag:")
                    (org-agenda-prefix-format
                     '((tags . "  %i %-30:c %s")))))))))
