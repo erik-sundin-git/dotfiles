@@ -124,5 +124,5 @@
             (file+olp+datetree "~/storagebox/org/agenda.org")
             "* %?\nSCHEDULED: %^{Time}t\n")
 
-          ("t" "Todo" entry (file+headline "~/storagebox/org/Inbox.org" "Tasks")
+          ("t" "Todo" entry (file+headline "/mnt/storagebox/org/Inbox.org" "Tasks")
            "* TODO %?\n"))))
