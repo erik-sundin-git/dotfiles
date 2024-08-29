@@ -16,7 +16,7 @@
                 (org-agenda-prefix-format
                  '((agenda . "  %i %-30:c%?-20t% s")))))
        (alltodo ""
-                ((org-agenda-todo-ignore-scheduled t)
+                ((org-agenda-skip-entry-if 'scheduled 'deadline)
                  (org-agenda-overriding-header "Unscheduled")
                  (org-agenda-overriding-header ""))))
       nil)
