@@ -16,9 +16,10 @@
                 (org-agenda-prefix-format
                  '((agenda . "  %i %-30:c%?-20t% s")))))
        (alltodo ""
-                ((org-agenda-skip-entry-if 'scheduled 'deadline)
-                 (org-agenda-overriding-header "Unscheduled")
-                 (org-agenda-overriding-header ""))))
+                ((org-agenda-skip-function
+                  '(or (org-agenda-skip-entry-if 'deadline 'scheduled))
+                  (org-agenda-overriding-header "Unscheduled")
+                  (org-agenda-overriding-header ""))))
       nil)
      ("u" "Untagged Tasks"
       ((tags-todo "-{.*}"
