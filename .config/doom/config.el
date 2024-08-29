@@ -121,7 +121,7 @@
         ;; Add entry to inbox
         '(("a" "Agenda / Calendar")
            ("aa" "Add an item to the agenda" entry
-            (file+olp+datetree "~/storagebox/org/agenda.org")
+            (file+olp+datetree "/mnt/storagebox/org/agenda.org")
             "* %?\nSCHEDULED: %^{Time}t\n")
 
           ("t" "Todo" entry (file+headline "/mnt/storagebox/org/Inbox.org" "Tasks")
