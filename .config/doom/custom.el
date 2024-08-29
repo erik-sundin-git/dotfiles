@@ -6,7 +6,7 @@
  '(org-agenda-custom-commands
    '(("i" "Inbox" alltodo ""
       ((org-agenda-files '("~/storagebox/org/Inbox.org"))))
-     ;;
+
      ;; Todays schedule
      ("d" "Today’s Schedule"
       ((agenda ""
@@ -16,13 +16,10 @@
                 (org-agenda-overriding-header "Today's Schedule:")
                 (org-agenda-prefix-format
                  '((agenda . "  %i %-30:c%?-20t% s")))))
-       (alltodo ""
-                (tags-todo "-config-emacs"
-                ((org-agenda-skip-function
-                  '(or (org-agenda-skip-entry-if 'deadline 'scheduled)))
-                 (org-agenda-overriding-header "Unscheduled")))))
-
-
+       (tags-todo "-config-emacs"
+                  ((org-agenda-skip-function
+                    '(or (org-agenda-skip-entry-if 'deadline 'scheduled)))
+                   (org-agenda-overriding-header "Unscheduled")))))
 
      ;; Untagged
      ("u" "Untagged Tasks"
@@ -30,6 +27,7 @@
                   ((org-agenda-overriding-header "Untagged Tasks:")
                    (org-agenda-prefix-format
                     '((tags . "  %i %-30:c %s")))))))))
+
  '(org-agenda-files
    '("/mnt/storagebox/org/Inbox.org"
      "/mnt/storagebox/org/todo.org"
