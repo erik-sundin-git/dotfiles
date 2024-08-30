@@ -126,3 +126,7 @@
 
           ("t" "Todo" entry (file+headline "/mnt/storagebox/org/Inbox.org" "Tasks")
            "* TODO %?\n"))))
+
+
+;; Nix
+(setq nix-indent-function 't)
