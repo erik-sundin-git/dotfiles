@@ -126,3 +126,7 @@
 
           ("t" "Todo" entry (file+headline "~/storagebox/org/Inbox.org" "Tasks")
            "* TODO %?\n"))))
+;; lilypond
+(use-package lilypond-mode
+  :ensure t
+  :mode ("\\.ly\\'" . LilyPond-mode))
