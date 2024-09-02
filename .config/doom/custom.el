@@ -11,7 +11,7 @@
         '("+skola"))))
      ("i" "Inbox" alltodo " -{.*}"
       ((org-agenda-files
-        '("~/storagebox/org/Inbox.org"))))
+        '("/mnt/storagebox/org/Inbox.org"))))
      ("d" "Today’s Schedule"
       ((agenda ""
                ((org-agenda-span 'day)
