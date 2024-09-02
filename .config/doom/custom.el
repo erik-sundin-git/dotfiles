@@ -4,7 +4,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(org-agenda-custom-commands
-   '(("i" "Inbox" alltodo " -{.*}"
+   '(("s" "School agenda" agenda ""
+      ((org-agenda-span 'day)
+       (org-agenda-overriding-header "School")
+       (org-agenda-tag-filter-preset
+        '("+skola"))))
+     ("i" "Inbox" alltodo " -{.*}"
       ((org-agenda-files
         '("~/storagebox/org/Inbox.org"))))
      ("d" "Today’s Schedule"
@@ -33,7 +38,7 @@
                     '((tags . "  %i %-30:c %s"))))))
       nil)))
  '(org-agenda-files
-   '("/mnt/storagebox/org-roam/20240902103922-f1_linjar_algebra.org" "/mnt/storagebox/org-roam/20240901152144-datakommunikation_ht24_schema.org" "/mnt/storagebox/org/Inbox.org" "/mnt/storagebox/org/todo.org" "/mnt/storagebox/org-roam/20240808132719-todo_skola.org" "/mnt/storagebox/org/agenda.org" "/mnt/storagebox/org-roam/20240808132624-todo.org")))
+   '("~/storagebox/org-roam/20240902103922-f1_linjar_algebra.org" "/home/erik/storagebox/org-roam/20240901152144-datakommunikation_ht24_schema.org" "/home/erik/storagebox/org/Inbox.org" "/home/erik/storagebox/org/todo.org" "/home/erik/storagebox/org-roam/20240808132719-todo_skola.org" "/home/erik/storagebox/org/agenda.org" "/home/erik/storagebox/org-roam/20240808132624-todo.org")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
