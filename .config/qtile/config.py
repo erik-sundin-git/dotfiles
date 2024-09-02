@@ -70,6 +70,7 @@ def create_bars() -> bar.Bar:
                 background=colors.color_16,
                 foreground="000000",
             ),
+            battery_widget(),
             #            widget.Systray(),
             widget.Clock(format="%Y-%m-%d %a %H:%M %p"),
             widget.QuickExit(),

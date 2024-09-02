@@ -29,12 +29,8 @@
                     '((tags . "  %i %-30:c %s")))))))))
 
  '(org-agenda-files
-   '("/mnt/storagebox/org/Inbox.org"
-     "/mnt/storagebox/org/todo.org"
-     "/mnt/storagebox/org-roam/20240808132719-todo_skola.org"
-     "/mnt/storagebox/org/agenda.org"
-     "/mnt/storagebox/org-roam/20240808132624-todo.org")))
 
+   '("~/storagebox/org/linjär-algebra-schema.org" "/home/erik/storagebox/org/Inbox.org" "/home/erik/storagebox/org/todo.org" "/home/erik/storagebox/org-roam/20240808132719-todo_skola.org" "/home/erik/storagebox/org/agenda.org" "/home/erik/storagebox/org-roam/20240808132624-todo.org")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
