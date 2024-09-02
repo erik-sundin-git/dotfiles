@@ -56,11 +56,21 @@
         :target (file+head "daily/%<%Y-%m-%d>.org"
                             "#+title: Daily Journal %<%Y-%m-%d>\n")
          :unnarrowed t)
-        ("s" "sleep" plain
+        ("s" "Sleep stuff")
+        ("ss" "sleep" plain
          "%?\n* Sleep\n** score\n** notes\n"
          :target (file+head "sleep/%<%Y-%m-%d>.org"
                             "#+title: Sleep Log %<%Y-%m-%d>\n")
          :unnarrowed t)
+
+         ("sr" "Kvällsrutin" plain
+         (file "/mnt/storagebox/org-roam/capture-templates/sovrutin.org")
+         :target (file+head "Kvällsrutin/%<%Y-%m-%d>.org"
+                            "#+title: Kvällsrutin %<%Y-%m-%d>\n")
+         :unnarrowed t)
+
+
+
         ("t" "tetra" plain
          "%?\n* Tetra\n
 | typ   | antal |   tid | längd (s) |
