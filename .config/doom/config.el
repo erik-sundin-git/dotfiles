@@ -140,3 +140,6 @@
 (use-package lilypond-mode
   :ensure t
   :mode ("\\.ly\\'" . LilyPond-mode))
+
+;; Evil
+(map! :i "C-c C-c" 'evil-normal-state)
