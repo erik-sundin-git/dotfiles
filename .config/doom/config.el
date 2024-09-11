@@ -45,7 +45,72 @@
 (setq org-directory "/mnt/storagebox/org")
 (setq org-roam-directory "/mnt/storagebox/org-roam")
 
+
+
+
+(defun vulpea-project-p ()
+  "Return non-nil if current buffer has any todo entry.
+
+TODO entries marked as done are ignored, meaning the this
+function returns nil if current buffer contains only completed
+tasks."
+  (seq-find                                 ; (3)
+   (lambda (type)
+     (eq type 'todo))
+   (org-element-map                         ; (2)
+       (org-element-parse-buffer 'headline) ; (1)
+       'headline
+     (lambda (h)
+       (org-element-property :todo-type h)))))
+
+(defun vulpea-project-update-tag ()
+    "Update PROJECT tag in the current buffer."
+    (when (and (not (active-minibuffer-window))
+               (vulpea-buffer-p))
+      (save-excursion
+        (goto-char (point-min))
+        (let* ((tags (vulpea-buffer-tags-get))
+               (original-tags tags))
+          (if (vulpea-project-p)
+              (setq tags (cons "project" tags))
+            (setq tags (remove "project" tags)))
+
+          ;; cleanup duplicates
+          (setq tags (seq-uniq tags))
+
+          ;; update tags if changed
+          (when (or (seq-difference tags original-tags)
+                    (seq-difference original-tags tags))
+            (apply #'vulpea-buffer-tags-set tags))))))
+
+(defun vulpea-buffer-p ()
+  "Return non-nil if the currently visited buffer is a note."
+  (and buffer-file-name
+       (string-prefix-p
+        (expand-file-name (file-name-as-directory org-roam-directory))
+        (file-name-directory buffer-file-name))))
+
+(defun vulpea-project-files ()
+    "Return a list of note files containing 'project' tag." ;
+    (seq-uniq
+     (seq-map
+      #'car
+      (org-roam-db-query
+       [:select [nodes:file]
+        :from tags
+        :left-join nodes
+        :on (= tags:node-id nodes:id)
+        :where (like tag (quote "%\"project\"%"))]))))
+
+
+(add-hook 'find-file-hook #'vulpea-project-update-tag)
+(add-hook 'before-save-hook #'vulpea-project-update-tag)
+
+(advice-add 'org-agenda :before #'vulpea-agenda-files-update)
+(advice-add 'org-todo-list :before #'vulpea-agenda-files-update)
+
 ;; Function to get current time in hh:mm
+
 (defun my-current-time ()
   "Return the current time in hh:mm format."
   (format-time-string "%H:%M"))
@@ -125,7 +190,7 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 (after! org
-  ;; Define custom agenda commands
+
 
   (setq org-capture-templates
         ;; Add entry to inbox
@@ -135,7 +200,86 @@
             "* %?\nSCHEDULED: %^{Time}t\n")
 
           ("t" "Todo" entry (file+headline "/mnt/storagebox/org/Inbox.org" "Tasks")
-           "* TODO %?\n"))))
+           "* TODO %?\n")))
+(setq org-agenda-prefix-format
+      '((agenda . " %i %(vulpea-agenda-category 12)%?-12t% s")
+        (todo . " %i %(vulpea-agenda-category 12) ")
+        (tags . " %i %(vulpea-agenda-category 12) ")
+        (search . " %i %(vulpea-agenda-category 12) ")))
+
+(defun vulpea-agenda-category (&optional len)
+  "Get category of item at point for agenda.
+
+Category is defined by one of the following items:
+
+- CATEGORY property
+- TITLE keyword
+- TITLE property
+- filename without directory and extension
+
+When LEN is a number, resulting string is padded right with
+spaces and then truncated with ... on the right if result is
+longer than LEN.
+
+Usage example:
+
+  (setq org-agenda-prefix-format
+        '((agenda . \" %(vulpea-agenda-category) %?-12t %12s\")))
+
+Refer to `org-agenda-prefix-format' for more information."
+  (let* ((file-name (when buffer-file-name
+                      (file-name-sans-extension
+                       (file-name-nondirectory buffer-file-name))))
+         (title (vulpea-buffer-prop-get "title"))
+         (category (org-get-category))
+         (result
+          (or (if (and
+                   title
+                   (string-equal category file-name))
+                  title
+                category)
+              "")))
+    (if (numberp len)
+        (s-truncate len (s-pad-right len " " result))
+      result))))
+
+ '(org-agenda-custom-commands
+   '(("s" "School agenda" agenda ""
+      ((org-agenda-span 'day)
+       (org-agenda-overriding-header "School")
+       (org-agenda-tag-filter-preset
+        '("+skola"))))
+     ("i" "Inbox" alltodo " -{.*}"
+      ((org-agenda-files
+        '("/mnt/storagebox/org/Inbox.org"))))
+     ("d" "Today’s Schedule"
+      ((agenda ""
+               ((org-agenda-span 'day)
+                (org-agenda-start-on-weekday 0)
+                (org-agenda-todo-ignore-scheduled 'n)
+                (org-agenda-overriding-header "Today's Schedule:")
+                (org-agenda-prefix-format
+                 '((agenda . "  %i %-30:c%?-20t% s")))))
+
+       (alltodo ""
+                ((org-agenda-todo-ignore-scheduled t)
+                 (org-agenda-overriding-header "Unscheduled")
+                 (org-agenda-overriding-header ""))))
+      nil)
+     ("u" "Untagged Tasks"
+      ((tags-todo "-{.*}"
+                  ((org-agenda-overriding-header "Untagged Tasks:")
+                   (org-agenda-prefix-format
+                    '((tags . "  %i %-30:c %s"))))))
+      nil)
+     ("n" "Tasks Without @scheduled Tag"
+      ((tags-todo "-scheduled"
+                  ((org-agenda-overriding-header "Tasks Without @scheduled Tag:")
+                   (org-agenda-prefix-format
+                    '((tags . "  %i %-30:c %s"))))))
+      nil)))
+
+
 ;; lilypond
 (use-package lilypond-mode
   :ensure t
