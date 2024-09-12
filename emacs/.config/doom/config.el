@@ -1,198 +1,10 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets. It is optional.
-;; (setq user-full-name "John Doe"
-;;       user-mail-address "john@doe.com")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-symbol-font' -- for symbols
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
-;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
-;;
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;(setq doom-font (font-spec :family "Fira Code" :size 24))
-
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
-;;
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-tokyo-night)
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
 (setq org-directory "/mnt/storagebox/org")
 (setq org-roam-directory "/mnt/storagebox/org-roam")
 
-
-
-(defun vulpea-project-p ()
-  "Return non-nil if current buffer has any todo entry.
-TODO entries marked as done are ignored, meaning the this
-function returns nil if current buffer contains only completed
-tasks."
-  (seq-find                                 ; (3)
-   (lambda (type)
-     (eq type 'todo))
-   (org-element-map                         ; (2)
-       (org-element-parse-buffer 'headline) ; (1)
-       'headline
-     (lambda (h)
-       (org-element-property :todo-type h)))))
-
-(defun vulpea-project-update-tag ()
-    "Update PROJECT tag in the current buffer."
-    (when (and (not (active-minibuffer-window))
-               (vulpea-buffer-p))
-      (save-excursion
-        (goto-char (point-min))
-        (let* ((tags (vulpea-buffer-tags-get))
-               (original-tags tags))
-          (if (vulpea-project-p)
-              (setq tags (cons "project" tags))
-            (setq tags (remove "project" tags)))
-
-          ;; cleanup duplicates
-          (setq tags (seq-uniq tags))
-
-          ;; update tags if changed
-          (when (or (seq-difference tags original-tags)
-                    (seq-difference original-tags tags))
-            (apply #'vulpea-buffer-tags-set tags))))))
-
-(defun vulpea-buffer-p ()
-  "Return non-nil if the currently visited buffer is a note."
-  (and buffer-file-name
-       (string-prefix-p
-        (expand-file-name (file-name-as-directory org-roam-directory))
-        (file-name-directory buffer-file-name))))
-
-(defun vulpea-project-files ()
-    "Return a list of note files containing 'project' tag." ;
-    (seq-uniq
-     (seq-map
-      #'car
-      (org-roam-db-query
-       [:select [nodes:file]
-        :from tags
-        :left-join nodes
-        :on (= tags:node-id nodes:id)
-        :where (like tag (quote "%\"project\"%"))]))))
-
-(defun vulpea-agenda-files-update (&rest _)
-  "Update the value of `org-agenda-files'."
-  (setq org-agenda-files (vulpea-project-files)))
-
-(add-hook 'find-file-hook #'vulpea-project-update-tag)
-(add-hook 'before-save-hook #'vulpea-project-update-tag)
-
-(advice-add 'org-agenda :before #'vulpea-agenda-files-update)
-(advice-add 'org-todo-list :before #'vulpea-agenda-files-update)
-
-;; functions borrowed from `vulpea' library
-;; https://github.com/d12frosted/vulpea/blob/6a735c34f1f64e1f70da77989e9ce8da7864e5ff/vulpea-buffer.el
-
-(defun vulpea-buffer-tags-get ()
-  "Return filetags value in current buffer."
-  (vulpea-buffer-prop-get-list "filetags" "[ :]"))
-
-(defun vulpea-buffer-tags-set (&rest tags)
-  "Set TAGS in current buffer.
-If filetags value is already set, replace it."
-  (if tags
-      (vulpea-buffer-prop-set
-       "filetags" (concat ":" (string-join tags ":") ":"))
-    (vulpea-buffer-prop-remove "filetags")))
-
-(defun vulpea-buffer-tags-add (tag)
-  "Add a TAG to filetags in current buffer."
-  (let* ((tags (vulpea-buffer-tags-get))
-         (tags (append tags (list tag))))
-    (apply #'vulpea-buffer-tags-set tags)))
-
-(defun vulpea-buffer-tags-remove (tag)
-  "Remove a TAG from filetags in current buffer."
-  (let* ((tags (vulpea-buffer-tags-get))
-         (tags (delete tag tags)))
-    (apply #'vulpea-buffer-tags-set tags)))
-
-(defun vulpea-buffer-prop-set (name value)
-  "Set a file property called NAME to VALUE in buffer file.
-If the property is already set, replace its value."
-  (setq name (downcase name))
-  (org-with-point-at 1
-    (let ((case-fold-search t))
-      (if (re-search-forward (concat "^#\\+" name ":\\(.*\\)")
-                             (point-max) t)
-          (replace-match (concat "#+" name ": " value) 'fixedcase)
-        (while (and (not (eobp))
-                    (looking-at "^[#:]"))
-          (if (save-excursion (end-of-line) (eobp))
-              (progn
-                (end-of-line)
-                (insert "\n"))
-            (forward-line)
-            (beginning-of-line)))
-        (insert "#+" name ": " value "\n")))))
-
-(defun vulpea-buffer-prop-set-list (name values &optional separators)
-  "Set a file property called NAME to VALUES in current buffer.
-VALUES are quoted and combined into single string using
-`combine-and-quote-strings'.
-If SEPARATORS is non-nil, it should be a regular expression
-matching text that separates, but is not part of, the substrings.
-If nil it defaults to `split-string-default-separators', normally
-\"[ \f\t\n\r\v]+\", and OMIT-NULLS is forced to t.
-If the property is already set, replace its value."
-  (vulpea-buffer-prop-set
-   name (combine-and-quote-strings values separators)))
-
-(defun vulpea-buffer-prop-get (name)
-  "Get a buffer property called NAME as a string."
-  (org-with-point-at 1
-    (when (re-search-forward (concat "^#\\+" name ": \\(.*\\)")
-                             (point-max) t)
-      (buffer-substring-no-properties
-       (match-beginning 1)
-       (match-end 1)))))
-
-(defun vulpea-buffer-prop-get-list (name &optional separators)
-  "Get a buffer property NAME as a list using SEPARATORS.
-If SEPARATORS is non-nil, it should be a regular expression
-matching text that separates, but is not part of, the substrings.
-If nil it defaults to `split-string-default-separators', normally
-\"[ \f\t\n\r\v]+\", and OMIT-NULLS is forced to t."
-  (let ((value (vulpea-buffer-prop-get name)))
-    (when (and value (not (string-empty-p value)))
-      (split-string-and-unquote value separators))))
-
-(defun vulpea-buffer-prop-remove (name)
-  "Remove a buffer property called NAME."
-  (org-with-point-at 1
-    (when (re-search-forward (concat "\\(^#\\+" name ":.*\n?\\)")
-                             (point-max) t)
-      (replace-match ""))));; Function to get current time in hh:mm
+(load! "agenda.el")
 
 (defun my-current-time ()
   "Return the current time in hh:mm format."
@@ -274,98 +86,42 @@ If nil it defaults to `split-string-default-separators', normally
 ;; they are implemented.
 (after! org
 
-
   (setq org-capture-templates
         ;; Add entry to inbox
         '(("a" "Agenda / Calendar")
            ("aa" "Add an item to the agenda" entry
-            (file+olp+datetree "/mnt/storagebox/org/agenda.org")
+            (file+olp+datetree "/mnt/storagebox/org-roam/20240912165402-agenda.org")
             "* %?\nSCHEDULED: %^{Time}t\n")
 
-          ("t" "Todo" entry (file+headline "/mnt/storagebox/org/Inbox.org" "Tasks")
+          ("t" "Todo" entry (file+headline "/mnt/storagebox/org-roam/20240912165541-task_inbox.org" "Tasks")
            "* TODO %?\n")))
-(setq org-agenda-prefix-format
-      '((agenda . " %i %(vulpea-agenda-category 12)%?-12t% s")
-        (todo . " %i %(vulpea-agenda-category 12) ")
-        (tags . " %i %(vulpea-agenda-category 12) ")
-        (search . " %i %(vulpea-agenda-category 12) ")))
 
-(defun vulpea-agenda-category (&optional len)
-  "Get category of item at point for agenda.
-
-Category is defined by one of the following items:
-
-- CATEGORY property
-- TITLE keyword
-- TITLE property
-- filename without directory and extension
-
-When LEN is a number, resulting string is padded right with
-spaces and then truncated with ... on the right if result is
-longer than LEN.
-
-Usage example:
-
-  (setq org-agenda-prefix-format
-        '((agenda . \" %(vulpea-agenda-category) %?-12t %12s\")))
-
-Refer to `org-agenda-prefix-format' for more information."
-  (let* ((file-name (when buffer-file-name
-                      (file-name-sans-extension
-                       (file-name-nondirectory buffer-file-name))))
-         (title (vulpea-buffer-prop-get "title"))
-         (category (org-get-category))
-         (result
-          (or (if (and
-                   title
-                   (string-equal category file-name))
-                  title
-                category)
-              "")))
-    (if (numberp len)
-        (s-truncate len (s-pad-right len " " result))
-      result))))
-
- '(org-agenda-custom-commands
-   '(("s" "School agenda" agenda ""
-      ((org-agenda-span 'day)
-       (org-agenda-overriding-header "School")
-       (org-agenda-tag-filter-preset
-        '("+skola"))))
-     ("i" "Inbox" alltodo " -{.*}"
-      ((org-agenda-files
-        '("/mnt/storagebox/org/Inbox.org"))))
-     ("d" "Today’s Schedule"
-      ((agenda ""
-               ((org-agenda-span 'day)
-                (org-agenda-start-on-weekday 0)
-                (org-agenda-todo-ignore-scheduled 'n)
-                (org-agenda-overriding-header "Today's Schedule:")
-                (org-agenda-prefix-format
-                 '((agenda . "  %i %-30:c%?-20t% s"))))))
-      nil)
-     ("u" "Untagged Tasks"
-      ((tags-todo "-{.*}"
-                  ((org-agenda-overriding-header "Untagged Tasks:")
-                   (org-agenda-prefix-format
-                    '((tags . "  %i %-30:c %s"))))))
-      nil)
-     ("n" "Tasks Without @scheduled Tag"
-      ((tags-todo "-scheduled"
-                  ((org-agenda-overriding-header "Tasks Without @scheduled Tag:")
-                   (org-agenda-prefix-format
-                    '((tags . "  %i %-30:c %s"))))))
-      nil)))
-
+  ;; Corrected org-agenda-custom-commands
+  (setq org-agenda-custom-commands
+        '(("s" "School agenda" agenda ""
+           ((org-agenda-span 'day)
+            (org-agenda-overriding-header "School")
+            (org-agenda-tag-filter-preset
+             '("+skola"))))
+          ("i" "Inbox" alltodo " -{.*}"
+           ((org-agenda-files
+             '("/mnt/storagebox/org/Inbox.org"))))
+          ("c" "Today's Schedule and Upcoming Deadlines"
+ ((agenda ""
+          ((org-agenda-span 'day)                  ;; Today's scheduled tasks
+           (org-deadline-warning-days 0)           ;; Only show today's deadlines
+           (org-agenda-overriding-header "Today's Schedule:")))
+  (agenda ""
+          ((org-agenda-span 14)                    ;; Next 14 days view
+           (org-deadline-warning-days 14)          ;; Show deadlines within 14 days
+           (org-agenda-time-grid nil)              ;; Don't show time grid for this section
+           (org-agenda-entry-types '(:deadline))   ;; Only show deadlines
+           (org-agenda-overriding-header "Upcoming Deadlines (14 Days):"))))))))
 
 ;; lilypond
 (use-package lilypond-mode
   :ensure t
   :mode ("\\.ly\\'" . LilyPond-mode))
-
-
-(use-package! vulpea
-  :hook ((org-roam-db-autosync-mode . vulpea-db-autosync-enable)))
 
 ;; Evil
 (map! :i "C-c C-c" 'evil-normal-state)
