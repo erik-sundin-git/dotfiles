@@ -259,12 +259,7 @@ Refer to `org-agenda-prefix-format' for more information."
                 (org-agenda-todo-ignore-scheduled 'n)
                 (org-agenda-overriding-header "Today's Schedule:")
                 (org-agenda-prefix-format
-                 '((agenda . "  %i %-30:c%?-20t% s")))))
-
-       (alltodo ""
-                ((org-agenda-todo-ignore-scheduled t)
-                 (org-agenda-overriding-header "Unscheduled")
-                 (org-agenda-overriding-header ""))))
+                 '((agenda . "  %i %-30:c%?-20t% s"))))))
       nil)
      ("u" "Untagged Tasks"
       ((tags-todo "-{.*}"
