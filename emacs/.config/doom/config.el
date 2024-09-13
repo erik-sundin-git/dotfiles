@@ -113,7 +113,7 @@
            (org-agenda-overriding-header "Today's Schedule:")))
   (agenda ""
           ((org-agenda-span 14)                    ;; Next 14 days view
-           (org-deadline-warning-days 14)          ;; Show deadlines within 14 days
+           (org-deadline-warning-days 0)          ;; Show deadlines within 14 days
            (org-agenda-time-grid nil)              ;; Don't show time grid for this section
            (org-agenda-entry-types '(:deadline))   ;; Only show deadlines
            (org-agenda-overriding-header "Upcoming Deadlines (14 Days):"))))))))
