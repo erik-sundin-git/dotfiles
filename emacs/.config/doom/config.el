@@ -124,4 +124,4 @@
   :mode ("\\.ly\\'" . LilyPond-mode))
 
 ;; Evil
-(map! :i "C-c C-c" 'evil-normal-state)
+(map! :i "C-ö" 'evil-normal-state)
