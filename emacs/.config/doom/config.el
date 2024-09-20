@@ -86,8 +86,13 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-(after! org
 
+(after! org
+  (setq org-tag-alist '(
+                        ("@skola" . ?s)
+                        ("@hem" . ?h)
+                        ("@ekonomi" . ?e)
+                        ("@system" . ?S)))
   (setq org-capture-templates
         ;; Add entry to inbox
         '(("a" "Agenda / Calendar")
