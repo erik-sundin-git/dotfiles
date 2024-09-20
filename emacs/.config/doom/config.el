@@ -145,5 +145,10 @@
   :ensure t
   :mode ("\\.ly\\'" . LilyPond-mode))
 
+
 ;; Evil
-(map! :i "C-ö" 'evil-normal-state)
+(after! evil
+  (map! :i "C-ö" 'evil-normal-state)
+  (map! "C-ä" 'evil-end-of-line)
+  (map! "M-o" 'other-window)
+)
