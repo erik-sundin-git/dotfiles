@@ -5,6 +5,7 @@
 (setq org-roam-directory "/mnt/storagebox/org-roam")
 
 (load! "agenda.el")
+(load! "exwm.el")
 
 (defun my-current-time ()
   "Return the current time in hh:mm format."
@@ -73,6 +74,7 @@
 ;; - `after!' for running code after a package has loaded
 ;; - `add-load-path!' for adding directories to the `load-path', relative to
 ;;   this file. Emacs searches the `load-path' when you load packages with
+;;
 ;;   `require' or `use-package'.
 ;; - `map!' for binding new keys
 ;;
