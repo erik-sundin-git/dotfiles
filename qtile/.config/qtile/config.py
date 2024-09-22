@@ -12,6 +12,10 @@ import subprocess
 import socket
 import colors
 
+################
+### Settings ###
+################
+
 mod = "mod4"
 terminal = "alacritty"
 # terminal = "kitty"
@@ -19,7 +23,15 @@ browser = "qutebrowser"
 menu = "rofi -show drun"
 FONT_SIZE = 14
 
-desktop = "nixos"
+desktop = "Thinkpad"
+
+# Bar settings
+bar_size = 35
+widget_padding = 10
+
+##############
+### Config ###
+##############
 
 @hook.subscribe.startup_once
 def autostart():
@@ -45,11 +57,9 @@ host_name = get_vendor_info()
 
 def battery_widget():
     w = widget.Battery(
-        background="" + colors.grey_blue_iguess,
         low_foreground="000000",
         low_background=colors.red_1,
         format="{char}{percent: 2.0%}",
-        foreground="000000",
         low_percentage=0.15,
     )
     return w
@@ -61,23 +71,24 @@ def create_bars() -> bar.Bar:
     """
     newBar = bar.Bar(
         [
-            widget.Spacer(10),
-            widget.CurrentLayout(fontsize=FONT_SIZE),
-            widget.Spacer(),
+
+            widget.CurrentLayout(fontsize=FONT_SIZE, padding=widget_padding),
+            widget.TextBox(text="|", padding=widget_padding, fontsize=FONT_SIZEl+10),
             widget.GroupBox(fontsize=FONT_SIZE),
             widget.Spacer(),
+            widget.Clock(format="%H:%M", padding=widget_padding, fontsize=FONT_SIZE),
+            widget.Spacer(),
             widget.Memory(
-                background=colors.color_16,
-                foreground="000000",
+                padding=widget_padding
             ),
             battery_widget(),
             #            widget.Systray(),
-            widget.Clock(format="%Y-%m-%d %a %H:%M %p"),
-            widget.QuickExit(),
+            widget.Clock(format="%y-%m-%d %a", padding=widget_padding),
         ],
-        30,
-        background="141414",
-        border_width=[2, 0, 2, 0],
+        bar_size,
+        background="141414.8",
+        border_width=[0, 0, 0, 0],
+        margin=[2, 2, 2, 2],  # Top, Right, Bottom, Left,
         border_color=["000000", "000000", "000000", "000000"],
     )
     return newBar
@@ -235,7 +246,7 @@ for i in groups:
 
 
 layouts = [
-    layout.Columns(border_focus="#bb00ff", margin=2),
+    layout.Columns(border_focus="#000000", margin=2, border_width=0),
     layout.MonadTall(border_focus="#28464B", margin=4),
     layout.Max(),
     # layout.MonadWide(border_focus="#28464B"),
@@ -263,7 +274,7 @@ screens = [
         top=create_bars(),
     ),
     Screen(
-        # top=create_bars(),
+         top=create_bars(),
     ),
 ]
 
