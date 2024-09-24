@@ -175,6 +175,7 @@ keys = [
     Key([mod], "space", lazy.next_screen(), desc="Move focues to the next screen"),
     Key([mod, "control"], "right", lazy.layout.next_split()),
     Key([mod, "control"], "left", lazy.layout.next_split()),
+    Key([mod, "control"], "n", lazy.layout.next())
 ]
 
 # Add key bindings to switch VTs in Wayland.
