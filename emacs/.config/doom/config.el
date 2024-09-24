@@ -98,24 +98,23 @@
   (setq org-capture-templates
         ;; Add entry to inbox
         '(("a" "Agenda / Calendar")
-           ("aa" "Add an item to the agenda" entry
-            (file+olp+datetree "/mnt/storagebox/org-roam/20240912165402-agenda.org")
-            "* %?\nSCHEDULED: %^{Time}t\n")
+          ("aa" "Add an item to the agenda" entry
+           (file+olp+datetree "/mnt/storagebox/org-roam/20240912165402-agenda.org")
+           "* %?\nSCHEDULED: %^{Time}t\n")
 
-           ("t""Todo")
+          ("t" "Todo")
           ("tt" "Todo" entry (file+headline "/mnt/storagebox/org-roam/20240912165541-task_inbox.org" "Tasks")
            "* TODO %?\n")
 
           ("ts" "System Configuration" entry
-           (file+headline "/mnt/storagebox/org-roam/20240822143307-todo_system.org" "Inbox") "* TODO %?\n"))
+           (file+headline "/mnt/storagebox/org-roam/20240822143307-todo_system.org" "Inbox")
+           "* TODO %?\n")
 
-          ("T" "Transaktion - ledger")
-          ("Tm" "Transaction" plain (file "/mnt/storagebox/ledger/default.ledger")
-           "%(org-read-date) Matvaror
-    Tillgångar:Swedbank:Privatkonto
-    Utgifter:Mat:Matvaror  SEK %^{Amount}"
-         :empty-lines 1)
-          ))
+          ("l" "Transaktion - ledger")
+          ("lm" "Transaction" plain (file "/mnt/storagebox/ledger/default.ledger")
+           "%(org-read-date) Matvaror\n    Tillgångar:Swedbank:Privatkonto\n    Utgifter:Mat:Matvaror  SEK %^{Amount}"
+           :empty-lines 1))))
+
 
 
 
