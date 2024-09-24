@@ -148,8 +148,15 @@
 
 
 ;; Evil
-(after! evil
-  (map! :i "C-ö" 'evil-normal-state)
-  (map! "C-ä" 'evil-end-of-line)
-  (map! "M-o" 'other-window)
-)
+(map! :i "C-ö" 'evil-normal-state)
+(map! "C-ä" 'evil-end-of-line)
+(map! "M-o" 'other-window)
+
+(setq evil-vsplit-window-right 1)
+
+(set-eshell-alias! "hms" "home-manager switch --flake $HOME/nixos/")
+
+
+;; coding system
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
