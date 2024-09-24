@@ -1,11 +1,13 @@
 (setq doom-theme 'doom-tokyo-night)
 (setq display-line-numbers-type t)
+(setq doom-font "Fira Code-14")
 
 (setq org-directory "/mnt/storagebox/org")
 (setq org-roam-directory "/mnt/storagebox/org-roam")
 
+
 (load! "agenda.el")
-(load! "exwm.el")
+;;(load! "exwm.el")
 
 (defun my-current-time ()
   "Return the current time in hh:mm format."
