@@ -17,7 +17,15 @@
   "Return the current time in hh:mm format."
   (format-time-string "%H:%M"))
 
-(setq org-roam-dailies-capture-templates
+
+
+(setq org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      ;; Accomodates for the fact that Logseq uses the "pages" directory
+      :target (file+head "pages/${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t))
+   org-roam-dailies-capture-templates
       '(("d" "daily" plain
         "\n* Entry %<%H:%M>\n%?"
         :target (file+head "daily/%<%Y-%m-%d>.org"
@@ -31,12 +39,10 @@
          :unnarrowed t)
 
          ("sr" "Kvällsrutin" plain
-         (file "/mnt/storagebox/org-roam/capture-templates/sovrutin.org")
+         (file "~/notes/roam/capture-templates/sovrutin.org")
          :target (file+head "Kvällsrutin/%<%Y-%m-%d>.org"
                             "#+title: Kvällsrutin %<%Y-%m-%d>\n")
          :unnarrowed t)
-
-
 
         ("t" "tetra" plain
          "%?\n* Tetra\n
@@ -60,6 +66,10 @@
          :target (file+head "tetra/%<%Y-%m-%d>.org"
                             "#+title: T %<%Y-%m-%d>\n")
          :unnarrowed t)))
+
+
+(add-hook 'logseq-org-roam-updated-hook #'org-roam-db-sync)
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
@@ -103,19 +113,19 @@
         ;; Add entry to inbox
         '(("a" "Agenda / Calendar")
           ("aa" "Add an item to the agenda" entry
-           (file+olp+datetree "/mnt/storagebox/org-roam/20240912165402-agenda.org")
+           (file+olp+datetree "~/notes/roam/20240912165402-agenda.org")
            "* %?\nSCHEDULED: %^{Time}t\n")
 
           ("t" "Todo")
-          ("tt" "Todo" entry (file+headline "/mnt/storagebox/org-roam/20240912165541-task_inbox.org" "Tasks")
+          ("tt" "Todo" entry (file+headline "~/notes/roam/20240912165541-task_inbox.org" "Tasks")
            "* TODO %?\n")
 
           ("ts" "System Configuration" entry
-           (file+headline "/mnt/storagebox/org-roam/20240822143307-todo_system.org" "Inbox")
+           (file+headline "~/notes/roam/20240822143307-todo_system.org" "Inbox")
            "* TODO %?\n")
 
           ("l" "Transaktion - ledger")
-          ("lm" "Transaction" plain (file "/mnt/storagebox/ledger/default.ledger")
+          ("lm" "Transaction" plain (file "~/ledger/default.ledger")
            "%(org-read-date) Matvaror\n    Tillgångar:Swedbank:Privatkonto\n    Utgifter:Mat:Matvaror  SEK %^{Amount}"
            :empty-lines 1))))
 
@@ -130,9 +140,6 @@
             (org-agenda-overriding-header "School")
             (org-agenda-tag-filter-preset
              '("+skola"))))
-          ("i" "Inbox" alltodo " -{.*}"
-           ((org-agenda-files
-             '("/mnt/storagebox/org/Inbox.org"))))
           ("c" "Today's Schedule and Upcoming Deadlines"
  ((agenda ""
           ((org-agenda-span 'day)                  ;; Today's scheduled tasks
