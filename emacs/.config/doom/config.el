@@ -2,8 +2,12 @@
 (setq display-line-numbers-type t)
 (setq doom-font "Fira Code-14")
 
-(setq org-directory "/mnt/storagebox/org")
-(setq org-roam-directory "/mnt/storagebox/org-roam")
+
+(setq org-directory "~/notes/"
+      org-roam-directory (file-truename (file-name-concat org-directory "roam/"))
+      org-attach-id-dir (expand-file-name "assets" org-roam-directory)
+      org-roam-dailies-directory "journals/"
+      org-roam-file-exclude-regexp "\\.git/.*\\|logseq/.*$")
 
 
 (load! "agenda.el")
