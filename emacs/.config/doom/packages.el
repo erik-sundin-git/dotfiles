@@ -42,6 +42,16 @@
 (package! ement)
 (package! vulpea)
 (package! exwm)
+(package! logseq-org-roam
+  :recipe (:host github
+           :repo "sbougerel/logseq-org-roam"
+           :files ("*.el")))
+
+(package! autosync-magit
+  :recipe (:host github
+             :repo "sbougerel/autosync-magit"
+             :files ("*.el")))
+
 ;;(package! counsel-spotify)
 
 ;; Doom's packages are pinned to a specific commit and updated from release to
