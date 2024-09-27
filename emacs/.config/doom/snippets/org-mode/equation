@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: latex equation
+# uuid:
+# key: equation
+# condition: t
+# --
+\begin{equation}
+${1}
+\end{equation}
