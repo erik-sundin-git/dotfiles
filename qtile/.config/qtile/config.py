@@ -12,6 +12,8 @@ import subprocess
 import socket
 import colors
 
+home = os.path.expanduser('~')
+
 ################
 ### Settings ###
 ################
@@ -33,11 +35,13 @@ widget_padding = 10
 ### Config ###
 ##############
 
+
 @hook.subscribe.startup_once
 def autostart():
     with open("/tmp/qtile-autostart.log", "w") as f:
         f.write("Autostart script triggered\n")
-    subprocess.Popen(['/bin/bash', os.path.expanduser('~/.config/qtile/autostart.sh')])
+    subprocess.Popen(["/bin/bash", os.path.expanduser("~/.config/qtile/autostart.sh")])
+
 
 def get_vendor_info():
     path = "/sys/class/dmi/id/sys_vendor"
@@ -71,24 +75,32 @@ def create_bars() -> bar.Bar:
     """
     newBar = bar.Bar(
         [
-
             widget.CurrentLayout(fontsize=FONT_SIZE, padding=widget_padding),
-            widget.TextBox(text="|", padding=widget_padding, fontsize=FONT_SIZEl+10),
+            widget.TextBox(text="|", padding=widget_padding, fontsize=FONT_SIZE + 10),
             widget.GroupBox(fontsize=FONT_SIZE),
             widget.Spacer(),
             widget.Clock(format="%H:%M", padding=widget_padding, fontsize=FONT_SIZE),
             widget.Spacer(),
-            widget.Memory(
-                padding=widget_padding
-            ),
+            widget.Memory(padding=widget_padding),
             battery_widget(),
+            widget.BatteryIcon(
+                theme_path='/home/erik/.config/qtile/images/'
+            ),
+               # arcobattery.BatteryIcon(
+               #          padding=0,
+               #          scale=0.7,
+               #          y_poss=2,
+               #          theme_path=home + "/.config/qtile/icons/battery_icons_horiz",
+               #          update_interval = 5,
+               #          background = colors[1]
+               #          ),
             #            widget.Systray(),
             widget.Clock(format="%y-%m-%d %a", padding=widget_padding),
         ],
         bar_size,
         background="141414.8",
         border_width=[0, 0, 0, 0],
-        margin=[2, 2, 2, 2],  # Top, Right, Bottom, Left,
+        margin=[2, 4, 2, 4],  # Top, Right, Bottom, Left,
         border_color=["000000", "000000", "000000", "000000"],
     )
     return newBar
@@ -102,7 +114,7 @@ keys = [
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
-        # Move windows between left/right columns or move up/down in current stack.
+    # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
     Key(
         [mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"
@@ -238,16 +250,17 @@ for i in groups:
     ### Group shortcuts ###
     #######################
 
-    keys.extend([
-        Key([mod], "m", lazy.group[groups[6].name].toscreen()), # email
-        Key([mod], "e", lazy.group[groups[3].name].toscreen()),  # emacs
-        Key([mod], "b", lazy.group[groups[2].name].toscreen())  # Browser
-    ])
-
+    keys.extend(
+        [
+            Key([mod], "m", lazy.group[groups[6].name].toscreen()),  # email
+            Key([mod], "e", lazy.group[groups[3].name].toscreen()),  # emacs
+            Key([mod], "b", lazy.group[groups[2].name].toscreen()),  # Browser
+        ]
+    )
 
 
 layouts = [
-    layout.Columns(border_focus="#000000", margin=2, border_width=0),
+    layout.Columns(border_focus="#000000", margin=[0,2,2,2], border_width=0),
     layout.MonadTall(border_focus="#28464B", margin=4),
     layout.Max(),
     # layout.MonadWide(border_focus="#28464B"),
@@ -274,8 +287,9 @@ screens = [
     Screen(
         top=create_bars(),
     ),
+    Screen(),
     Screen(
-         top=create_bars(),
+        top=create_bars(),
     ),
 ]
 
