@@ -52,6 +52,7 @@
              :repo "sbougerel/autosync-magit"
              :files ("*.el")))
 
+(package! org-bullets)
 ;;(package! counsel-spotify)
 
 ;; Doom's packages are pinned to a specific commit and updated from release to
