@@ -1,7 +1,0 @@
-antigen
-davfs2
-sct
-tokyonight-gtk-theme-git
-ttf-font-awesome-4
-yay
-yay-debug
