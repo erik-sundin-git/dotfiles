@@ -695,6 +695,14 @@
   :custom
   (text-scale-mode-step 1.07))
 
+;; An Emacs major mode for editing Nix expressions.
+(use-package nix-mode
+  :ensure f ;; installed via nixos
+  :mode "\\.nix\\'"
+  :config
+  (define-key nix-mode-map (kbd "C-c C-f") 'nix-format-buffer))
+
+
 
 (which-key-mode t)
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -708,6 +716,7 @@
 
 (global-set-key (kbd "M-o")  'other-window)
 (global-set-key (kbd "C-x .") 'recentf)
+
 
 (which-key-add-key-based-replacements
   "C-ö r" "Roam"
