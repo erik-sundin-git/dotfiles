@@ -489,11 +489,6 @@
 ;; ORG-MODE ;;
 ;;;;;;;;;;;;;;
 
-;; Org mode is a major mode designed for organizing notes, planning, task
-;; management, and authoring documents using plain text with a simple and
-;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
-;; scheduling, deadlines, time tracking, and exporting to multiple formats
-;; including HTML, LaTeX, PDF, and Markdown.
 (use-package org
   :ensure t
   :commands (org-mode org-version)
@@ -508,7 +503,35 @@
   ;; (org-fontify-todo-headline t)
   ;; (org-fontify-whole-heading-line t)
   ;; (org-fontify-quote-and-verse-blocks t)
-  (org-startup-truncated t))
+  (org-startup-truncated t)
+  (org-return-follows-link t)
+  (org-refile-targets
+   '(("~/notes/todo/todo.org" :maxlevel . 2)))
+  :config
+  (setq org-agenda-files
+        '("~/notes/roam/20240912165402-agenda.org"
+   	      "/home/erik/notes/todo/daily.org"
+   	      "/home/erik/notes/todo/inbox.org"
+   	      "/home/erik/notes/todo/reminders.org"
+   	      "/home/erik/notes/todo/todo.org"
+   	      "/home/erik/notes/todo/flytt2025.org")))
+
+(use-package org-roam
+  :after org
+  :custom
+  (org-roam-db-autosync-mode t)
+  :config
+  (setq org-directory "~/notes/" org-roam-directory
+        (file-truename
+         (file-name-concat org-directory "roam/")) org-attach-id-dir
+        (expand-file-name "assets" org-roam-directory)
+        org-roam-dailies-directory "journals/"
+        org-roam-file-exclude-regexp "\\.git/.*\\|logseq/.*$"))
+
+(use-package autosync-magit
+  :straight (:host github
+                   :repo "sbougerel/autosync-magit"
+                   :files ("*.el")))
 
 ;;;;;;;;;;;;;;;;;;
 ;; Auto upgrade ;;
@@ -677,6 +700,28 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global keybindings ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package general
+  :ensure t)
+
+(general-create-definer my-leader-def
+  :prefix "C-ö")
 
 (global-set-key (kbd "M-o")  'other-window)
 (global-set-key (kbd "C-x .") 'recentf)
+
+(which-key-add-key-based-replacements
+  "C-ö r" "Roam"
+  "C-ö r d" "dailies"
+  "C-ö e" "Eval"
+  "C-ö o" "open")
+(my-leader-def
+  "C-x" 'org-capture
+  "w" '(:ignore t :which-key "windows")
+  "w s" 'window-swap-states
+  "o a" '("Org Agenda" . org-agenda)
+
+  "r f" 'org-roam-node-find
+  "r i" 'org-roam-node-insert
+
+  "e" '(:ignore t :which-key "eval")
+  "e r" 'eval-region)
