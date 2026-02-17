@@ -505,9 +505,37 @@
   ;; (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t)
   (org-return-follows-link t)
+  (org-enforce-todo-dependencies t)
   (org-refile-targets
    '(("~/notes/todo/todo.org" :maxlevel . 2)))
   :config
+  (setq org-capture-templates
+        ;; Add entry to inbox
+        '(("a" "Agenda / Calendar")
+          ("aa" "Add an item to the agenda" entry
+           (file+olp+datetree "~/notes/roam/20240912165402-agenda.org")
+           "* TODO  %?\nSCHEDULED: %^{Time}t\n")
+
+  	      ("p" "Planering")
+  	      ("pd" "Planera dag" entry (file+olp+datetree "~/notes/planering.org")
+  	       "\n* Entry %t\n%?")
+
+  	      ("L" "Log")
+  	      ("Lb" "Övningsjournal bas" entry (file+olp+datetree "~/notes/FrilansMappen/övning.org")
+  	       "\n*  %<%H:%M>\n%?")
+
+
+  	      ("Lh" "Log Habit Time" table-line
+  	       (file "~/notes/roam/pages/rutin_tidslogg.org")
+  	       "|%^{Habit name} | %U  |%^{Tid} | %^{Comment}")
+
+          ("t" "Todo" entry (file+headline "~/notes/todo/inbox.org" "Tasks")
+           "* TODO %?\n")
+
+          ("l" "Transaktion - ledger")
+          ("lm" "Transaction" plain (file "~/ledger/default.ledger")
+           "%(org-read-date) Matvaror\n    Tillgångar:Swedbank:Privatkonto\n    Utgifter:Mat:Matvaror  SEK %^{Amount}"
+           :empty-lines 1)))
   (setq org-agenda-files
         '("~/notes/roam/20240912165402-agenda.org"
    	      "/home/erik/notes/todo/daily.org"
