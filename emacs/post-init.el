@@ -601,6 +601,15 @@
   ;; alternative mechanism.
   (auto-package-update-at-time "10:00"))
 
+;;;;;;;;;;;
+;; Email ;;
+;;;;;;;;;;;
+(use-package notmuch
+  :ensure t)
+
+(setq send-mail-function 'sendmail-send-it
+      sendmail-program "/usr/bin/msmtp")
+
 ;;;;;;;;;;
 ;; MISC ;;
 ;;;;;;;;;;
@@ -731,7 +740,6 @@
   (define-key nix-mode-map (kbd "C-c C-f") 'nix-format-buffer))
 
 
-
 (which-key-mode t)
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global keybindings ;;
@@ -756,6 +764,7 @@
   "w" '(:ignore t :which-key "windows")
   "w s" 'window-swap-states
   "o a" '("Org Agenda" . org-agenda)
+  "m" 'notmuch
 
   "r f" 'org-roam-node-find
   "r i" 'org-roam-node-insert
