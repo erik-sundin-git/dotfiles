@@ -768,6 +768,8 @@
 
   "r f" 'org-roam-node-find
   "r i" 'org-roam-node-insert
+  "r d t" 'org-roam-dailies-find-today
+  "r d f" 'org-roam-dailies-capture-today
 
   "e" '(:ignore t :which-key "eval")
   "e r" 'eval-region)
