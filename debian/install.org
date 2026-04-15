@@ -2,6 +2,38 @@
 Instructions for install my debian system with my
 custom configuration and packages.
 
+* TODO install program
+consider creating a script or a program for this.
+
+  ncurses is a solid project for it. You'll get hands-on with:
+  - Manual memory management (string buffers for package lists, etc.)
+  - C's lack of abstractions forcing you to think carefully about data structures
+  - A real API (ncurses) that isn't hand-holdy
+  - Calling exec/system and handling process return codes
+
+  A rough progression that keeps it manageable:
+
+  1. Start with the shell logic first — get a working shell script so you know exactly what the program needs to do
+  2. Port it to C without any TUI — just a C program that runs the same steps in sequence
+  3. Add ncurses for the interactive parts (package selection is a natural first screen)
+
+
+** testing
+to run commands without executing
+#+begin_src bash
+  DRY_RUN=true
+
+  run() {
+    if $DRY_RUN; then
+      echo "WOULD RUN: $*"
+    else
+      "$@"
+    fi
+  }
+#+end_src
+
+* guide
+
 ** TODO (spelling) Prerequisits
 The guide assumes the starting point to be a freshly
 installed system with no desktop manager selected during
