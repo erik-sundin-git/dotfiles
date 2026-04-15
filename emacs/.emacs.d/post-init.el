@@ -564,6 +564,9 @@
                    :repo "sbougerel/autosync-magit"
                    :files ("*.el")))
 
+(add-to-list 'safe-local-variable-values
+             '(eval add-hook 'autosync-magit-after-merge-hook #'logseq-org-roam nil t))
+
 ;;;;;;;;;;;;;;;;;;
 ;; Auto upgrade ;;
 ;;;;;;;;;;;;;;;;;;
