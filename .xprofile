@@ -1,0 +1,5 @@
+setxkbmap se -option ctrl:swapcaps
+xinput set-prop "Elan Touchpad" "libinput Tapping Enabled" 1
+
+xrdb -merge ~/.Xresources
+
