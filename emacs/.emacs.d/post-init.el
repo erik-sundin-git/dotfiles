@@ -544,6 +544,7 @@
    	      "/home/erik/notes/todo/todo.org"
    	      "/home/erik/notes/todo/flytt2025.org")))
 
+
 (use-package org-roam
   :after org
   :custom
@@ -555,6 +556,12 @@
         (expand-file-name "assets" org-roam-directory)
         org-roam-dailies-directory "journals/"
         org-roam-file-exclude-regexp "\\.git/.*\\|logseq/.*$"))
+
+(use-package consult-org-roam
+  :ensure t
+  :after org-roam
+  :config
+  (consult-org-roam-mode 1))
 
 (use-package autosync-magit
   :straight (:host github
