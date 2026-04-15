@@ -1,0 +1,67 @@
+* Debian installation
+Instructions for install my debian system with my
+custom configuration and packages.
+
+** TODO (spelling) Prerequisits
+The guide assumes the starting point to be a freshly
+installed system with no desktop manager selected during
+install.
+
+** ssh-keys
+*** Generate ssh-key
+#+begin_src bash
+ssh-keygen
+cat ~/.ssh/id_ed25519.pub
+#+end_src
+
+Then just add the keys to gitlab and github.
+*** Alternative option
+Another option is to just copy the current key to the new system.
+#+begin_src bash
+scp ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub user@newhost:~/.ssh/
+#+end_src
+** Update system
+run as superuser:
+#+BEGIN_SRC bash
+apt update && apt upgrade
+#+END_SRC
+** Install initial packages
+#+BEGIN_SRC bash
+apt install git sudo
+#+END_SRC
+** add user to sudo group
+#+begin_src
+usermod -aG sudo erik
+newgrp sudo
+#+end_src
+** clone repositories
+Dotfiles:
+#+begin_src bash
+git clone git@github.com:erik-sundin-git/dotfiles.git ~/dotfiles
+#+end_src
+
+Notes:
+#+begin_src bash
+git clone git@gitlab.com:vr35/notes.git ~/notes
+#+end_src
+** install packages
+First add non-free and contrib to apt/sources.list
+#+begin_src bash
+sudo sed -i 's/main non-free-firmware$/main contrib non-free non-free-firmware/' /etc/apt/sources.list
+sudo apt update
+#+end_src
+
+now install required packages:
+#+begin_src bash
+ sudo apt install $(cat dotfiles/debian/installed_packages.txt)
+#+end_src
+** nix
+install the nix package manager
+#+begin_src bash
+sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+#+end_src
+
+start nix
+#+begin_src bash
+. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+#+end_src
