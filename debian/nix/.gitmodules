@@ -1,0 +1,6 @@
+[submodule "dotfiles"]
+	path = dotfiles
+	url = git@github.com:erik-sundin-git/dotfiles.git
+[submodule "minimal-emacs.d"]
+	path = minimal-emacs.d
+	url = https://github.com/jamescherti/minimal-emacs.d.git
