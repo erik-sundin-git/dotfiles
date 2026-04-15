@@ -3,5 +3,5 @@
   ...
 }:
 {
-  flake.homeConfigurations = inputs.self.lib.mkHomeManager "aarch64-linux" "debian-laptop";
+  flake.homeConfigurations = inputs.self.lib.mkHomeManager "x86_64-linux" "debian";
 }

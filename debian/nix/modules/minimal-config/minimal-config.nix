@@ -8,6 +8,7 @@
   flake.modules.homeManager.minimal-config =
     { config, ... }:
     {
+      imports = [inputs.self.modules.generic.systemConstants];
       home.homeDirectory = "/home/${config.home.username}";
       home.stateVersion = "23.05";
       home.sessionVariables = {

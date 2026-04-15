@@ -1,13 +1,14 @@
-{ inputs, ... }:
+{ config, inputs, ... }:
 {
-  flake.modules.homeManager.debian-laptop =
+  flake.modules.homeManager.debian =
     { pkgs, ... }:
     {
       imports = with inputs.self.modules.homeManager; [
-        system-default
-        waybar
+        minimal-config
       ];
       home.username = "erik";
+      home.homeDirectory = "/home/erik";
+
       home.packages = with pkgs; [
 
       ];
