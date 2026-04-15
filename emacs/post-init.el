@@ -554,7 +554,10 @@
          (file-name-concat org-directory "roam/")) org-attach-id-dir
         (expand-file-name "assets" org-roam-directory)
         org-roam-dailies-directory "journals/"
-        org-roam-file-exclude-regexp "\\.git/.*\\|logseq/.*$"))
+        org-roam-file-exclude-regexp "\\.git/.*\\|logseq/.*$")
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry "* %<%H:%M> %?" :target
+           (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))))
 
 (use-package autosync-magit
   :straight (:host github
