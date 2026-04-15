@@ -544,6 +544,9 @@
    	      "/home/erik/notes/todo/todo.org"
    	      "/home/erik/notes/todo/flytt2025.org")))
 
+(use-package org-tempo
+  :after org
+  :ensure nil)
 
 (use-package org-roam
   :after org
@@ -689,7 +692,14 @@
   :commands (electric-pair-mode
              electric-pair-local-mode
              electric-pair-delete-pair)
-  :hook (after-init . electric-pair-mode))
+  :hook
+  ;; Do not automatically insert <> in org files for org-tempo
+  (after-init . electric-pair-mode)
+  (org-mode . (lambda ()
+                (setq-local electric-pair-inhibit-predicate
+                            (lambda (c)
+                              (if (char-equal c ?<) t
+                                (electric-pair-default-inhibit c)))))))
 
 ;; Highlights function and variable definitions in Emacs Lisp mode
 (use-package highlight-defined
