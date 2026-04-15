@@ -626,6 +626,16 @@
 (setq send-mail-function 'sendmail-send-it
       sendmail-program "/usr/bin/msmtp")
 
+;;;;;;;;;;;;;;
+;; TERMINAL ;;
+;;;;;;;;;;;;;;
+
+(use-package vterm
+  :ensure t
+  :commands (vterm vterm-other-window)
+  :bind
+  ("C-c t" . vterm))
+
 ;;;;;;;;;;
 ;; MISC ;;
 ;;;;;;;;;;
