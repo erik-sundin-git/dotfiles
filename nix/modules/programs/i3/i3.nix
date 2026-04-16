@@ -20,6 +20,11 @@
 
         config = {
           modifier = "Mod4";
+
+          startup = [
+            { command = "nitrogen --restore"; }
+          ];
+
           gaps = {
             inner = 0;
             outer = 0;
@@ -29,7 +34,7 @@
           bars = [
             {
               fonts = {
-                size = 13.0;
+                size = 10.0;
               };
               position = "bottom";
               statusCommand = "i3status";
