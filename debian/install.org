@@ -97,3 +97,8 @@ start nix
 #+begin_src bash
 . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 #+end_src
+
+install home-manager
+#+begin_src bash
+
+#+end_src
