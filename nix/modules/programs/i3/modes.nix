@@ -7,8 +7,8 @@
 }:
 
 {
-  flake.modules.homeManager.windowManagers.i3 = {
-    config.modes = {
+  flake.modules.homeManager.i3 = {
+    xsession.windowManager.i3.config.modes = {
       resize = {
         "j" = "resize grow height 10 px or 10 ppt";
         Escape = "mode default";

@@ -1,22 +1,21 @@
 {
   inputs,
-  config,
   lib,
   pkgs,
   ...
 }:
 
 {
-  flake.modules.homeManager.windowManagers.i3 = {
-    config.keybindings = {
+  flake.modules.homeManager.i3 = {config, lib, ...}: {
+    xsession.windowManager.i3.config = {
       keybindings =
         let
           modifier = config.xsession.windowManager.i3.config.modifier;
         in
         lib.mkOptionDefault {
-          "${modifier}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";
+          "${modifier}+Return" = "exec alacritty";
           "${modifier}+Shift+q" = "kill";
-          "${modifier}+d" = "exec ${pkgs.rofi}/bin/rofi -show drun";
+          "${modifier}+d" = "exec --no-startup-id dmenu_run";
 
           "${modifier}+h" = "focus left";
           "${modifier}+j" = "focus down";
@@ -28,7 +27,6 @@
           "${modifier}+shift+k" = "move up";
           "${modifier}+shift+l" = "move right";
 
-          "${modifier}+shift+s" = "exec rofi-power";
 
           # Media controls
           "XF86AudioRaiseVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%";
