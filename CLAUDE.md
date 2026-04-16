@@ -37,16 +37,20 @@ Key conventions:
 Module layout:
 ```
 nix/modules/
-├── nix/flake-parts []/          # Core flake-parts setup (dendritic-tools, lib, factory)
-├── nix/tools/home-manager [ND]/ # Home Manager flake integration
+├── nix/
+│   ├── flake-parts []/          # Core flake-parts setup (dendritic-tools, lib, factory)
+│   └── tools/home-manager [ND]/ # Home Manager flake integration
 ├── hosts/debian-laptop/         # Host config — imports modules, sets username/homeDirectory
 ├── minimal-config/              # Base Home Manager defaults (keyboard, locale, xsession)
 ├── systemConstants/             # Global constants (admin name, email, config dir)
 └── programs/
     ├── emacs/                   # Symlinks emacs dotfiles via dotPath
-    ├── cli-tools [ND]/          # CLI packages (git, alacritty, htop, etc.)
+    ├── i3/                      # i3wm config, keybindings, modes, i3status
+    ├── cli-tools/               # CLI packages (git, alacritty, htop, etc.)
     └── mail/                    # ProtonMail Bridge + mbsync + notmuch + msmtp
 ```
+
+The debian host (`hosts/debian-laptop/configuration.nix`) currently imports: `minimal-config`, `emacs`, `i3`.
 
 The `lib.nix` helpers `mkNixos` and `mkHomeManager` wire a named module into `nixosConfigurations` or `homeConfigurations` respectively. The debian host is a `homeConfigurations` entry (not a full NixOS system).
 
