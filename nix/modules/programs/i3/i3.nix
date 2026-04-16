@@ -15,7 +15,6 @@
       ...
     }:
     {
-
       xsession.windowManager.i3 = {
         enable = true;
 
@@ -36,7 +35,6 @@
               statusCommand = "i3status";
             }
           ];
-
           workspaceAutoBackAndForth = true;
           defaultWorkspace = "1";
         };

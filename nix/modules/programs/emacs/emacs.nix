@@ -6,7 +6,7 @@
   flake.modules.homeManager.emacs =
     { pkgs, config, ... }:
     let
-      dotPath = "${config.systemConstants.configDir}/emacs/.emacs.d";
+      dotPath = "${inputs.self}/emacs/.emacs.d";
     in
     {
       home.file = {
