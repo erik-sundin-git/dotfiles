@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   flake.modules.generic.systemConstants =
     { lib, pkgs, ... }:
@@ -12,6 +12,7 @@
         adminEmail = "mail@eriksundin.com";
         adminName = "Erik Sundin";
         configDir = inputs.self;
+        isLaptop = lib.mkDefault false;
       };
     };
 }

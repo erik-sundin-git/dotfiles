@@ -17,9 +17,13 @@
         ".emacs.d/init.el".source = "${dotPath}/init.el";
         ".emacs.d/early-init.el".source = "${dotPath}/early-init.el";
       };
-
-      # programs.emacs = {
-      #   enable = true;
-      # };
+      programs.emacs = {
+        enable = true;
+        extraPackages =
+          epkgs: with epkgs; [
+            nixfmt
+            nix-mode
+          ];
+      };
     };
 }
