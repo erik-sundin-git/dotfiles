@@ -50,7 +50,7 @@ Then just add the keys to gitlab and github.
 *** Alternative option
 Another option is to just copy the current key to the new system.
 #+begin_src bash
-scp ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub user@newhost:~/.ssh/
+ssh-copy-id user@host
 #+end_src
 ** Update system
 run as superuser:
