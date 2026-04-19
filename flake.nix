@@ -9,6 +9,7 @@
     };
     import-tree.url = "github:vic/import-tree";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nur.url = "github:nix-community/NUR";
     pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
   };
 }

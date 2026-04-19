@@ -1,6 +1,6 @@
 { config, inputs, ... }:
 {
-  flake.modules.homeManager.debianLaptop =
+  flake.modules.homeManager.debianDesktop =
     { pkgs, ... }:
     {
       imports = with inputs.self.modules.homeManager; [
@@ -11,6 +11,6 @@
         nixfmt
       ];
       home.homeDirectory = "/home/erik";
-      systemConstants.currentSystemType = "laptop";
+
     };
 }
