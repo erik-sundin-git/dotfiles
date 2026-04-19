@@ -8,17 +8,19 @@
   flake.modules.homeManager.minimal-config =
     { config, lib, ... }:
     let
-      isLaptop = config.systemConstants.isLaptop;
+      isLaptop = config.systemConstants.currentSystemType == "laptop";
     in
     {
-      imports = [ inputs.self.modules.generic.systemConstants ];
+      imports = with inputs.self.modules.homeManager; [
+        inputs.self.modules.generic.systemConstants
+        emacs
+        librewolf
+        bash
+        i3
+      ];
       home.homeDirectory = "/home/${config.home.username}";
       home.stateVersion = "23.05";
-      # home.keyboard = {
-      #   layout = "se";
-      #   options = ["ctrl:swapcaps"];
-      # };
-      # xsession.enable = true;
+      home.username = "erik";
 
       home.sessionVariables = {
         LANG = "en_US.UTF-8";
@@ -35,11 +37,14 @@
 
       home.file.".Xresources".text = lib.optionalString isLaptop "Xft.dpi: 120\n";
 
-      home.file.".bashrc".source = "${inputs.self}/bash/.bashrc";
-
       home.file.".local/share/fonts".source = "${inputs.self}/fonts";
 
+      home.file.".config/nitrogen/nitrogen.cfg".source = "${inputs.self}/nitrogen/nitrogen.cfg";
       programs.home-manager.enable = true;
+
+      home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        echo -e "\033[33mRebuilt system using profile: ${config.systemConstants.currentSystemType}\033[0m"
+      '';
 
     };
 }

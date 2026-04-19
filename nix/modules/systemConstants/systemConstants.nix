@@ -11,7 +11,7 @@
       config.systemConstants = {
         adminEmail = "mail@eriksundin.com";
         adminName = "Erik Sundin";
-        isLaptop = lib.mkDefault false;
+        currentSystemType = lib.mkDefault "desktop"; # either laptop or desktop currently
       };
     };
 }
