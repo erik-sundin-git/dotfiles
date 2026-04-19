@@ -15,6 +15,20 @@
       ...
     }:
     {
+      home.packages =
+        [ pkgs.blueman ]
+        ++ lib.optionals (config.systemConstants.currentSystemType == "laptop") [
+          pkgs.brightnessctl
+        ];
+
+      services.redshift = {
+        enable = true;
+        latitude = config.systemConstants.latitude;
+        longitude = config.systemConstants.longitude;
+        temperature.day = 6500;
+        temperature.night = 3500;
+      };
+
       xsession.windowManager.i3 = {
         enable = true;
 
@@ -23,6 +37,8 @@
 
           startup = [
             { command = "nitrogen --restore"; }
+            { command = "blueman-applet"; notification = false; }
+            { command = "systemctl --user import-environment DISPLAY XAUTHORITY"; notification = false; }
           ];
 
           gaps = {

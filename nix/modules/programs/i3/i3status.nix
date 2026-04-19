@@ -50,7 +50,7 @@
           "memory" = {
             position = 7;
             settings = {
-              format = "%used | %available";
+              format = "%used / %available";
               threshold_degraded = "1G";
               format_degraded = "MEMORY < %available";
             };
@@ -75,6 +75,9 @@
             position = 4;
             settings = {
               format = "%status %percentage %remaining";
+              low_threshold = 30;
+              threshold_type = "percentage";
+              color_bad = "#FF0000";
             };
           };
         };
