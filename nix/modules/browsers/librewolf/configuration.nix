@@ -20,17 +20,16 @@
         profiles."default".settings = {
           "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
           "browser.uidensity" = 1;
+          "extensions.autoDisableScopes" = 0;
         };
 
-        profiles."default".extensions = {
-          packages = with pkgs.nur.repos.rycee.firefox-addons; [
-            ublock-origin
-            bitwarden
-            darkreader
-            sponsorblock
-            consent-o-matic
-          ];
-        };
+        profiles."default".extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
+          ublock-origin
+          bitwarden
+          darkreader
+          sponsorblock
+          consent-o-matic
+        ];
       };
 
     };
