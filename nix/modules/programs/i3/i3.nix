@@ -38,7 +38,7 @@
           startup = [
             { command = "nitrogen --restore"; }
             { command = "blueman-applet"; notification = false; }
-            { command = "systemctl --user import-environment DISPLAY XAUTHORITY"; notification = false; }
+            { command = "systemctl --user import-environment DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS && systemctl --user restart xdg-desktop-portal-gtk xdg-desktop-portal"; notification = false; }
           ];
 
           gaps = {
