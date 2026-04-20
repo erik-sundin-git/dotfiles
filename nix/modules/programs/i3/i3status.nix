@@ -80,7 +80,7 @@
               format = "%status %percentage %remaining";
               low_threshold = 30;
               threshold_type = "percentage";
-              color_bad = "#FF0000";
+              color_bad = config.colors.red;
             };
           };
         };

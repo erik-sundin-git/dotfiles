@@ -13,6 +13,7 @@
     {
       imports = with inputs.self.modules.homeManager; [
         inputs.self.modules.generic.systemConstants
+        inputs.self.modules.generic.colors
         emacs
         librewolf
         bash
