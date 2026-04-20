@@ -41,14 +41,17 @@
               format = "%avail";
             };
           };
-          "load" = {
+          "cpu_temperature 0" = {
             position = 6;
             settings = {
-              format = "%1min";
+              format = "%degrees °C";
+              path = "/sys/class/thermal/thermal_zone6/temp";
+              max_threshold = 80;
             };
           };
+
           "memory" = {
-            position = 7;
+            position = 8;
             settings = {
               format = "%used / %available";
               threshold_degraded = "1G";
@@ -56,7 +59,7 @@
             };
           };
           "tztime local" = {
-            position = 8;
+            position = 9;
             settings = {
               format = "%Y-%m-%d %H:%M:%S";
             };
@@ -67,7 +70,7 @@
           "wireless _first_" = {
             position = 2;
             settings = {
-              format_up = "W: (%quality at %essid) %ip";
+              format_up = "%quality at %essid %ip";
               format_down = "W: down";
             };
           };

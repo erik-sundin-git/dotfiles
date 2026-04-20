@@ -6,7 +6,7 @@
   # default settings needed for all homeManagerConfigurations
 
   flake.modules.homeManager.minimal-config =
-    { config, lib, ... }:
+    { config, lib, pkgs, ... }:
     let
       isLaptop = config.systemConstants.currentSystemType == "laptop";
     in
@@ -41,6 +41,9 @@
 
       home.file.".config/nitrogen/nitrogen.cfg".source = "${inputs.self}/nitrogen/nitrogen.cfg";
       programs.home-manager.enable = true;
+
+      nix.package = pkgs.nix;
+      nix.settings.warn-dirty = false;
 
       home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         echo -e "\033[33mRebuilt system using profile: ${config.systemConstants.currentSystemType}\033[0m"

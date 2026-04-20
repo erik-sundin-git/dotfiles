@@ -12,6 +12,8 @@
         adminEmail = "mail@eriksundin.com";
         adminName = "Erik Sundin";
         currentSystemType = lib.mkDefault "desktop"; # either laptop or desktop currently
+        latitude = lib.mkDefault 0.0;
+        longitude = lib.mkDefault 0.0;
       };
     };
 }

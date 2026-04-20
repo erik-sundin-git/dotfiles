@@ -12,5 +12,7 @@
       ];
       home.homeDirectory = "/home/erik";
       systemConstants.currentSystemType = "laptop";
+      systemConstants.latitude = 59.33;
+      systemConstants.longitude = 18.07;
     };
 }
