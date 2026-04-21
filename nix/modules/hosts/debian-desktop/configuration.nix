@@ -1,6 +1,6 @@
 { config, inputs, ... }:
 {
-  flake.modules.homeManager.debianDesktop =
+  flake.modules.homeManager.forge =
     { pkgs, ... }:
     {
       imports = with inputs.self.modules.homeManager; [

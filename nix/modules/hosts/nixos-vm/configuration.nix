@@ -1,6 +1,14 @@
 { inputs, ... }:
 {
-  flake.modules.nixos.nixosVm =
+  flake.modules.homeManager.ether =
+    { ... }:
+    {
+      imports = [ inputs.self.modules.homeManager.minimal-config ];
+      systemConstants.system.type = "desktop";
+      systemConstants.system.host = "ether";
+    };
+
+  flake.modules.nixos.ether =
     { config, pkgs, ... }:
     {
       imports = [
@@ -14,9 +22,9 @@
 
         ssh-askpass-fullscreen
       ];
-      Home-manager.useGlobalPkgs = true;
+      home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
-      home-manager.users.erik = inputs.self.modules.homeManager.minimal-config;
+      home-manager.users.erik = inputs.self.modules.homeManager.ether;
 
       # Bootloader.
       boot.loader.grub.enable = true;

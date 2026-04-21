@@ -1,6 +1,6 @@
 { ... }:
 {
-  flake.modules.nixos.nixosVm =
+  flake.modules.nixos.ether =
     {
       config,
       lib,

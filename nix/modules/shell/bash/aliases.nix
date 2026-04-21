@@ -3,8 +3,7 @@
   flake.modules.homeManager.bash =
     { config, ... }:
     let
-      isDesktop = config.systemConstants.system.type == "desktop";
-      isLaptop = config.systemConstants.system.type == "laptop";
+      host = config.systemConstants.system.host;
     in
     {
       programs.bash.shellAliases = {
@@ -13,12 +12,14 @@
         l = "ls -CF";
         ssh-desktop = "ssh erik@192.168.1.224";
         rebuild =
-          if isDesktop then
-            "home-manager switch -b backup --flake ~/dotfiles#debianDesktop"
-          else if isLaptop then
-            "home-manager switch -b backup --flake ~/dotfiles#debianLaptop"
+          if host == "ether" then
+            "sudo nixos-rebuild switch --flake ~/dotfiles#ether"
+          else if host == "forge" then
+            "home-manager switch -b backup --flake ~/dotfiles#forge"
+          else if host == "nomad" then
+            "home-manager switch -b backup --flake ~/dotfiles#nomad"
           else
-            throw "bash/aliases.nix: unknown systemType '${config.systemConstants.system.type}'";
+            throw "bash/aliases.nix: unknown host '${host}'";
       };
     };
 }

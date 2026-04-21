@@ -1,6 +1,6 @@
 { config, inputs, ... }:
 {
-  flake.modules.homeManager.debianLaptop =
+  flake.modules.homeManager.nomad =
     { pkgs, ... }:
     {
       imports = with inputs.self.modules.homeManager; [
