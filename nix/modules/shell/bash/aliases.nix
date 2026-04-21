@@ -3,8 +3,8 @@
   flake.modules.homeManager.bash =
     { config, ... }:
     let
-      isDesktop = config.systemConstants.currentSystemType == "desktop";
-      isLaptop = config.systemConstants.currentSystemType == "laptop";
+      isDesktop = config.systemConstants.system.type == "desktop";
+      isLaptop = config.systemConstants.system.type == "laptop";
     in
     {
       programs.bash.shellAliases = {
@@ -18,7 +18,7 @@
           else if isLaptop then
             "home-manager switch -b backup --flake ~/dotfiles#debianLaptop"
           else
-            throw "bash/aliases.nix: unknown systemType '${config.systemConstants.currentSystemType}'";
+            throw "bash/aliases.nix: unknown systemType '${config.systemConstants.system.type}'";
       };
     };
 }

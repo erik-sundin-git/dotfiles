@@ -11,7 +11,7 @@
       keybindings =
         let
           modifier = config.xsession.windowManager.i3.config.modifier;
-          isLaptop = config.systemConstants.currentSystemType == "laptop";
+          isLaptop = config.systemConstants.system.type == "laptop";
         in
         lib.mkOptionDefault (
           {

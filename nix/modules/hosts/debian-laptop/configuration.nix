@@ -12,7 +12,8 @@
         nixfmt
       ];
       home.homeDirectory = "/home/erik";
-      systemConstants.currentSystemType = "laptop";
+      systemConstants.system.type = "laptop";
+      systemConstants.system.host = "nomad";
       systemConstants.latitude = 59.33;
       systemConstants.longitude = 18.07;
     };

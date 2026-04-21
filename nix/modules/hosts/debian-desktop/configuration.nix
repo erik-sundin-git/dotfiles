@@ -11,6 +11,8 @@
         nixfmt
       ];
       home.homeDirectory = "/home/erik";
+      systemConstants.system.type = "desktop";
+      systemConstants.system.host = "forge";
 
     };
 }
