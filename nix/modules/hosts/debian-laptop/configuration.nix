@@ -7,6 +7,7 @@
         minimal-config
       ];
 
+      nix.package = pkgs.nix;
       home.packages = with pkgs; [
         nixfmt
       ];

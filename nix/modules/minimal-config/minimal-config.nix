@@ -42,8 +42,9 @@
 
       home.file.".config/nitrogen/nitrogen.cfg".source = "${inputs.self}/nitrogen/nitrogen.cfg";
       programs.home-manager.enable = true;
+      programs.git.enable = true;
 
-      nix.package = pkgs.nix;
+
       nix.settings.warn-dirty = false;
 
       home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
