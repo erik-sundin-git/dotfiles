@@ -1,32 +1,15 @@
 { inputs, ... }:
 {
-  flake.modules.homeManager.ether =
-    { ... }:
-    {
-      imports = [ inputs.self.modules.homeManager.minimal-config ];
-      systemConstants.system.type = "desktop";
-      systemConstants.system.host = "ether";
-    };
-
-  flake.modules.nixos.ether =
+  flake.modules.nixos.nixosVm =
     { config, pkgs, ... }:
     {
-      imports = with inputs.self.modules.nixos; [
+      imports = [
         inputs.home-manager.nixosModules.home-manager
-        xfce
       ];
 
-      environment.systemPackages = with pkgs; [
-        nixfmt
-        claude-code
-        xorg.xinit
-        tmux
-        cmake
-        ssh-askpass-fullscreen
-      ];
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
-      home-manager.users.erik = inputs.self.modules.homeManager.ether;
+      home-manager.users.erik = inputs.self.modules.homeManager.minimal-config;
 
       # Bootloader.
       boot.loader.grub.enable = true;
@@ -52,6 +35,8 @@
       };
 
       services.xserver.enable = true;
+      services.xserver.displayManager.lightdm.enable = true;
+      services.xserver.desktopManager.xfce.enable = true;
       services.xserver.xkb = {
         layout = "se";
         variant = "";

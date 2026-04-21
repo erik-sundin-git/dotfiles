@@ -17,7 +17,6 @@
         emacs
         librewolf
         bash
-        i3
       ];
       home.homeDirectory = "/home/${config.home.username}";
       home.stateVersion = "23.05";

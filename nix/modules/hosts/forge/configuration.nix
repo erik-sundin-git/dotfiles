@@ -5,6 +5,7 @@
     {
       imports = with inputs.self.modules.homeManager; [
         minimal-config
+        i3
       ];
       nix.package = pkgs.nix;
       home.packages = with pkgs; [
