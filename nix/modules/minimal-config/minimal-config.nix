@@ -8,7 +8,7 @@
   flake.modules.homeManager.minimal-config =
     { config, lib, pkgs, ... }:
     let
-      isLaptop = config.systemConstants.currentSystemType == "laptop";
+      isLaptop = config.systemConstants.system.type == "laptop";
     in
     {
       imports = with inputs.self.modules.homeManager; [
@@ -47,7 +47,7 @@
       nix.settings.warn-dirty = false;
 
       home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        echo -e "\033[33mRebuilt system using profile: ${config.systemConstants.currentSystemType}\033[0m"
+        echo -e "\033[33mRebuilt system using profile: ${config.systemConstants.system.type}\033[0m"
       '';
 
     };

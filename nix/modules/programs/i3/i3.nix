@@ -17,7 +17,7 @@
     {
       home.packages =
         [ pkgs.blueman ]
-        ++ lib.optionals (config.systemConstants.currentSystemType == "laptop") [
+        ++ lib.optionals (config.systemConstants.system.type == "laptop") [
           pkgs.brightnessctl
         ];
 

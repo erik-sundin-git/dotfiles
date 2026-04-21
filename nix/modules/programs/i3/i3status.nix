@@ -66,7 +66,7 @@
           };
         }
 
-        // lib.optionalAttrs (config.systemConstants.currentSystemType == "laptop") {
+        // lib.optionalAttrs (config.systemConstants.system.type == "laptop") {
           "wireless _first_" = {
             position = 2;
             settings = {
