@@ -1,5 +1,20 @@
 {
   "nodes": {
+    "den": {
+      "locked": {
+        "lastModified": 1776710169,
+        "narHash": "sha256-q4WXIX2E3w9Ld3MZ1Pl8Lh5SgrEFdEuzvY1Lj/Wo2kY=",
+        "owner": "denful",
+        "repo": "den",
+        "rev": "0af82e24be89b9fd400bd0b58b0fed5ea0f269ad",
+        "type": "github"
+      },
+      "original": {
+        "owner": "denful",
+        "repo": "den",
+        "type": "github"
+      }
+    },
     "flake-file": {
       "locked": {
         "lastModified": 1776202746,
@@ -92,11 +107,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1776434932,
-        "narHash": "sha256-gyqXNMgk3sh+ogY5svd2eNLJ6oEwzbAeaoBrrxD0lKk=",
+        "lastModified": 1776560675,
+        "narHash": "sha256-p68udKWWh7+V4ZPpcMDq0gTHWNZJnr4JPI+kHPPE40o=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "c7f47036d3df2add644c46d712d14262b7d86c0c",
+        "rev": "e07580dae39738e46609eaab8b154de2488133ce",
         "type": "github"
       },
       "original": {
@@ -123,11 +138,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1776169885,
-        "narHash": "sha256-l/iNYDZ4bGOAFQY2q8y5OAfBBtrDAaPuRQqWaFHVRXM=",
+        "lastModified": 1776548001,
+        "narHash": "sha256-ZSK0NL4a1BwVbbTBoSnWgbJy9HeZFXLYQizjb2DPF24=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "4bd9165a9165d7b5e33ae57f3eecbcb28fb231c9",
+        "rev": "b12141ef619e0a9c1c84dc8c684040326f27cdcc",
         "type": "github"
       },
       "original": {
@@ -143,11 +158,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1776622971,
-        "narHash": "sha256-QqOhyb++WwDyZV+9hTMTl9YQxyKAGkwr1zRKAbDK1WY=",
+        "lastModified": 1776796447,
+        "narHash": "sha256-cjp8KTs1XnUCRzrV3esDBFlqZVYg24ii7WRzejc9FJE=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "ecca87b92708b5b10e5ad632561e41a812cfdbdf",
+        "rev": "c1e071bb170f66bc2c1e6993595345a9452dd0b4",
         "type": "github"
       },
       "original": {
@@ -173,6 +188,7 @@
     },
     "root": {
       "inputs": {
+        "den": "den",
         "flake-file": "flake-file",
         "flake-parts": "flake-parts",
         "home-manager": "home-manager",
