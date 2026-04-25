@@ -7,7 +7,7 @@
         imports = [
           inputs.home-manager.nixosModules.home-manager
           inputs.self.modules.nixos.xfce
-          ./ether/hardware-configuration.nix
+          ./hardware-configuration.nix
         ];
         nixpkgs.overlays = [ inputs.nur.overlays.default ];
         nixpkgs.config.allowUnfree = true;
