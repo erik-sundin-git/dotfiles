@@ -41,17 +41,8 @@
               format = "%avail";
             };
           };
-          "cpu_temperature 0" = {
-            position = 6;
-            settings = {
-              format = "%degrees °C";
-              path = "/sys/class/thermal/thermal_zone6/temp";
-              max_threshold = 80;
-            };
-          };
-
           "memory" = {
-            position = 8;
+            position = 7;
             settings = {
               format = "%used / %available";
               threshold_degraded = "1G";
@@ -59,9 +50,20 @@
             };
           };
           "tztime local" = {
-            position = 9;
+            position = 8;
             settings = {
               format = "%Y-%m-%d %H:%M:%S";
+            };
+          };
+        }
+
+        // lib.optionalAttrs (config.systemConstants.thermalZonePath != null) {
+          "cpu_temperature 0" = {
+            position = 6;
+            settings = {
+              format = "%degrees °C";
+              path = config.systemConstants.thermalZonePath;
+              max_threshold = 80;
             };
           };
         }

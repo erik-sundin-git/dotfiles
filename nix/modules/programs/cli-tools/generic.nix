@@ -1,3 +1,3 @@
 {
-  flake.modules.homeManager.cli-tools = { };
+  flake.modules.homeManager.cliTools = { };
 }

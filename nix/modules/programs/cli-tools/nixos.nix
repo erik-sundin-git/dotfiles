@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.cli-tools =
+  flake.modules.nixos.cliTools =
     { pkgs, ... }:
     {
       environment.systemPackages = with pkgs; [
