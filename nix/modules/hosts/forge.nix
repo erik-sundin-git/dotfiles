@@ -5,14 +5,12 @@
       { pkgs, ... }:
       {
         imports = with inputs.self.modules.homeManager; [
-          minimal-config
+          debianMinimal
+          minimalConfig
           i3
+          alacritty
         ];
-        nixpkgs.overlays = [ inputs.nur.overlays.default ];
-        nixpkgs.config.allowUnfree = true;
-        nix.package = pkgs.nix;
-        home.packages = [ pkgs.nixfmt ];
-        home.homeDirectory = "/home/erik";
+        debianGL.nixGLPackage = inputs.nixgl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLNvidia;
         systemConstants.system.type = "desktop";
         systemConstants.system.host = "forge";
       };

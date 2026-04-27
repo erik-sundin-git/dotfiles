@@ -5,18 +5,18 @@
       { pkgs, ... }:
       {
         imports = with inputs.self.modules.homeManager; [
-          minimal-config
+          debianMinimal
+          minimalConfig
           i3
+          alacritty
+          vpn
         ];
-        nixpkgs.overlays = [ inputs.nur.overlays.default ];
-        nixpkgs.config.allowUnfree = true;
-        nix.package = pkgs.nix;
-        home.packages = [ pkgs.nixfmt ];
-        home.homeDirectory = "/home/erik";
+        debianGL.nixGLPackage = inputs.nixgl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLIntel;
         systemConstants.system.type = "laptop";
         systemConstants.system.host = "nomad";
         systemConstants.latitude = 59.33;
         systemConstants.longitude = 18.07;
+        systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone6/temp";
       };
   };
 }
