@@ -33,6 +33,9 @@
   (push "/pre-early-init.el" compile-angel-excluded-files)
   (push "/post-early-init.el" compile-angel-excluded-files)
 
+  (setq compile-angel-predicate-function
+        (lambda (file) (not (string-prefix-p "/nix/store" file))))
+
   ;; A local mode that compiles .el files whenever the user saves them.
   ;; (add-hook 'emacs-lisp-mode-hook #'compile-angel-on-save-local-mode)
 
@@ -635,6 +638,18 @@
   :commands (vterm vterm-other-window)
   :bind
   ("C-c t" . vterm))
+
+;;;;;;;;;;;
+;; PDF   ;;
+;;;;;;;;;;;
+
+(use-package pdf-tools
+  :ensure t
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-tools-install :no-query))
+
 
 ;;;;;;;;;;
 ;; MISC ;;
