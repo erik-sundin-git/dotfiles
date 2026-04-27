@@ -5,18 +5,18 @@
 {
   # default settings needed for all homeManagerConfigurations
 
-  flake.modules.homeManager.minimal-config =
+  flake.modules.homeManager.minimalConfig =
     { config, lib, pkgs, ... }:
     let
       isLaptop = config.systemConstants.system.type == "laptop";
     in
     {
-      imports = with inputs.self.modules.homeManager; [
-        inputs.self.modules.generic.systemConstants
-        inputs.self.modules.generic.colors
-        emacs
-        librewolf
-        bash
+      imports = with inputs.self.modules; [
+        generic.systemConstants
+        generic.colors
+        homeManager.emacs
+        homeManager.librewolf
+        homeManager.bash
       ];
       home.homeDirectory = "/home/${config.home.username}";
       home.stateVersion = "23.05";
@@ -42,6 +42,7 @@
       home.file.".config/nitrogen/nitrogen.cfg".source = "${inputs.self}/nitrogen/nitrogen.cfg";
       programs.home-manager.enable = true;
       programs.git.enable = true;
+      programs.git.signing.format = null;
 
 
       nix.settings.warn-dirty = false;

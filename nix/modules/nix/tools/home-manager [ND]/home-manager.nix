@@ -18,7 +18,7 @@ let
     };
 in
 {
-  flake.modules.nixos.home-manager = {
+  flake.modules.nixos.homeManager = {
     _module.args = {
       inherit inputs;
     };
