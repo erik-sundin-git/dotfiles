@@ -1,12 +1,20 @@
 {
   flake.modules.homeManager.alacritty =
-    { config, ... }:
+    { config, lib, pkgs, ... }:
     let
       c = config.colors;
+      nixGLPkg = config.debianGL.nixGLPackage;
     in
     {
       programs.alacritty = {
         enable = true;
+        package =
+          if nixGLPkg == null then
+            pkgs.alacritty
+          else
+            pkgs.writeShellScriptBin "alacritty" ''
+              exec ${lib.getExe nixGLPkg} ${pkgs.alacritty}/bin/alacritty "$@"
+            '';
         settings = {
           font = {
             size = 12.0;
