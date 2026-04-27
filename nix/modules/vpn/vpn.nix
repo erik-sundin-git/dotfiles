@@ -15,9 +15,9 @@
       ...
     }:
     {
-      home.packages = [
+      home.packages = with pkgs; [
         wireguard-tools
-        protonvpn-gui
+        proton-vpn
       ];
 
     };
