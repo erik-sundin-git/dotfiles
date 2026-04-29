@@ -19,7 +19,11 @@
     in
     {
       home.packages =
-        [ pkgs.blueman ]
+        [
+          pkgs.blueman
+          pkgs.flameshot
+          pkgs.nerd-fonts.jetbrains-mono
+        ]
         ++ lib.optionals (config.systemConstants.system.type == "laptop") [
           pkgs.brightnessctl
         ];
@@ -43,6 +47,7 @@
             { command = "blueman-applet"; notification = false; }
             { command = "systemctl --user import-environment DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS && systemctl --user restart xdg-desktop-portal-gtk xdg-desktop-portal"; notification = false; }
             { command = "pkill polybar; polybar main"; always = true; notification = false; }
+            { command = "pkill picom; picom"; always = true; notification = false; }
           ];
 
           gaps = {

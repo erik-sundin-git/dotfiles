@@ -9,6 +9,7 @@
           minimalConfig
           i3
           polybar
+          picom
           alacritty
         ];
         debianGL.nixGLPackage = inputs.nixgl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLNvidia;

@@ -55,7 +55,7 @@
             height = 22;
             background = c.background;
             foreground = c.foreground;
-            font-0 = "monospace:size=12;3";
+            font-0 = "JetBrainsMono Nerd Font:size=12;3";
             modules-left = "i3 tray";
             modules-right = rightModules;
             padding-right = 1;

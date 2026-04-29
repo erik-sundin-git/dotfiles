@@ -32,6 +32,10 @@
               "${modifier}+shift+k" = "move up";
               "${modifier}+shift+l" = "move right";
 
+              # Screenshots
+              "Print" = "exec flameshot gui";
+              "${modifier}+Print" = "exec flameshot screen";
+
               # Media controls
               "XF86AudioRaiseVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%";
               "XF86AudioLowerVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ -5%";

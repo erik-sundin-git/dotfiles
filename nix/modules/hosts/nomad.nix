@@ -9,6 +9,7 @@
           minimalConfig
           i3
           polybar
+          picom
           alacritty
           vpn
         ];
