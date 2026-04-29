@@ -14,6 +14,9 @@
       lib,
       ...
     }:
+    let
+      c = config.colors;
+    in
     {
       home.packages =
         [ pkgs.blueman ]
@@ -39,6 +42,7 @@
             { command = "nitrogen --restore"; }
             { command = "blueman-applet"; notification = false; }
             { command = "systemctl --user import-environment DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS && systemctl --user restart xdg-desktop-portal-gtk xdg-desktop-portal"; notification = false; }
+            { command = "pkill polybar; polybar main"; always = true; notification = false; }
           ];
 
           gaps = {
@@ -47,17 +51,40 @@
             top = 0;
           };
 
-          bars = [
-            {
-              fonts = {
-                size = 10.0;
-              };
-              position = "bottom";
-              statusCommand = "i3status";
-            }
-          ];
+          bars = [ ];
           workspaceAutoBackAndForth = true;
           defaultWorkspace = "1";
+
+          colors = {
+            focused = {
+              border = c.blue;
+              background = c.blue;
+              text = c.black;
+              indicator = c.cyan;
+              childBorder = c.blue;
+            };
+            focusedInactive = {
+              border = c.black;
+              background = c.black;
+              text = c.foreground;
+              indicator = c.black;
+              childBorder = c.black;
+            };
+            unfocused = {
+              border = c.black;
+              background = c.background;
+              text = c.brightBlack;
+              indicator = c.black;
+              childBorder = c.black;
+            };
+            urgent = {
+              border = c.red;
+              background = c.red;
+              text = c.brightWhite;
+              indicator = c.red;
+              childBorder = c.red;
+            };
+          };
         };
       };
     };

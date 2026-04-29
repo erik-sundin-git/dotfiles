@@ -8,6 +8,7 @@
           debianMinimal
           minimalConfig
           i3
+          polybar
           alacritty
           vpn
         ];
