@@ -30,7 +30,15 @@
         thermalZonePath = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           default = null;
-          description = "Sysfs path to the thermal zone for CPU temperature display in i3status. Set to null to disable.";
+          description = "Sysfs path to the thermal zone for CPU temperature display in the polybar bar. Set to null to disable.";
+        };
+
+        network = {
+          forgeHost = lib.mkOption {
+            type = lib.types.str;
+            default = "192.168.1.224";
+            description = "LAN address of the forge desktop, used by the ssh-desktop alias.";
+          };
         };
 
         system = {

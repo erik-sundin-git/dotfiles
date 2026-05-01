@@ -10,7 +10,7 @@
         ll = "ls -l";
         la = "ls -A";
         l = "ls -CF";
-        ssh-desktop = "ssh erik@192.168.1.224";
+        ssh-desktop = "ssh erik@${config.systemConstants.network.forgeHost}";
         rebuild =
           if host == "ether" then
             "sudo nixos-rebuild switch --flake ~/dotfiles#ether"
