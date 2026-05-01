@@ -33,8 +33,8 @@
               "${modifier}+shift+l" = "move right";
 
               # Screenshots
-              "Print" = "exec flameshot gui";
-              "${modifier}+Print" = "exec flameshot screen";
+              "Print" = "exec --no-startup-id screenshot-area";
+              "${modifier}+Print" = "exec --no-startup-id screenshot-full";
 
               # Media controls
               "XF86AudioRaiseVolume" = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%";

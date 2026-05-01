@@ -58,6 +58,7 @@
             font-0 = "JetBrainsMono Nerd Font:size=12;3";
             modules-left = "i3 tray";
             modules-right = rightModules;
+            radius = 0;
             padding-right = 1;
             module-margin = 1;
             separator = "|";
@@ -95,8 +96,9 @@
 
           "module/ipv6" = {
             type = "custom/script";
-            exec = "ip -6 addr show scope global | awk '/inet6/{print $2; exit}'";
-            interval = 30;
+            exec = ''addr=$(ip -6 addr show scope global | awk '/inet6/{print $2; exit}'); if [ -n "$addr" ]; then if [ -f /tmp/polybar_ipv6_mode ]; then echo "%{F${c.green}}$addr%{F-}"; else echo "%{F${c.green}}IPV6%{F-}"; fi; else echo "IPV6"; fi'';
+            click-left = "[ -f /tmp/polybar_ipv6_mode ] && rm /tmp/polybar_ipv6_mode || touch /tmp/polybar_ipv6_mode";
+            interval = 5;
           };
 
           "module/ethernet" = {

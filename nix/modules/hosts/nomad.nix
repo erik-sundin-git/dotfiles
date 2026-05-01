@@ -7,12 +7,11 @@
         imports = with inputs.self.modules.homeManager; [
           debianMinimal
           minimalConfig
-          i3
-          polybar
-          picom
+          i3Stack
           alacritty
           vpn
         ];
+        home.packages = with pkgs; [ protonmail-desktop ];
         debianGL.nixGLPackage = inputs.nixgl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLIntel;
         systemConstants.system.type = "laptop";
         systemConstants.system.host = "nomad";

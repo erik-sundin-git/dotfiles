@@ -8,17 +8,22 @@
 
 {
   flake.modules.homeManager.picom =
-    { pkgs, config, lib, ... }:
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
     {
       services.picom = {
         enable = true;
-        inactiveOpacity = 0.95;
+        inactiveOpacity = 1;
         opacityRules = [
           "90:class_g = 'Alacritty'"
           "90:class_g = 'Emacs'"
         ];
         settings = {
-          corner-radius = 6;
+          corner-radius = 0;
         };
       };
     };

@@ -7,9 +7,7 @@
         imports = with inputs.self.modules.homeManager; [
           debianMinimal
           minimalConfig
-          i3
-          polybar
-          picom
+          i3Stack
           alacritty
         ];
         debianGL.nixGLPackage = inputs.nixgl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLNvidia;
