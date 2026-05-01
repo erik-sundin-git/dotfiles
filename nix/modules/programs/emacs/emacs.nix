@@ -23,6 +23,7 @@
           epkgs: with epkgs; [
             nixfmt
             nix-mode
+            ledger-mode
           ];
       };
     };

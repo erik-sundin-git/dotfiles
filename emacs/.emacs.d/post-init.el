@@ -788,6 +788,17 @@
   (define-key nix-mode-map (kbd "C-c C-f") 'nix-format-buffer))
 
 
+(use-package ledger-mode
+  :ensure nil
+  :mode "\\.ledger\\'"
+  :custom
+  (ledger-reports
+   '(("bal" "%(binary) -f %(ledger-file) bal")
+     ("reg" "%(binary) -f %(ledger-file) reg")
+     ("payee" "%(binary) -f %(ledger-file) reg @%(payee)")
+     ("account" "%(binary) -f %(ledger-file) reg %(account)"))))
+
+
 (which-key-mode t)
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Global keybindings ;;
