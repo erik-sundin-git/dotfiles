@@ -16,7 +16,7 @@
     let
       laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
-      c = config.colors;
+      c = config.theme;
       mkScript =
         {
           exec,

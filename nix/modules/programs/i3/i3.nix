@@ -15,7 +15,7 @@
       ...
     }:
     let
-      c = config.colors;
+      c = config.theme;
       mkColors =
         {
           border,

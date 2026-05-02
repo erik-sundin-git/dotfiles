@@ -2,7 +2,7 @@
   flake.modules.homeManager.alacritty =
     { config, lib, pkgs, ... }:
     let
-      c = config.colors;
+      c = config.theme;
       nixGLPkg = config.debianGL.nixGLPackage;
     in
     {

@@ -15,7 +15,7 @@
     }:
     let
       laptop = config.systemConstants.system.type == "laptop";
-      c = config.colors;
+      c = config.theme;
       mkScript =
         {
           exec,
