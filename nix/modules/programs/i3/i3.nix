@@ -16,6 +16,15 @@
     }:
     let
       c = config.colors;
+      mkColors =
+        {
+          border,
+          background ? border,
+          text,
+          indicator ? border,
+          childBorder ? border,
+        }:
+        { inherit border background text indicator childBorder; };
       mkScreenshot = { name, args ? "" }: pkgs.writeShellScriptBin name ''
         mkdir -p ~/Pictures/Screenshots
         f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
@@ -71,34 +80,10 @@
           defaultWorkspace = "1";
 
           colors = {
-            focused = {
-              border = c.blue;
-              background = c.blue;
-              text = c.black;
-              indicator = c.cyan;
-              childBorder = c.blue;
-            };
-            focusedInactive = {
-              border = c.black;
-              background = c.black;
-              text = c.foreground;
-              indicator = c.black;
-              childBorder = c.black;
-            };
-            unfocused = {
-              border = c.black;
-              background = c.background;
-              text = c.brightBlack;
-              indicator = c.black;
-              childBorder = c.black;
-            };
-            urgent = {
-              border = c.red;
-              background = c.red;
-              text = c.brightWhite;
-              indicator = c.red;
-              childBorder = c.red;
-            };
+            focused = mkColors { border = c.blue; text = c.black; indicator = c.cyan; };
+            focusedInactive = mkColors { border = c.black; text = c.foreground; };
+            unfocused = mkColors { border = c.black; background = c.background; text = c.brightBlack; };
+            urgent = mkColors { border = c.red; text = c.brightWhite; };
           };
         };
       };
