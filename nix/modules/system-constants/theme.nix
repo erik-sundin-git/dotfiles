@@ -1,21 +1,21 @@
 { inputs, lib, ... }:
 
-let
-  themes = {
-    onedark = import ../../themes/onedark.nix;
-  };
-in
-
 {
-  flake.lib.themes = themes;
-
   flake.modules.generic.theme =
     { lib, ... }:
     {
-      options.theme = lib.mkOption {
-        type = lib.types.attrsOf lib.types.str;
-        default = themes.onedark;
-        description = "Active color theme palette. Switch per-host via inputs.self.lib.themes.<name>.";
+      options = {
+        selectedTheme = lib.mkOption {
+          type = lib.types.str;
+          default = "onedark";
+          description = "Name of the active theme. Must match a theme file in system-constants/themes/.";
+        };
+
+        theme = lib.mkOption {
+          type = lib.types.attrsOf lib.types.str;
+          default = { };
+          description = "Resolved color palette for the selected theme.";
+        };
       };
     };
 }
