@@ -7,6 +7,7 @@
         i3
         polybar
         picom
+        gtk
       ];
     };
 }
