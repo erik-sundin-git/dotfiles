@@ -12,7 +12,7 @@
       {
         imports = with inputs.self.modules.nixos; [
           inputs.home-manager.nixosModules.home-manager
-          xfce
+          xfceStack
           commonConfig
         ];
 
