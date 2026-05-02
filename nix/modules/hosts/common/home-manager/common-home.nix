@@ -3,9 +3,7 @@
   ...
 }:
 {
-  # default settings needed for all homeManagerConfigurations
-
-  flake.modules.homeManager.minimalConfig =
+  flake.modules.homeManager.commonHome =
     {
       config,
       lib,
@@ -47,7 +45,7 @@
 
       home.file.".Xresources".text = lib.optionalString isLaptop "Xft.dpi: 120\n";
 
-      home.file.".local/share/fonts".source = "${inputs.self}/fonts";
+      home.file.".local/share/fonts/static".source = "${inputs.self}/fonts";
 
       home.file.".config/nitrogen/nitrogen.cfg".source = "${inputs.self}/nitrogen/nitrogen.cfg";
       home.packages = with pkgs; [ ledger ];

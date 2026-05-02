@@ -27,7 +27,7 @@
         systemConstants.system = sysConst;
 
         home-manager.users.erik = {
-          imports = [ inputs.self.modules.homeManager.minimalConfig ];
+          imports = [ inputs.self.modules.homeManager.commonHome ];
           systemConstants.system = sysConst;
         };
 

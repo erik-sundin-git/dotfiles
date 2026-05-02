@@ -6,7 +6,7 @@
       {
         imports = with inputs.self.modules.homeManager; [
           debianMinimal
-          minimalConfig
+          commonHome
           i3Stack
           alacritty
         ];
