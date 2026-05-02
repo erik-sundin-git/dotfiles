@@ -2,7 +2,7 @@
 
 let
   themes = {
-    onedark = import ./themes/onedark.nix;
+    onedark = import ../../themes/onedark.nix;
   };
 in
 

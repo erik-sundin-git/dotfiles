@@ -30,6 +30,7 @@
           name = "Sans";
           size = 10;
         };
+        gtk4.theme = null;
         gtk3.extraCss = ''
           @define-color theme_selected_bg_color ${t.blue};
           @define-color theme_selected_fg_color ${t.black};

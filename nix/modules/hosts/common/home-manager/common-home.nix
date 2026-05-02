@@ -16,7 +16,7 @@
     {
       imports = with inputs.self.modules; [
         generic.systemConstants
-        generic.colors # consumed by i3, polybar, alacritty — they don't import it themselves
+        generic.theme # consumed by i3, polybar, alacritty — they don't import it themselves
         homeManager.emacs
         homeManager.librewolf
         homeManager.bash
