@@ -8,7 +8,10 @@
 
 {
   flake.modules.homeManager.gtk =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
+    let
+      t = config.theme;
+    in
     {
       gtk = {
         enable = true;
@@ -27,6 +30,14 @@
           name = "Sans";
           size = 10;
         };
+        gtk3.extraCss = ''
+          @define-color theme_selected_bg_color ${t.blue};
+          @define-color theme_selected_fg_color ${t.black};
+          @define-color theme_unfocused_selected_bg_color ${t.brightBlack};
+          @define-color accent_color ${t.blue};
+          @define-color accent_bg_color ${t.blue};
+          @define-color accent_fg_color ${t.black};
+        '';
       };
     };
 }
