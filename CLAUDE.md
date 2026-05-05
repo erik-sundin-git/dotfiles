@@ -25,14 +25,13 @@ Each host configuration sets `systemConstants.system.host` and `systemConstants.
 ## Nix Commands
 
 ```bash
-# Apply Home Manager (laptop/desktop)
+# Apply (preferred — uses nh wrapper)
+rebuild                                        # per-host alias: nh home/os switch ~/dotfiles -c <host>
+
+# Apply (direct fallback)
 home-manager switch -b backup --flake ~/dotfiles#nomad
 home-manager switch -b backup --flake ~/dotfiles#forge
-
-# Apply NixOS (VM)
 sudo nixos-rebuild switch --flake ~/dotfiles#ether
-
-# Or use the per-host `rebuild` shell alias (set automatically)
 
 # Build without applying
 home-manager build --flake ~/dotfiles#nomad
@@ -60,38 +59,53 @@ Module layout:
 ```
 nix/modules/
 ├── nix/
-│   ├── flake-parts []/          # Core setup: imports den, flake-parts, import-tree wiring
+│   ├── flake-parts []/          # Core setup: imports den, flake-parts, import-tree wiring; pkgs-by-name overlay
+│   ├── nh.nix                   # programs.nh: flake path + auto-cleanup (keep 7d/5 gens)
 │   └── tools/home-manager [ND]/ # Home Manager NixOS module (not auto-applied)
 ├── hosts/
-│   ├── nomad.nix                # Debian laptop — imports debianMinimal, minimalConfig, i3, polybar, picom, alacritty, vpn
+│   ├── nomad.nix                # Debian laptop — debianMinimal + commonHome + i3Stack + alacritty + vpn
 │   ├── forge.nix                # Debian desktop — same minus vpn; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
-│   ├── common/nixos/            # Shared NixOS config (commonConfig module)
+│   ├── common/
+│   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources
+│   │   └── nixos/               # Shared NixOS config (commonConfig module)
 │   ├── debian-minimal.nix       # Debian base: nixGL wrapping, NUR overlay, allowUnfree
 │   └── topology.nix             # Registers hosts: den.homes / den.hosts + stateVersion
-├── minimal-config/              # Base Home Manager defaults (keyboard, locale, xsession)
 ├── system-constants/
 │   ├── system-constants.nix     # Options: adminName, adminEmail, system.host/type, lat/lon, thermalZonePath
-│   └── colors.nix               # One Dark palette exposed as config.colors (attrsOf str)
+│   ├── theme.nix                # Options: selectedTheme (str) + theme (attrsOf str palette)
+│   └── themes/onedark.nix       # One Dark palette; sets config.theme via mkIf selectedTheme == "onedark"
+├── stacks/
+│   └── i3-stack.nix             # Groups: i3 + polybar + gtk + redshift + dunst
+├── services/
+│   ├── dunst.nix                # Notification daemon; themed via config.theme
+│   └── redshift.nix
 ├── browsers/
 │   ├── chromium/
 │   └── librewolf/
 ├── shell/bash/                  # Bash aliases (per-host `rebuild`) and config
 ├── vpn/                         # WireGuard tools, proton-vpn-cli, vpn-status script, gnome-keyring
 └── programs/
-    ├── emacs/                   # Symlinks emacs dotfiles from repo via dotPath
-    ├── i3/                      # i3wm, keybindings, modes, polybar, picom
-    ├── alacritty/               # Alacritty with nixGL wrapping + One Dark colors
+    ├── helpers.nix              # _module.args: mkColors (i3 window color sets), mkScreenshot
+    ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file
+    ├── gtk/                     # Arc-Dark theme; injects selection/accent colors via extraCss
+    ├── i3/                      # i3wm, keybindings, modes, picom
+    ├── alacritty/               # Alacritty with nixGL wrapping + theme colors
     ├── xfce/                    # XFCE (ether only)
     ├── cli-tools/               # CLI packages (generic + NixOS-specific)
     └── mail/                    # ProtonMail Bridge + mbsync + notmuch + msmtp
+
+nix/packages/
+└── airpods-status/              # Custom package — auto-exposed as pkgs.local.airpods-status via overlay
 ```
 
 **Host wiring via `den`**: Hosts are defined using `den.aspects.<host> = { homeManager = ...; }` (or `nixos = ...`). The `topology.nix` registers them into `homeConfigurations`/`nixosConfigurations` via `den.homes.x86_64-linux.<host>` and `den.hosts.x86_64-linux.<host>`. There is no `lib.nix` with `mkNixos`/`mkHomeManager`.
 
 **nixGL on Debian**: The `debianMinimal` module provides a `debianGL.nixGLPackage` option. When set, it wraps GL-dependent binaries (alacritty, kitty) with the specified nixGL package so they work on non-NixOS systems. nomad uses `nixGLIntel`, forge uses `nixGLNvidia`.
 
-**Color system**: `config.colors` is a flat `attrsOf str` map (semantic name → `#rrggbb`) defined in `system-constants/colors.nix`. All UI modules (i3, alacritty, polybar) reference it via `let c = config.colors; in ...`.
+**Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all Debian hosts. To add a new theme, add a file to `themes/` following the same pattern.
+
+**Custom packages**: Files under `nix/packages/<name>/package.nix` are auto-picked up by `pkgs-by-name` and exposed as `pkgs.local.<name>` via `flake.overlays.default`. After adding a new package directory, `git add` it immediately.
 
 ## Static Dotfiles
 
