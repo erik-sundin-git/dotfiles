@@ -1,11 +1,4 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  config,
-  ...
-}:
-
+{ ... }:
 {
   flake.modules.homeManager.gtk =
     { pkgs, config, ... }:

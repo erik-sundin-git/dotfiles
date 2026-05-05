@@ -1,19 +1,7 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  config,
-  ...
-}:
-
+{ ... }:
 {
   flake.modules.homeManager.picom =
-    {
-      pkgs,
-      config,
-      lib,
-      ...
-    }:
+    { ... }:
     {
       services.picom = {
         enable = true;

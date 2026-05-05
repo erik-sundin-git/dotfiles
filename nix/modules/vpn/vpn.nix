@@ -1,19 +1,7 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  config,
-  ...
-}:
-
+{ ... }:
 {
   flake.modules.homeManager.vpn =
-    {
-      pkgs,
-      config,
-      lib,
-      ...
-    }:
+    { pkgs, ... }:
     {
       home.packages =
         (with pkgs; [

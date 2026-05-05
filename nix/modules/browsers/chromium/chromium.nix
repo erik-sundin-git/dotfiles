@@ -1,7 +1,4 @@
-{
-  inputs,
-  ...
-}:
+{ ... }:
 {
   flake.modules.homeManager.chromium =
     { pkgs, config, ... }:

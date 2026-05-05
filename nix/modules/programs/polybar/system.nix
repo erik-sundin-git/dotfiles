@@ -1,11 +1,4 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  config,
-  ...
-}:
-
+{ ... }:
 {
   flake.modules.homeManager.polybar =
     {
@@ -18,11 +11,7 @@
       thermalPath = config.systemConstants.thermalZonePath;
       c = config.theme;
       mkScript =
-        {
-          exec,
-          interval ? 5,
-          clickLeft ? null,
-        }:
+        { exec, interval ? 5, clickLeft ? null }:
         { type = "custom/script"; inherit exec interval; }
         // lib.optionalAttrs (clickLeft != null) { click-left = clickLeft; };
     in

@@ -18,9 +18,11 @@
       laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
       c = config.theme;
+      airpods-status = pkgs.callPackage ../../../packages/airpods-status/package.nix { };
 
       rightModules = lib.concatStringsSep " " (
         [
+          "airpods"
           "vpn"
           "ipv6"
         ]
@@ -86,6 +88,15 @@
             label-mode = " %mode% ";
             label-mode-foreground = c.black;
             label-mode-background = c.yellow;
+          };
+
+          "module/airpods" = {
+            type = "custom/script";
+            exec = "${pkgs.writeShellScript "airpods-polybar" ''
+              ${airpods-status}/bin/airpods-status | ${pkgs.jq}/bin/jq -r .text
+            ''}";
+            interval = 30;
+            label = "%output%";
           };
 
           "module/date" = {
