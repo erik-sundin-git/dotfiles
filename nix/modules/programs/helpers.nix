@@ -1,7 +1,7 @@
 { ... }:
 {
   flake.modules.homeManager.uiHelpers =
-    { pkgs, lib, ... }:
+    { pkgs, ... }:
     {
       _module.args.mkColors =
         {
@@ -29,9 +29,16 @@
           maim ${args} | tee "$f" | xclip -selection clipboard -t image/png
         '';
 
-      _module.args.mkScript =
-        { exec, interval ? 5, clickLeft ? null }:
-        { type = "custom/script"; inherit exec interval; }
-        // lib.optionalAttrs (clickLeft != null) { click-left = clickLeft; };
+      _module.args.mkModeNotif =
+        { summary, body }:
+        {
+          enter = pkgs.writeShellScript "i3-mode-notif-enter" ''
+            notify-send -u low -t 0 --print-id "${summary}" "${body}" > /tmp/i3-mode-notif
+          '';
+          exit = pkgs.writeShellScript "i3-mode-notif-exit" ''
+            dunstctl close "$(cat /tmp/i3-mode-notif 2>/dev/null)" 2>/dev/null
+          '';
+        };
+
     };
 }
