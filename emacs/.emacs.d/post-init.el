@@ -541,11 +541,7 @@
            :empty-lines 1)))
   (setq org-agenda-files
         '("~/notes/roam/20240912165402-agenda.org"
-   	      "/home/erik/notes/todo/daily.org"
-   	      "/home/erik/notes/todo/inbox.org"
-   	      "/home/erik/notes/todo/reminders.org"
-   	      "/home/erik/notes/todo/todo.org"
-   	      "/home/erik/notes/todo/flytt2025.org")))
+          "~/notes/todo")))
 
 (use-package org-tempo
   :after org
@@ -579,6 +575,8 @@
 
 (add-to-list 'safe-local-variable-values
              '(eval add-hook 'autosync-magit-after-merge-hook #'logseq-org-roam nil t))
+
+
 
 ;;;;;;;;;;;;;;;;;;
 ;; Auto upgrade ;;
@@ -650,9 +648,15 @@
   :config
   (pdf-tools-install :no-query))
 
+(use-package buffer-to-pdf
+  :straight (:host github
+                   :repo "protesilaos/buffer-to-pdf"
+                   :files ("*.el"))
+  :config
+  (setq buffer-to-pdf-directory (expand-file-name "~/notes/pdf/")))
 
 ;;;;;;;;;;
-;; MISC ;;
+;; ;;
 ;;;;;;;;;;
 
 (use-package buffer-terminator
