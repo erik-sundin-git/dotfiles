@@ -4,7 +4,7 @@ from binascii import hexlify
 from json import dumps
 from sys import argv
 from datetime import datetime
-from time import sleep, time_ns
+from time import sleep, time_ns  # sleep used in continuous logging mode
 
 SCAN_TIMEOUT = 5.0
 MIN_RSSI = -70
@@ -112,20 +112,19 @@ def get_data():
 
 
 def run():
-    output_file = argv[-1]
-
-    while True:
-        data = get_data()
-
-        if data["status"] == 1:
-            json_data = dumps(data)
-            if len(argv) > 1:
+    # With a file argument, log continuously (append mode); otherwise print once and exit.
+    if len(argv) > 1:
+        output_file = argv[1]
+        while True:
+            data = get_data()
+            if data["status"] == 1:
                 with open(output_file, "a") as f:
-                    f.write(json_data + "\n")
-            else:
-                print(json_data)
-
-        sleep(1)
+                    f.write(dumps(data) + "\n")
+            sleep(1)
+    else:
+        data = get_data()
+        if data["status"] == 1:
+            print(dumps(data))
 
 
 if __name__ == '__main__':

@@ -1,11 +1,4 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  config,
-  ...
-}:
-
+{ inputs, ... }:
 {
   flake.modules.homeManager.polybar =
     {
@@ -41,12 +34,7 @@
       services.polybar = {
         enable = true;
 
-        package = pkgs.polybarFull.overrideAttrs (old: {
-          postPatch = (old.postPatch or "") + ''
-            substituteInPlace lib/i3ipcpp/CMakeLists.txt \
-              --replace-fail '-std=c++11' '-std=c++17'
-          '';
-        });
+        package = inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.polybarFull;
 
         script = "polybar main &";
 
