@@ -1,15 +1,19 @@
 { ... }:
 {
   flake.modules.homeManager.i3 =
-    { mkModeNotif, ... }:
+    { config, lib, mkModeNotif, ... }:
     let
+      modifier = config.xsession.windowManager.i3.config.modifier;
       exit = {
         "Escape" = "mode \"default\"";
         "space" = "mode \"default\"";
       };
       powerNotif = mkModeNotif {
-        summary = "Power";
-        body = "h  hibernate\nEsc/Spc  exit";
+        modeTitle = "Power";
+        bindings = [
+          { key = "h"; description = "hibernate"; }
+          { key = "Esc/Spc"; description = "exit"; }
+        ];
       };
       powerExit = {
         "Escape" = "exec --no-startup-id ${powerNotif.exit}; mode \"default\"";
@@ -17,6 +21,11 @@
       };
     in
     {
+      xsession.windowManager.i3.config.keybindings = lib.mkOptionDefault {
+        "${modifier}+i" = "mode \"launch\"";
+        "${modifier}+Shift+p" = "exec --no-startup-id ${powerNotif.enter}; mode \"Power\"";
+      };
+
       xsession.windowManager.i3.config.modes = {
         launch = exit // {
           "e" = "exec emacs; mode \"default\"";

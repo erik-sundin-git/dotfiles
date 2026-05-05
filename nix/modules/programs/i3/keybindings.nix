@@ -1,13 +1,7 @@
 { ... }:
 {
   flake.modules.homeManager.i3 =
-    { config, lib, mkModeNotif, ... }:
-    let
-      powerNotif = mkModeNotif {
-        summary = "Power";
-        body = "h  hibernate\nEsc/Spc  exit";
-      };
-    in
+    { config, lib, ... }:
     {
       xsession.windowManager.i3.config = {
         keybindings =
@@ -20,8 +14,6 @@
               "${modifier}+Return" = "exec alacritty";
               "${modifier}+Shift+q" = "kill";
               "${modifier}+d" = "exec --no-startup-id dmenu_run";
-              "${modifier}+i" = "mode \"launch\"";
-              "${modifier}+Shift+p" = "exec --no-startup-id ${powerNotif.enter}; mode \"Power\"";
 
               "${modifier}+h" = "focus left";
               "${modifier}+j" = "focus down";
