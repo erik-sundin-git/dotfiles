@@ -20,6 +20,7 @@
         homeManager.emacs
         homeManager.librewolf
         homeManager.bash
+        homeManager.nh
       ];
       home.homeDirectory = "/home/${config.home.username}";
       home.stateVersion = "23.05";
