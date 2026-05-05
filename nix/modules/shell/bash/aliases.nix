@@ -12,14 +12,8 @@
         l = "ls -CF";
         ssh-desktop = "ssh erik@${config.systemConstants.network.forgeHost}";
         rebuild =
-          if host == "ether" then
-            "sudo nixos-rebuild switch --flake ~/dotfiles#ether"
-          else if host == "forge" then
-            "home-manager switch -b backup --flake ~/dotfiles#forge"
-          else if host == "nomad" then
-            "home-manager switch -b backup --flake ~/dotfiles#nomad"
-          else
-            throw "bash/aliases.nix: unknown host '${host}'";
+          if host == "ether" then "nh os switch ~/dotfiles -c ${host}"
+          else "nh home switch ~/dotfiles -c ${host}";
       };
     };
 }
