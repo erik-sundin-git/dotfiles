@@ -6,8 +6,10 @@
       imports = with inputs.self.modules.homeManager; [
         i3
         polybar
-        picom
+        #        picom
         gtk
+        redshift
+        dunst
       ];
     };
 }

@@ -1,11 +1,13 @@
 { ... }:
 {
   flake.modules.homeManager.dunst =
-    { config, ... }:
+    { config, pkgs, ... }:
     let
       c = config.theme;
     in
     {
+      home.packages = [ pkgs.libnotify ];
+
       services.dunst = {
         enable = true;
         settings = {
