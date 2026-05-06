@@ -21,7 +21,7 @@
           urgency_low = {
             background = c.black;
             foreground = c.brightBlack;
-            frame_color = c.brightBlack;
+            frame_color = c.blue;
             timeout = 5;
           };
           urgency_normal = {

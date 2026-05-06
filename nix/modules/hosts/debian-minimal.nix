@@ -18,7 +18,10 @@
       };
 
       config = {
-        nixpkgs.overlays = [ inputs.nur.overlays.default ];
+        nixpkgs.overlays = [
+          inputs.nur.overlays.default
+          inputs.emacs-overlay.overlays.default
+        ];
         nixpkgs.config.allowUnfree = true;
         nix.package = pkgs.nix;
         home.packages = [

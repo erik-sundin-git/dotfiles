@@ -63,8 +63,8 @@
       ];
       nix.settings.trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSDs="
-        "nixgl.cachix.org-1:XpznIuKfjZH9fUDRlRfMB5sMNMSCvD9PajW5EVKUZI="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "nixgl.cachix.org-1:RXXcaU+XNGCeQw4zAcpG/Iu89yQfA2U0ZLtKExliq0A="
       ];
 
       home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

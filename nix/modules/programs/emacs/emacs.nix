@@ -22,8 +22,11 @@
           "early-init.el"
         ]
       );
+      services.emacs.enable = true;
+
       programs.emacs = {
         enable = true;
+        package = pkgs.emacs-git;
         extraPackages =
           epkgs: with epkgs; [
             nixfmt
