@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.commonDesktop =
-    { ... }:
+    { pkgs, ... }:
     {
       imports = [ inputs.self.modules.nixos.commonConfig ];
       services.xserver.enable = true;
