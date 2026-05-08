@@ -26,7 +26,10 @@
         ];
       };
 
-      nixpkgs.overlays = [ inputs.nur.overlays.default ];
+      nixpkgs.overlays = [
+        inputs.nur.overlays.default
+        inputs.emacs-overlay.overlays.default
+      ];
       services.printing.enable = true;
       services.pulseaudio.enable = false;
       security.rtkit.enable = true;
