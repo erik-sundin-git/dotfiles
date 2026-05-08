@@ -54,6 +54,7 @@
               "nomad"
               "forge"
               "ether"
+              "specter"
             ];
             description = "Canonical name of this host; used to select host-specific shell aliases and config.";
           };
