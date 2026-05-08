@@ -15,6 +15,9 @@
               "${modifier}+Shift+q" = "kill";
               "${modifier}+d" = "exec --no-startup-id dmenu_run";
 
+              "${modifier}+b" = "split h";
+              "${modifier}+v" = "split v";
+
               "${modifier}+h" = "focus left";
               "${modifier}+j" = "focus down";
               "${modifier}+k" = "focus up";
