@@ -1,18 +1,18 @@
 { den, inputs, ... }:
 {
-  den.aspects.ether = {
+  den.aspects.specter = {
     nixos =
       { config, pkgs, ... }:
       let
         sysConst = {
-          type = "desktop";
-          host = "ether";
+          type = "laptop";
+          host = "specter";
         };
       in
       {
         imports = with inputs.self.modules.nixos; [
           inputs.home-manager.nixosModules.home-manager
-          xfceStack
+          i3Stack
           commonDesktop
         ];
 
@@ -23,9 +23,8 @@
           systemConstants.system = sysConst;
         };
 
-        boot.loader.grub.enable = true;
-        boot.loader.grub.device = "/dev/vda";
-        boot.loader.grub.useOSProber = true;
+        boot.loader.systemd-boot.enable = true;
+        boot.loader.efi.canTouchEfiVariables = true;
       };
   };
 }

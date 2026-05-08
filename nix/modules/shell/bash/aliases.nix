@@ -10,10 +10,17 @@
         ll = "ls -l";
         la = "ls -A";
         l = "ls -CF";
+
+        gs = "git status";
+        gc = "git commit -m";
+        gp = "git push";
+
         ssh-desktop = "ssh erik@${config.systemConstants.network.forgeHost}";
         rebuild =
-          if host == "ether" then "nh os switch ~/dotfiles -c ${host}"
-          else "nh home switch ~/dotfiles -c ${host}";
+          if host == "ether" then
+            "nh os switch ~/dotfiles -c ${host}"
+          else
+            "nh home switch ~/dotfiles -c ${host}";
       };
     };
 }
