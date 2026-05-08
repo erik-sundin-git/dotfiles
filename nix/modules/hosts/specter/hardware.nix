@@ -2,7 +2,13 @@
 {
   den.aspects.specter = {
     nixos =
-      { config, pkgs, lib, ... }:
+      {
+        config,
+        pkgs,
+        lib,
+        modulesPath,
+        ...
+      }:
       {
         imports = [
           (modulesPath + "/installer/scan/not-detected.nix")
