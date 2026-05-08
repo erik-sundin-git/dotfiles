@@ -12,14 +12,16 @@
       {
         imports = with inputs.self.modules.nixos; [
           inputs.home-manager.nixosModules.home-manager
-          i3Stack
           commonDesktop
         ];
 
         systemConstants.system = sysConst;
 
         home-manager.users.erik = {
-          imports = [ inputs.self.modules.homeManager.commonHome ];
+          imports = with inputs.self.modules.homeManager; [
+            commonHome
+            i3Stack
+          ];
           systemConstants.system = sysConst;
         };
 
