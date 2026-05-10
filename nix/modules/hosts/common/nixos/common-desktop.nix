@@ -17,6 +17,8 @@
         openssh-askpass
         cmake
         alacritty
+        nixfmt
+        fastfetch
       ];
 
       users.users.erik = {

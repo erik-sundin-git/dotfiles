@@ -10,6 +10,7 @@
         gtk
         redshift
         dunst
+        starship
       ];
     };
 }

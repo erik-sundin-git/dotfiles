@@ -23,6 +23,7 @@
             i3Stack
           ];
           systemConstants.system = sysConst;
+          systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone8/temp";
         };
 
         services.xserver.displayManager.lightdm.enable = false;
