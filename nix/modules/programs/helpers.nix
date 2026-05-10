@@ -32,24 +32,13 @@
       _module.args.mkModeNotif =
         { modeTitle, bindings }:
         let
-          n = builtins.length bindings;
-          colWidths = builtins.genList (
-            i:
-            let
-              b = lib.elemAt bindings i;
-              w = lib.max (lib.stringLength b.key) (lib.stringLength b.description);
-            in
-            if i == n - 1 then w else w + 2
-          ) n;
+          keyWidth = lib.foldl (acc: b: lib.max acc (lib.stringLength b.key)) 0 bindings;
           rightPad =
             width: str:
             str + lib.concatStrings (builtins.genList (_: " ") (lib.max 0 (width - lib.stringLength str)));
-          mkRow =
-            getter:
-            lib.concatStrings (
-              builtins.genList (i: rightPad (lib.elemAt colWidths i) (getter (lib.elemAt bindings i))) n
-            );
-          body = "${mkRow (b: b.key)}\n${mkRow (b: b.description)}";
+          body = lib.concatStringsSep "\n" (
+            map (b: "${rightPad keyWidth b.key}  ${b.description}") bindings
+          );
         in
         {
           enter = pkgs.writeShellScript "i3-mode-notif-enter" ''
