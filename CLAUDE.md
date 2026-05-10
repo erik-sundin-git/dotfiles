@@ -16,9 +16,10 @@ Personal dotfiles for Erik Sundin. The Nix flake manages Home Manager and NixOS 
 
 | Name | Type | Flake target | Config file |
 |------|------|-------------|-------------|
-| `nomad` | Debian laptop (homeConfigurations) | `#nomad` | `hosts/nomad/` |
-| `forge` | Debian desktop (homeConfigurations) | `#forge` | `hosts/forge/` |
+| `nomad` | Debian laptop (homeConfigurations) | `#nomad` | `hosts/nomad.nix` |
+| `forge` | Debian desktop (homeConfigurations) | `#forge` | `hosts/forge.nix` |
 | `ether` | NixOS VM (nixosConfigurations) | `#ether` | `hosts/ether/` |
+| `specter` | NixOS laptop (nixosConfigurations) | `#specter` | `hosts/specter/` |
 
 Each host configuration sets `systemConstants.system.host` and `systemConstants.system.type`, which downstream modules (e.g. `shell/bash/aliases.nix`) use to vary behavior per host.
 
@@ -32,6 +33,7 @@ rebuild                                        # per-host alias: nh home/os swit
 home-manager switch -b backup --flake ~/dotfiles#nomad
 home-manager switch -b backup --flake ~/dotfiles#forge
 sudo nixos-rebuild switch --flake ~/dotfiles#ether
+sudo nixos-rebuild switch --flake ~/dotfiles#specter
 
 # Build without applying
 home-manager build --flake ~/dotfiles#nomad
@@ -66,9 +68,10 @@ nix/modules/
 │   ├── nomad.nix                # Debian laptop — debianMinimal + commonHome + i3Stack + alacritty + vpn
 │   ├── forge.nix                # Debian desktop — same minus vpn; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
+│   ├── specter/                 # NixOS laptop — commonDesktop + embedded homeManager (commonHome + i3Stack); uses startx
 │   ├── common/
 │   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources
-│   │   └── nixos/               # Shared NixOS config (commonConfig module)
+│   │   └── nixos/               # commonConfig (base NixOS) + commonDesktop (X server, pipewire, users; used by ether + specter)
 │   ├── debian-minimal.nix       # Debian base: nixGL wrapping, NUR overlay, allowUnfree
 │   └── topology.nix             # Registers hosts: den.homes / den.hosts + stateVersion
 ├── system-constants/

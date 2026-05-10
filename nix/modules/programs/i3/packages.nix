@@ -11,6 +11,8 @@
     {
       home.packages = [
         pkgs.blueman
+        pkgs.dmenu
+        pkgs.nitrogen
         pkgs.maim
         pkgs.xclip
         pkgs.nerd-fonts.jetbrains-mono

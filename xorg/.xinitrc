@@ -5,7 +5,6 @@
 [ -f ~/.xprofile ] && . ~/.xprofile
 
 eval $(ssh-agent -s)
-export SSH_ASKPASS=/usr/bin/ssh-askpass
 export SSH_ASKPASS_REQUIRE=prefer
 ssh-add ~/.ssh/id_ed25519
 

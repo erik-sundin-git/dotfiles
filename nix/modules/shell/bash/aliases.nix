@@ -17,8 +17,8 @@
 
         ssh-desktop = "ssh erik@${config.systemConstants.network.forgeHost}";
         rebuild =
-          if host == "ether" then
-            "nh os switch ~/dotfiles -c ${host}"
+          if host == "ether" || host == "specter" then
+            "nh os switch ~/dotfiles#${host}"
           else
             "nh home switch ~/dotfiles -c ${host}";
       };

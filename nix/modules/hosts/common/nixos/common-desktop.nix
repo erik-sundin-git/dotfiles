@@ -14,7 +14,9 @@
       environment.systemPackages = with pkgs; [
         claude-code
         xorg.xinit
-        ssh-askpass-fullscreen
+        openssh-askpass
+        cmake
+        alacritty
       ];
 
       users.users.erik = {
@@ -30,6 +32,8 @@
         inputs.nur.overlays.default
         inputs.emacs-overlay.overlays.default
       ];
+      programs.ssh.askPassword = "${pkgs.openssh-askpass}/libexec/gtk-ssh-askpass";
+      programs.dconf.enable = true;
       services.printing.enable = true;
       services.pulseaudio.enable = false;
       security.rtkit.enable = true;

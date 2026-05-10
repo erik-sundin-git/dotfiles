@@ -25,6 +25,14 @@
           systemConstants.system = sysConst;
         };
 
+        services.xserver.displayManager.lightdm.enable = false;
+        services.xserver.displayManager.startx.enable = true;
+
+        boot.kernelParams = [
+          "usbcore.autosuspend=-1"
+          "acpi_osi=Linux"
+        ];
+
         boot.loader.systemd-boot.enable = true;
         boot.loader.efi.canTouchEfiVariables = true;
       };
