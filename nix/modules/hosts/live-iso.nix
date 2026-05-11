@@ -20,6 +20,8 @@
 
           environment.systemPackages = with pkgs; [ git ];
 
+          environment.etc."dotfiles".source = inputs.self;
+
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users.nixos = {
