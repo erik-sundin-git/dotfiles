@@ -16,7 +16,7 @@ Personal dotfiles for Erik Sundin. The Nix flake manages Home Manager and NixOS 
 
 | Name | Type | Flake target | Config file |
 |------|------|-------------|-------------|
-| `nomad` | Debian laptop (homeConfigurations) | `#nomad` | `hosts/nomad.nix` |
+| `nomad` | NixOS laptop (nixosConfigurations) | `#nomad` | `hosts/nomad/` |
 | `forge` | Debian desktop (homeConfigurations) | `#forge` | `hosts/forge.nix` |
 | `ether` | NixOS VM (nixosConfigurations) | `#ether` | `hosts/ether/` |
 | `specter` | NixOS laptop (nixosConfigurations) | `#specter` | `hosts/specter/` |
@@ -30,13 +30,13 @@ Each host configuration sets `systemConstants.system.host` and `systemConstants.
 rebuild                                        # per-host alias: nh home/os switch ~/dotfiles -c <host>
 
 # Apply (direct fallback)
-home-manager switch -b backup --flake ~/dotfiles#nomad
 home-manager switch -b backup --flake ~/dotfiles#forge
 sudo nixos-rebuild switch --flake ~/dotfiles#ether
 sudo nixos-rebuild switch --flake ~/dotfiles#specter
+sudo nixos-rebuild switch --flake ~/dotfiles#nomad
 
 # Build without applying
-home-manager build --flake ~/dotfiles#nomad
+home-manager build --flake ~/dotfiles#forge
 
 # Update flake inputs
 nix flake update
@@ -65,13 +65,14 @@ nix/modules/
 │   ├── nh.nix                   # programs.nh: flake path + auto-cleanup (keep 7d/5 gens)
 │   └── tools/home-manager [ND]/ # Home Manager NixOS module (not auto-applied)
 ├── hosts/
-│   ├── nomad.nix                # Debian laptop — debianMinimal + commonHome + i3Stack + alacritty + vpn
-│   ├── forge.nix                # Debian desktop — same minus vpn; uses nixGLNvidia
+│   ├── nomad/                   # NixOS laptop — commonDesktop + i3Stack(nixos) + homeManager (commonHome + i3Stack + alacritty + vpn); uses startx
+│   ├── forge.nix                # Debian desktop — debianMinimal + commonHome + i3Stack + alacritty; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
 │   ├── specter/                 # NixOS laptop — commonDesktop + i3Stack(nixos) + embedded homeManager (commonHome + i3Stack); uses startx
+│   ├── live-iso.nix             # Bootable NixOS ISO — GNOME, git, emacs, dotfiles at /etc/dotfiles, prepare-disk install script
 │   ├── common/
 │   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources
-│   │   └── nixos/               # commonConfig (base NixOS) + commonDesktop (X server, pipewire, users; used by ether + specter)
+│   │   └── nixos/               # commonConfig (base NixOS + trusted-users) + commonDesktop (X server, pipewire, users)
 │   ├── debian-minimal.nix       # Debian base: nixGL wrapping, NUR overlay, allowUnfree
 │   └── topology.nix             # Registers hosts: den.homes / den.hosts + stateVersion
 ├── system-constants/
@@ -105,7 +106,9 @@ nix/packages/
 
 **Host wiring via `den`**: Hosts are defined using `den.aspects.<host> = { homeManager = ...; }` (or `nixos = ...`). The `topology.nix` registers them into `homeConfigurations`/`nixosConfigurations` via `den.homes.x86_64-linux.<host>` and `den.hosts.x86_64-linux.<host>`. There is no `lib.nix` with `mkNixos`/`mkHomeManager`.
 
-**nixGL on Debian**: The `debianMinimal` module provides a `debianGL.nixGLPackage` option. When set, it wraps GL-dependent binaries (alacritty, kitty) with the specified nixGL package so they work on non-NixOS systems. nomad uses `nixGLIntel`, forge uses `nixGLNvidia`.
+**nixGL on Debian**: The `debianMinimal` module provides a `debianGL.nixGLPackage` option. When set, it wraps GL-dependent binaries (alacritty, kitty) with the specified nixGL package so they work on non-NixOS systems. forge uses `nixGLNvidia`.
+
+**Live ISO**: Built with `nix build .#iso`. The `prepare-disk /dev/nvme0n1` script partitions, formats, mounts, clones the dotfiles repo, patches `hosts/nomad/hardware.nix` with generated UUIDs, and runs `nixos-install --flake /tmp/dotfiles#nomad` in one shot.
 
 **Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all Debian hosts. To add a new theme, add a file to `themes/` following the same pattern.
 
