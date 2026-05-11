@@ -28,6 +28,7 @@
         "flakes"
       ];
       nix.settings.warn-dirty = false;
+      nix.settings.trusted-users = [ "root" "erik" ];
       services.openssh.enable = true;
       services.tlp.enable = config.systemConstants.system.type == "laptop";
       home-manager.useGlobalPkgs = true;
