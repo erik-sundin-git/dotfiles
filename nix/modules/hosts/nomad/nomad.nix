@@ -13,7 +13,7 @@
         imports = with inputs.self.modules.nixos; [
           inputs.home-manager.nixosModules.home-manager
           commonDesktop
-          i3Stack
+          hyprlandStack
         ];
 
         systemConstants.system = sysConst;
@@ -22,7 +22,7 @@
         home-manager.users.erik = {
           imports = with inputs.self.modules.homeManager; [
             commonHome
-            i3Stack
+            hyprlandStack
             alacritty
             vpn
           ];
