@@ -35,7 +35,10 @@
           keyWidth = lib.foldl (acc: b: lib.max acc (lib.stringLength b.key)) 0 bindings;
           rightPad =
             width: str:
-            str + lib.concatStrings (builtins.genList (_: " ") (lib.max 0 (width - lib.stringLength str)));
+            let
+              padding = lib.max 0 (width - lib.stringLength str);
+            in
+            str + lib.concatStrings (builtins.genList (_: " ") padding);
           body = lib.concatStringsSep "\n" (
             map (b: "${rightPad keyWidth b.key}  ${b.description}") bindings
           );

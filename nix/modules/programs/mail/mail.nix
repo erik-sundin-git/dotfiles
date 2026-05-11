@@ -2,6 +2,16 @@
 {
   flake.modules.homeManager.mail =
     { pkgs, ... }:
+    let
+      # Poll until ProtonMail Bridge IMAP port (1143) is ready, up to 30 seconds
+      waitForBridge = pkgs.writeShellScript "wait-for-bridge" ''
+        for i in $(seq 1 30); do
+          (echo > /dev/tcp/127.0.0.1/1143) 2>/dev/null && exit 0
+          sleep 1
+        done
+        exit 1
+      '';
+    in
     {
       home.packages = with pkgs; [
         libnotify
@@ -36,8 +46,7 @@
         Service = {
           Type = "oneshot";
           ExecStartPre = [
-            # Poll until bridge IMAP port is ready (up to 30s)
-            "${pkgs.bash}/bin/bash -c 'for i in $(seq 1 30); do (echo > /dev/tcp/127.0.0.1/1143) 2>/dev/null && exit 0; sleep 1; done; exit 1'"
+            "${waitForBridge}"
             "-${pkgs.libnotify}/bin/notify-send 'Mail' 'Fetching mail...' --icon=mail-unread"
           ];
           ExecStart = "${pkgs.isync}/bin/mbsync proton";

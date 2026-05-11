@@ -3,11 +3,19 @@
   flake.modules.homeManager.i3 =
     {
       config,
+      pkgs,
       mkColors,
       ...
     }:
     let
       c = config.theme;
+      importEnv = pkgs.writeShellScript "i3-import-env" ''
+        systemctl --user import-environment \
+          DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS
+        systemctl --user restart \
+          xdg-desktop-portal-gtk \
+          xdg-desktop-portal
+      '';
     in
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
@@ -25,7 +33,7 @@
               notification = false;
             }
             {
-              command = "systemctl --user import-environment DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS && systemctl --user restart xdg-desktop-portal-gtk xdg-desktop-portal";
+              command = "${importEnv}";
               notification = false;
             }
             {

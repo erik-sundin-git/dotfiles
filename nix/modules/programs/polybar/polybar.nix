@@ -12,6 +12,9 @@
       thermalPath = config.systemConstants.thermalZonePath;
       c = config.theme;
       airpods-status = pkgs.callPackage ../../../packages/airpods-status/package.nix { };
+      airpodsScript = pkgs.writeShellScript "airpods-polybar" ''
+        ${airpods-status}/bin/airpods-status | ${pkgs.jq}/bin/jq -r .text
+      '';
 
       rightModules = lib.concatStringsSep " " (
         [
@@ -85,9 +88,7 @@
 
           "module/airpods" = {
             type = "custom/script";
-            exec = "${pkgs.writeShellScript "airpods-polybar" ''
-              ${airpods-status}/bin/airpods-status | ${pkgs.jq}/bin/jq -r .text
-            ''}";
+            exec = "${airpodsScript}";
             interval = 30;
             label = "%output%";
           };
