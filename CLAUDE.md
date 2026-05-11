@@ -65,7 +65,7 @@ nix/modules/
 │   ├── nh.nix                   # programs.nh: flake path + auto-cleanup (keep 7d/5 gens)
 │   └── tools/home-manager [ND]/ # Home Manager NixOS module (not auto-applied)
 ├── hosts/
-│   ├── nomad/                   # NixOS laptop — commonDesktop + i3Stack(nixos) + homeManager (commonHome + i3Stack + alacritty + vpn); uses startx
+│   ├── nomad/                   # NixOS laptop — commonDesktop + hyprlandStack(nixos) + homeManager (commonHome + hyprlandStack + alacritty + vpn); auto-starts Hyprland from tty1
 │   ├── forge.nix                # Debian desktop — debianMinimal + commonHome + i3Stack + alacritty; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
 │   ├── specter/                 # NixOS laptop — commonDesktop + i3Stack(nixos) + embedded homeManager (commonHome + i3Stack); uses startx
@@ -80,7 +80,8 @@ nix/modules/
 │   ├── theme.nix                # Options: selectedTheme (str) + theme (attrsOf str palette)
 │   └── themes/onedark.nix       # One Dark palette; sets config.theme via mkIf selectedTheme == "onedark"
 ├── stacks/
-│   └── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst; nixos: bluetooth
+│   ├── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst; nixos: bluetooth
+│   └── hyprland-stack.nix       # homeManager: hyprland + waybar + gtk + dunst + starship; nixos: bluetooth + hyprland + xdg-portal
 ├── services/
 │   ├── bluetooth/               # NixOS: hardware.bluetooth + blueman
 │   ├── dunst.nix                # Notification daemon; themed via config.theme
@@ -95,6 +96,8 @@ nix/modules/
     ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file
     ├── gtk/                     # Arc-Dark theme; injects selection/accent colors via extraCss
     ├── i3/                      # i3wm, keybindings, modes, picom
+    ├── hyprland/                # Hyprland (hy3 plugin), waybar, keybindings, packages, swayosd
+    ├── waybar/                  # Waybar config + themed CSS; hexToRgba helper for GTK CSS rgba()
     ├── alacritty/               # Alacritty with nixGL wrapping + theme colors
     ├── xfce/                    # XFCE (ether only)
     ├── cli-tools/               # CLI packages (generic + NixOS-specific)
@@ -110,7 +113,7 @@ nix/packages/
 
 **Live ISO**: Built with `nix build .#iso`. The `prepare-disk /dev/nvme0n1` script partitions, formats, mounts, clones the dotfiles repo, patches `hosts/nomad/hardware.nix` with generated UUIDs, and runs `nixos-install --flake /tmp/dotfiles#nomad` in one shot.
 
-**Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all Debian hosts. To add a new theme, add a file to `themes/` following the same pattern.
+**Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk, hyprland, waybar) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all Debian hosts. To add a new theme, add a file to `themes/` following the same pattern. Note: waybar CSS uses a `hexToRgba` Nix helper (defined in `waybar.nix`) to convert hex theme colors to `rgba()` — GTK CSS does not accept `alpha(#rrggbb, a)` with hex literals.
 
 **Custom packages**: Files under `nix/packages/<name>/package.nix` are auto-picked up by `pkgs-by-name` and exposed as `pkgs.local.<name>` via `flake.overlays.default`. After adding a new package directory, `git add` it immediately.
 
