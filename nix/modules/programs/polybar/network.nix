@@ -3,16 +3,12 @@
   flake.modules.homeManager.polybar =
     {
       config,
-      lib,
+      mkScript,
       ...
     }:
     let
       laptop = config.systemConstants.system.type == "laptop";
       c = config.theme;
-      mkScript =
-        { exec, interval ? 5, clickLeft ? null }:
-        { type = "custom/script"; inherit exec interval; }
-        // lib.optionalAttrs (clickLeft != null) { click-left = clickLeft; };
     in
     {
       services.polybar.settings = {
@@ -21,8 +17,8 @@
         };
 
         "module/ipv6" = mkScript {
-          exec = ''addr=$(ip -6 addr show scope global | awk '/inet6/{print $2; exit}'); if [ -n "$addr" ]; then if [ -f /tmp/polybar_ipv6_mode ]; then echo "%{F${c.green}}$addr%{F-}"; else echo "%{F${c.green}}IPV6%{F-}"; fi; else echo "IPV6"; fi'';
-          clickLeft = "[ -f /tmp/polybar_ipv6_mode ] && rm /tmp/polybar_ipv6_mode || touch /tmp/polybar_ipv6_mode";
+          exec = ''addr=$(ip -6 addr show scope global | awk '/inet6/{print $2; exit}'); if [ -n "$addr" ]; then if [ -f $XDG_RUNTIME_DIR/polybar_ipv6_mode ]; then echo "%{F${c.green}}$addr%{F-}"; else echo "%{F${c.green}}IPV6%{F-}"; fi; else echo "IPV6"; fi'';
+          clickLeft = "[ -f $XDG_RUNTIME_DIR/polybar_ipv6_mode ] && rm $XDG_RUNTIME_DIR/polybar_ipv6_mode || touch $XDG_RUNTIME_DIR/polybar_ipv6_mode";
         };
 
         "module/ethernet" = mkScript {
@@ -30,8 +26,8 @@
         };
       } // lib.optionalAttrs laptop {
         "module/wireless" = mkScript {
-          exec = ''conn=$(nmcli -t -f ACTIVE,SSID dev wifi 2>/dev/null | awk -F: '/^yes/{print $2}'); if [ -n "$conn" ]; then if [ -f /tmp/polybar_wifi_mode ]; then iface=$(nmcli -t -f DEVICE,TYPE dev | awk -F: '/wifi$/{print $1; exit}'); ip=$(ip -4 addr show "$iface" 2>/dev/null | awk '/inet /{split($2,a,"/"); print a[1]; exit}'); echo "%{F${c.green}}$conn $ip%{F-}"; else echo "%{F${c.green}}$conn%{F-}"; fi; else echo "%{F${c.red}}W: down%{F-}"; fi'';
-          clickLeft = "[ -f /tmp/polybar_wifi_mode ] && rm /tmp/polybar_wifi_mode || touch /tmp/polybar_wifi_mode";
+          exec = ''conn=$(nmcli -t -f ACTIVE,SSID dev wifi 2>/dev/null | awk -F: '/^yes/{print $2}'); if [ -n "$conn" ]; then if [ -f $XDG_RUNTIME_DIR/polybar_wifi_mode ]; then iface=$(nmcli -t -f DEVICE,TYPE dev | awk -F: '/wifi$/{print $1; exit}'); ip=$(ip -4 addr show "$iface" 2>/dev/null | awk '/inet /{split($2,a,"/"); print a[1]; exit}'); echo "%{F${c.green}}$conn $ip%{F-}"; else echo "%{F${c.green}}$conn%{F-}"; fi; else echo "%{F${c.red}}W: down%{F-}"; fi'';
+          clickLeft = "[ -f $XDG_RUNTIME_DIR/polybar_wifi_mode ] && rm $XDG_RUNTIME_DIR/polybar_wifi_mode || touch $XDG_RUNTIME_DIR/polybar_wifi_mode";
           interval = 1;
         };
       };
