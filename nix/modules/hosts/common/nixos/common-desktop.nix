@@ -19,7 +19,11 @@
         alacritty
         nixfmt
         fastfetch
+        wineWow64Packages.stable
+        winetricks
       ];
+
+      hardware.graphics.enable32Bit = true;
 
       users.users.erik = {
         isNormalUser = true;
@@ -31,6 +35,7 @@
       };
 
       nixpkgs.overlays = [
+        inputs.self.overlays.default
         inputs.nur.overlays.default
         inputs.emacs-overlay.overlays.default
       ];
