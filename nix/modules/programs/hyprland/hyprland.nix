@@ -1,7 +1,12 @@
 { inputs, ... }:
 {
   flake.modules.homeManager.hyprland =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       c = config.theme;
       isLaptop = config.systemConstants.system.type == "laptop";
@@ -16,9 +21,11 @@
         settings = {
           general = {
             layout = "hy3";
-            gaps_in = 4;
-            gaps_out = 8;
-            border_size = 0;
+            gaps_in = 0;
+            gaps_out = 0;
+            border_size = 2;
+            "col.active_border" = "rgb(${lib.removePrefix "#" c.blue})";
+            "col.inactive_border" = "rgb(${lib.removePrefix "#" c.black})";
           };
 
           decoration = {
@@ -49,7 +56,8 @@
             kb_options = "ctrl:swapcaps";
             accel_profile = "flat";
             sensitivity = 0.0;
-          } // lib.optionalAttrs isLaptop {
+          }
+          // lib.optionalAttrs isLaptop {
             touchpad = {
               tap-to-click = true;
               natural_scroll = false;
@@ -63,6 +71,7 @@
           };
 
           "exec-once" = [
+            "swayosd-server"
             "blueman-applet"
             "waybar"
             "dunst"
@@ -76,6 +85,12 @@
         preload = ~/dotfiles/Pictures/Nasa/nasa.jpg
         wallpaper = ,~/dotfiles/Pictures/Nasa/nasa.jpg
         splash = false
+      '';
+
+      programs.bash.profileExtra = ''
+        if [ -z "''${WAYLAND_DISPLAY}" ] && [ "$(tty)" = "/dev/tty1" ]; then
+          exec Hyprland
+        fi
       '';
     };
 }

@@ -31,6 +31,7 @@
         extraGroups = [
           "networkmanager"
           "wheel"
+          "video"
         ];
       };
 
@@ -40,6 +41,7 @@
         inputs.emacs-overlay.overlays.default
       ];
       programs.ssh.askPassword = "${pkgs.openssh-askpass}/libexec/gtk-ssh-askpass";
+      services.udev.packages = [ pkgs.brightnessctl ];
       programs.dconf.enable = true;
       services.printing.enable = true;
       services.pulseaudio.enable = false;

@@ -20,6 +20,9 @@
     {
       home.packages = [
         pkgs.wofi
+        pkgs.pavucontrol
+        pkgs.pulseaudio
+        pkgs.swayosd
         pkgs.grim
         pkgs.slurp
         pkgs.wl-clipboard

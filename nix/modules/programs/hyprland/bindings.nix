@@ -50,6 +50,12 @@
             "${mod}, B, hy3:makegroup, h"
             "${mod}, V, hy3:makegroup, v"
 
+            # Layout (hy3) — mirrors i3 s/e
+            "${mod}, S, hy3:changegroup, tab"
+            "${mod}, E, hy3:changegroup, opposite"
+
+            "${mod} SHIFT, R, exec, hyprctl reload"
+
             # Screenshots
             ", Print, exec, screenshot-area"
             "${mod}, Print, exec, screenshot-full"
@@ -64,21 +70,21 @@
           ++ lib.genList (i: "${mod}, ${toString (i + 1)}, workspace, ${toString (i + 1)}") 9
           ++ lib.genList (i: "${mod} SHIFT, ${toString (i + 1)}, movetoworkspace, ${toString (i + 1)}") 9
           ++ lib.optionals isLaptop [
-            ", XF86MonBrightnessUp, exec, brightnessctl set +5%"
-            ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+            ", XF86MonBrightnessUp, exec, swayosd-client --brightness raise"
+            ", XF86MonBrightnessDown, exec, swayosd-client --brightness lower"
             "${mod}, XF86MonBrightnessUp, exec, brightnessctl --device='*kbd*' set +1"
             "${mod}, XF86MonBrightnessDown, exec, brightnessctl --device='*kbd*' set 1-"
           ];
 
         # Repeating binds (held down) for volume
         binde = [
-          ", XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%"
-          ", XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%"
+          ", XF86AudioRaiseVolume, exec, swayosd-client --output-volume raise"
+          ", XF86AudioLowerVolume, exec, swayosd-client --output-volume lower"
         ];
 
         # Works even when screen is locked
         bindl = [
-          ", XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle"
+          ", XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
         ];
       };
 
