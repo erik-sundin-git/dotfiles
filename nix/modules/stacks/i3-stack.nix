@@ -1,5 +1,13 @@
 { inputs, ... }:
 {
+  flake.modules.nixos.i3Stack =
+    { ... }:
+    {
+      imports = with inputs.self.modules.nixos; [
+        bluetooth
+      ];
+    };
+
   flake.modules.homeManager.i3Stack =
     { ... }:
     {

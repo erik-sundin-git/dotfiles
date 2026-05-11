@@ -68,7 +68,7 @@ nix/modules/
 │   ├── nomad.nix                # Debian laptop — debianMinimal + commonHome + i3Stack + alacritty + vpn
 │   ├── forge.nix                # Debian desktop — same minus vpn; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
-│   ├── specter/                 # NixOS laptop — commonDesktop + embedded homeManager (commonHome + i3Stack); uses startx
+│   ├── specter/                 # NixOS laptop — commonDesktop + i3Stack(nixos) + embedded homeManager (commonHome + i3Stack); uses startx
 │   ├── common/
 │   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources
 │   │   └── nixos/               # commonConfig (base NixOS) + commonDesktop (X server, pipewire, users; used by ether + specter)
@@ -79,15 +79,16 @@ nix/modules/
 │   ├── theme.nix                # Options: selectedTheme (str) + theme (attrsOf str palette)
 │   └── themes/onedark.nix       # One Dark palette; sets config.theme via mkIf selectedTheme == "onedark"
 ├── stacks/
-│   └── i3-stack.nix             # Groups: i3 + polybar + gtk + redshift + dunst
+│   └── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst; nixos: bluetooth
 ├── services/
+│   ├── bluetooth/               # NixOS: hardware.bluetooth + blueman
 │   ├── dunst.nix                # Notification daemon; themed via config.theme
-│   └── redshift.nix
+│   ├── redshift.nix
+│   └── vpn/                     # WireGuard tools, proton-vpn-cli, vpn-status script, gnome-keyring
 ├── browsers/
 │   ├── chromium/
 │   └── librewolf/
 ├── shell/bash/                  # Bash aliases (per-host `rebuild`) and config
-├── vpn/                         # WireGuard tools, proton-vpn-cli, vpn-status script, gnome-keyring
 └── programs/
     ├── helpers.nix              # _module.args: mkColors (i3 window color sets), mkScreenshot
     ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file

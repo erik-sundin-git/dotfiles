@@ -13,6 +13,7 @@
         imports = with inputs.self.modules.nixos; [
           inputs.home-manager.nixosModules.home-manager
           commonDesktop
+          i3Stack
         ];
 
         systemConstants.system = sysConst;
