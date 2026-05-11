@@ -25,8 +25,8 @@
           ];
           systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone8/temp";
-          systemConstants.latitude = 59.33;
-          systemConstants.longitude = 18.07;
+          systemConstants.latitude = 59.33; # Stockholm
+          systemConstants.longitude = 18.07; # Stockholm
         };
 
         services.xserver.displayManager.lightdm.enable = false;

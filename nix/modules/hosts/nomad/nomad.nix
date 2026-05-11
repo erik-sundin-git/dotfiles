@@ -27,8 +27,8 @@
             vpn
           ];
           systemConstants.system = sysConst;
-          systemConstants.latitude = 59.33;
-          systemConstants.longitude = 18.07;
+          systemConstants.latitude = 59.33; # Stockholm
+          systemConstants.longitude = 18.07; # Stockholm
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone6/temp";
           home.packages = with pkgs; [ protonmail-desktop ];
         };

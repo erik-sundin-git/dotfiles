@@ -47,6 +47,7 @@
       }
       // lib.optionalAttrs (thermalPath != null) {
         "module/temperature" = mkScript {
+          # kernel reports millidegrees; divide by 1000 for Celsius
           exec = ''awk '{printf "%.0f °C", $1/1000}' ${thermalPath}'';
         };
       };
