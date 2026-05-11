@@ -34,6 +34,9 @@
                 parted "$DISK" -- mkpart swap linux-swap 512MB "$SWAP"
                 parted "$DISK" -- mkpart root ext4 "$SWAP" 100%
 
+                partprobe "$DISK"
+                sleep 1
+
                 if [[ "$DISK" == *nvme* ]]; then
                   BOOT="''${DISK}p1"
                   SWAP_DEV="''${DISK}p2"

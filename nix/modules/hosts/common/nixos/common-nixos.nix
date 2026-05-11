@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.commonConfig =
-    { config, ... }:
+    { config, pkgs, ... }:
     {
       imports = [
         inputs.self.modules.generic.systemConstants
@@ -33,5 +33,6 @@
       services.tlp.enable = config.systemConstants.system.type == "laptop";
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+      environment.systemPackages = [ pkgs.python3 ];
     };
 }
