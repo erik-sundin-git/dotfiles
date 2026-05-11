@@ -36,6 +36,8 @@
       home.file.".xprofile".text = ''
         setxkbmap se -option ctrl:swapcaps
         ${lib.optionalString isLaptop "xinput set-prop \"Elan Touchpad\" \"libinput Tapping Enabled\" 1"}
+
+        # per-device pointer acceleration
         for id in $(xinput list --id-only); do
           if xinput list-props "$id" 2>/dev/null | grep -q "libinput Accel Speed "; then
             xinput set-prop "$id" "libinput Accel Speed" 0.5

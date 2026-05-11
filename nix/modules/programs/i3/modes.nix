@@ -37,7 +37,7 @@
     {
       xsession.windowManager.i3.config.keybindings = lib.mkOptionDefault {
         "${modifier}+i" = "exec --no-startup-id ${launchNotif.enter}; mode \"launch\"";
-        "${modifier}+Shift+p" = "exec --no-startup-id ${powerNotif.enter}; mode \"Power\"";
+        "${modifier}+Shift+p" = "exec --no-startup-id ${powerNotif.enter}; mode \"power\"";
       };
 
       xsession.windowManager.i3.config.modes = {
@@ -51,7 +51,7 @@
           "k" = "resize shrink height 10 px or 10 ppt";
           "l" = "resize grow width 10 px or 10 ppt";
         };
-        Power = powerExit // {
+        power = powerExit // {
           "h" = "exec --no-startup-id ${powerNotif.exit}; exec systemctl hibernate; mode \"default\"";
           "r" = "exec --no-startup-id ${powerNotif.exit}; exec systemctl reboot; mode \"default\"";
           "s" = "exec --no-startup-id ${powerNotif.exit}; exec systemctl poweroff; mode \"default\"";

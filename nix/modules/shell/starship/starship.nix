@@ -27,6 +27,7 @@
           git_status = {
             format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](fg:${c.brightMagenta}) ($ahead_behind$stashed)]($style)";
             style = "fg:${c.cyan}";
+            # zero-width space (U+200B) — suppresses the default status symbols
             conflicted = "​";
             untracked = "​";
             modified = "​";

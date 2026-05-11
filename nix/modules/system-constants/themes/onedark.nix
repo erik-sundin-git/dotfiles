@@ -19,6 +19,7 @@
         cyan = "#56b6c2";
         white = "#abb2bf";
 
+        # bright variants
         brightBlack = "#5c6370";
         brightRed = "#e06c75";
         brightGreen = "#98c379";
