@@ -3,6 +3,7 @@
   flake.modules.homeManager.polybar =
     {
       config,
+      lib,
       mkScript,
       ...
     }:
