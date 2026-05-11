@@ -29,6 +29,7 @@
       ];
       nix.settings.warn-dirty = false;
       services.openssh.enable = true;
+      services.tlp.enable = config.systemConstants.system.type == "laptop";
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
     };
