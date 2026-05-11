@@ -22,7 +22,7 @@
             git
             (writeShellApplication {
               name = "prepare-disk";
-              runtimeInputs = [ parted util-linux e2fsprogs dosfstools ];
+              runtimeInputs = [ parted util-linux e2fsprogs dosfstools git ];
               text = ''
                 DISK=''${1:?Usage: prepare-disk /dev/nvme0n1 [swap-size]}
                 SWAP=''${2:-16G}
@@ -58,12 +58,25 @@
                 echo "Generating hardware config..."
                 nixos-generate-config --root /mnt
 
-                echo ""
-                echo "=== hardware-configuration.nix ==="
-                cat /mnt/etc/nixos/hardware-configuration.nix
-                echo ""
-                echo "Copy the UUIDs above into hosts/nomad/hardware.nix, push, then run:"
-                echo "  sudo nixos-install --flake github:erik-sundin-git/dotfiles#nomad"
+                echo "Cloning dotfiles..."
+                git clone --depth 1 https://github.com/erik-sundin-git/dotfiles.git /tmp/dotfiles
+
+                echo "Patching hardware.nix..."
+                HW_CONF=/mnt/etc/nixos/hardware-configuration.nix
+                NOMAD_HW=/tmp/dotfiles/nix/modules/hosts/nomad/hardware.nix
+
+                ROOT_UUID=$(grep -A2 '"/"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
+                BOOT_UUID=$(grep -A2 '"/boot"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
+                SWAP_UUID=$(grep -A3 'swapDevices' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
+
+                sed -i "s|REPLACE-ROOT-UUID|$ROOT_UUID|" "$NOMAD_HW"
+                sed -i "s|REPLACE-BOOT-UUID|$BOOT_UUID|" "$NOMAD_HW"
+                sed -i "s|REPLACE-SWAP-UUID|$SWAP_UUID|" "$NOMAD_HW"
+
+                git -C /tmp/dotfiles add nix/modules/hosts/nomad/hardware.nix
+
+                echo "Installing NixOS..."
+                nixos-install --flake /tmp/dotfiles#nomad
               '';
             })
           ];
