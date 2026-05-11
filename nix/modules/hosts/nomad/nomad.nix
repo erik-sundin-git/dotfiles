@@ -18,6 +18,7 @@
 
         systemConstants.system = sysConst;
 
+        home-manager.backupFileExtension = "backup";
         home-manager.users.erik = {
           imports = with inputs.self.modules.homeManager; [
             commonHome
