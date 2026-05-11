@@ -21,6 +21,19 @@
       tempScript = pkgs.writeShellScript "waybar-temp" ''
         awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
       '';
+
+      vpnScript = pkgs.writeShellScript "waybar-vpn" ''
+        result=$(vpn-status 2>/dev/null)
+        if [ -n "$result" ]; then
+          echo "{\"text\": \"$result\", \"class\": \"connected\"}"
+        else
+          echo "{\"text\": \"VPN\", \"class\": \"disconnected\"}"
+        fi
+      '';
+
+      airpodsScript = pkgs.writeShellScript "waybar-airpods" ''
+        ${pkgs.local.airpods-status}/bin/airpods-status | ${pkgs.jq}/bin/jq -r '.text // empty'
+      '';
     in
     {
       programs.waybar = {
@@ -38,7 +51,7 @@
                 "hyprland/submap"
               ];
               modules-right =
-                [ "tray" "network" ]
+                [ "tray" "custom/airpods" "custom/vpn" "network" ]
                 ++ lib.optionals laptop [ "battery" ]
                 ++ [ "memory" "clock" ]
                 ++ lib.optionals (thermalPath != null) [ "custom/temperature" ];
@@ -78,6 +91,19 @@
               clock = {
                 format = "{:%Y-%m-%d %H:%M:%S}";
                 interval = 1;
+              };
+            }
+            // {
+              "custom/vpn" = {
+                exec = "${vpnScript}";
+                return-type = "json";
+                interval = 5;
+                format = "{}";
+              };
+              "custom/airpods" = {
+                exec = "${airpodsScript}";
+                interval = 30;
+                format = "{}";
               };
             }
             // lib.optionalAttrs (thermalPath != null) {
@@ -154,6 +180,20 @@
 
           #custom-temperature {
             color: ${c.yellow};
+            padding: 0 6px;
+          }
+
+          #custom-vpn {
+            color: ${c.red};
+            padding: 0 6px;
+          }
+
+          #custom-vpn.connected {
+            color: ${c.green};
+          }
+
+          #custom-airpods {
+            color: ${c.cyan};
             padding: 0 6px;
           }
         '';

@@ -20,6 +20,7 @@
     {
       home.packages = [
         pkgs.wofi
+        pkgs.jq
         pkgs.pavucontrol
         pkgs.pulseaudio
         pkgs.swayosd
