@@ -4,6 +4,7 @@
     { config, pkgs, ... }:
     let
       c = config.theme;
+      frameColor = c.blue;
     in
     {
       home.packages = [ pkgs.libnotify ];
@@ -12,7 +13,7 @@
         enable = true;
         settings = {
           global = {
-            frame_color = c.blue;
+            frame_color = frameColor;
             separator_color = "frame";
             font = "Monospace 10";
             corner_radius = 4;
@@ -21,13 +22,13 @@
           urgency_low = {
             background = c.black;
             foreground = c.brightBlack;
-            frame_color = c.blue;
+            frame_color = frameColor;
             timeout = 5;
           };
           urgency_normal = {
             background = c.black;
             foreground = c.foreground;
-            frame_color = c.blue;
+            frame_color = frameColor;
             timeout = 10;
           };
           urgency_critical = {

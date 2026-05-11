@@ -4,9 +4,15 @@
     let
       c = config.theme;
       nixGLPkg = config.debianGL.nixGLPackage;
+      fontFamily = "AdwaitaMono Nerd Font";
     in
     {
-      programs.alacritty = {
+      options.debianGL.nixGLPackage = lib.mkOption {
+        type = lib.types.nullOr lib.types.package;
+        default = null;
+      };
+
+      config.programs.alacritty = {
         enable = true;
         package =
           if nixGLPkg == null then
@@ -19,19 +25,19 @@
           font = {
             size = 12.0;
             normal = {
-              family = "AdwaitaMono Nerd Font";
+              family = fontFamily;
               style = "Regular";
             };
             bold = {
-              family = "AdwaitaMono Nerd Font";
+              family = fontFamily;
               style = "Bold";
             };
             italic = {
-              family = "AdwaitaMono Nerd Font";
+              family = fontFamily;
               style = "Italic";
             };
             bold_italic = {
-              family = "AdwaitaMono Nerd Font";
+              family = fontFamily;
               style = "Bold Italic";
             };
           };
