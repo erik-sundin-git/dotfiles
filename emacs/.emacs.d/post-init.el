@@ -321,12 +321,6 @@
    :preview-key '(:debounce 0.4 any))
   (setq consult-narrow-key "<"))
 
-;;;;;;;;;;;;;;;;;;
-;; CODE FOLDING ;;
-;;;;;;;;;;;;;;;;;;
-
-;; TODO
-
 ;;;;;;;;;;;;;;;
 ;; UNDO/REDO ;;
 ;;;;;;;;;;;;;;;
