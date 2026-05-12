@@ -56,6 +56,7 @@ Key conventions:
 - **`flake-parts []` directories** — brackets signal to `import-tree` that these are flake-parts modules (not Home Manager modules)
 - **`[ND]` directories** — "Not Default"; modules are available but not auto-applied, must be explicitly imported
 - Modules expose themselves via `flake.modules.homeManager.<name>`, `flake.modules.nixos.<name>`, or `flake.modules.generic.<name>` (for platform-neutral modules like `systemConstants`)
+- A single `.nix` file can define multiple module types (e.g. both `flake.modules.nixos.hyprland` and `flake.modules.homeManager.hyprland` in the same file) — the stack then imports both by name
 
 Module layout:
 ```
@@ -65,7 +66,7 @@ nix/modules/
 │   ├── nh.nix                   # programs.nh: flake path + auto-cleanup (keep 7d/5 gens)
 │   └── tools/home-manager [ND]/ # Home Manager NixOS module (not auto-applied)
 ├── hosts/
-│   ├── nomad/                   # NixOS laptop — commonDesktop + hyprlandStack(nixos) + homeManager (commonHome + hyprlandStack + alacritty + vpn); auto-starts Hyprland from tty1
+│   ├── nomad/                   # NixOS laptop — commonDesktop + hyprlandStack(nixos) + homeManager (commonHome + hyprlandStack + alacritty + vpn); auto-starts Hyprland via UWSM from tty1
 │   ├── forge.nix                # Debian desktop — debianMinimal + commonHome + i3Stack + alacritty; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
 │   ├── specter/                 # NixOS laptop — commonDesktop + i3Stack(nixos) + embedded homeManager (commonHome + i3Stack); uses startx
@@ -81,7 +82,7 @@ nix/modules/
 │   └── themes/onedark.nix       # One Dark palette; sets config.theme via mkIf selectedTheme == "onedark"
 ├── stacks/
 │   ├── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst; nixos: bluetooth
-│   └── hyprland-stack.nix       # homeManager: hyprland + waybar + gtk + dunst + starship; nixos: bluetooth + hyprland + xdg-portal
+│   └── hyprland-stack.nix       # homeManager: hyprland + waybar + gtk + dunst + starship; nixos: bluetooth + hyprland
 ├── services/
 │   ├── bluetooth/               # NixOS: hardware.bluetooth + blueman
 │   ├── dunst.nix                # Notification daemon; themed via config.theme
@@ -96,7 +97,7 @@ nix/modules/
     ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file
     ├── gtk/                     # Arc-Dark theme; injects selection/accent colors via extraCss
     ├── i3/                      # i3wm, keybindings, modes, picom
-    ├── hyprland/                # Hyprland (hy3 plugin), waybar, keybindings, packages, swayosd
+    ├── hyprland/                # homeManager: Hyprland (hy3 plugin), keybindings, packages, swayosd; nixos: programs.hyprland + UWSM + xdg-portal + NIXOS_OZONE_WL
     ├── waybar/                  # Waybar config + themed CSS; hexToRgba helper for GTK CSS rgba()
     ├── alacritty/               # Alacritty with nixGL wrapping + theme colors
     ├── xfce/                    # XFCE (ether only)

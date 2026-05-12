@@ -29,6 +29,7 @@
         pkgs.wl-clipboard
         pkgs.swaybg
         pkgs.blueman
+        pkgs.hyprpolkitagent
         pkgs.nerd-fonts.jetbrains-mono
         screenshotArea
         screenshotFull

@@ -1,5 +1,21 @@
 { inputs, ... }:
 {
+  flake.modules.nixos.hyprland =
+    { pkgs, ... }:
+    {
+      programs.hyprland.enable = true;
+      programs.hyprland.withUWSM = true;
+      programs.hyprland.xwayland.enable = true;
+
+      environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
+      xdg.portal = {
+        enable = true;
+        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+        configPackages = [ pkgs.xdg-desktop-portal-hyprland ];
+      };
+    };
+
   flake.modules.homeManager.hyprland =
     {
       config,
@@ -18,6 +34,7 @@
       wayland.windowManager.hyprland = {
         enable = true;
         plugins = [ pkgs.hyprlandPlugins.hy3 ];
+        systemd.enable = false;
 
         settings = {
           general = {
@@ -70,6 +87,7 @@
           };
 
           "exec-once" = [
+            "systemctl --user start hyprpolkitagent"
             "swayosd-server"
             "blueman-applet"
             "waybar"
@@ -83,7 +101,7 @@
 
       programs.bash.profileExtra = ''
         if [ -z "''${WAYLAND_DISPLAY}" ] && [ "$(tty)" = "/dev/tty1" ]; then
-          exec Hyprland
+          exec uwsm start hyprland-uwsm.desktop
         fi
       '';
     };

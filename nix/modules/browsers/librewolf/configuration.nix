@@ -1,10 +1,18 @@
-{ ... }:
+{ lib, ... }:
 {
   flake.modules.homeManager.librewolf =
-    { pkgs, config, ... }:
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
 
     {
       home.sessionVariables.MOZ_USE_XINPUT2 = "1";
+      home.sessionVariables.MOZ_ENABLE_WAYLAND = lib.mkIf (builtins.any (v: v.enable or false) (
+        builtins.attrValues config.wayland.windowManager
+      )) "1";
 
       home.file.".librewolf/librewolf.overrides.cfg".text = ''
         lockPref("browser.theme.content-theme", 0);
@@ -17,43 +25,64 @@
         policies.DontCheckDefaultBrowser = true;
 
         profiles."default".search = {
-          force          = true;
-          default        = "ddg";
+          force = true;
+          default = "ddg";
           privateDefault = "ddg";
 
           engines = {
             "Nix Packages" = {
-              urls = [ {
-                template = "https://search.nixos.org/packages";
-                params = [
-                  { name = "channel"; value = "unstable"; }
-                  { name = "query";   value = "{searchTerms}"; }
-                ];
-              } ];
-              icon           = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+              urls = [
+                {
+                  template = "https://search.nixos.org/packages";
+                  params = [
+                    {
+                      name = "channel";
+                      value = "unstable";
+                    }
+                    {
+                      name = "query";
+                      value = "{searchTerms}";
+                    }
+                  ];
+                }
+              ];
+              icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               definedAliases = [ "@np" ];
             };
 
             "Nix Options" = {
-              urls = [ {
-                template = "https://search.nixos.org/options";
-                params = [
-                  { name = "channel"; value = "unstable"; }
-                  { name = "query";   value = "{searchTerms}"; }
-                ];
-              } ];
-              icon           = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+              urls = [
+                {
+                  template = "https://search.nixos.org/options";
+                  params = [
+                    {
+                      name = "channel";
+                      value = "unstable";
+                    }
+                    {
+                      name = "query";
+                      value = "{searchTerms}";
+                    }
+                  ];
+                }
+              ];
+              icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               definedAliases = [ "@no" ];
             };
 
             "NixOS Wiki" = {
-              urls = [ {
-                template = "https://wiki.nixos.org/w/index.php";
-                params = [
-                  { name = "search"; value = "{searchTerms}"; }
-                ];
-              } ];
-              icon           = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+              urls = [
+                {
+                  template = "https://wiki.nixos.org/w/index.php";
+                  params = [
+                    {
+                      name = "search";
+                      value = "{searchTerms}";
+                    }
+                  ];
+                }
+              ];
+              icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               definedAliases = [ "@nw" ];
             };
           };
@@ -69,7 +98,7 @@
           "media.hardware-video-decoding.force-enabled" = true;
 
           # Fewer content processes — less RAM and IPC overhead
-          "dom.ipc.processCount" = 4;
+          #          "dom.ipc.processCount" = 4;
 
           # RAM-only cache — faster, avoids disk thrash
           "browser.cache.disk.enable" = false;
@@ -94,6 +123,10 @@
           "gfx.webrender.all" = true;
           "gfx.webrender.compositor" = true;
           "layers.acceleration.force-enabled" = true;
+
+          # Reduce scroll latency — remove APZ frame delay and shorten transaction timeout
+          "apz.frame_delay.enabled" = false;
+          "mousewheel.transaction.timeout" = 200;
         };
 
         profiles."default".extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
@@ -103,6 +136,7 @@
           sponsorblock
           consent-o-matic
           vimium
+          lockedin-yt
         ];
       };
 
