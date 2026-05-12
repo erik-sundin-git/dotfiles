@@ -10,7 +10,7 @@
     let
       c = config.theme;
       isLaptop = config.systemConstants.system.type == "laptop";
-      wallpaper = "${inputs.self}/Pictures/Nasa/Artemis_2/crescent-earth.jpeg";
+      wallpaper = "${inputs.self}/Pictures/landscapes/mountain_landscape_1.jpg";
     in
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];

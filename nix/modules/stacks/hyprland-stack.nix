@@ -26,6 +26,7 @@
         gtk
         dunst
         starship
+        gammastep
       ];
     };
 }

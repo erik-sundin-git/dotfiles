@@ -30,7 +30,13 @@
       nix.settings.warn-dirty = false;
       nix.settings.trusted-users = [ "root" "erik" ];
       services.openssh.enable = true;
-      services.tlp.enable = config.systemConstants.system.type == "laptop";
+      services.tlp = {
+        enable = config.systemConstants.system.type == "laptop";
+        settings = {
+          START_CHARGE_THRESH_BAT0 = 0;
+          STOP_CHARGE_THRESH_BAT0 = 100;
+        };
+      };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       environment.systemPackages = [ pkgs.python3 ];

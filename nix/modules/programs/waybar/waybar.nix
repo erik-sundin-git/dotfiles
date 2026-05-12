@@ -90,6 +90,8 @@
               };
 
               battery = {
+                bat = "BAT0";
+                adapter = "AC";
                 format = "{icon} {capacity}%";
                 format-charging = "󱐋 {capacity}%";
                 format-full = "{icon} full";
