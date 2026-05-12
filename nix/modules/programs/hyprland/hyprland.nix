@@ -10,6 +10,7 @@
     let
       c = config.theme;
       isLaptop = config.systemConstants.system.type == "laptop";
+      wallpaper = "${inputs.self}/Pictures/Nasa/Artemis II/art002e012673.jpg";
     in
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
@@ -80,12 +81,13 @@
         };
       };
 
-      # Configure hyprpaper — update path to your wallpaper
       xdg.configFile."hypr/hyprpaper.conf".text = ''
-        preload = ~/dotfiles/Pictures/Nasa/nasa.jpg
-        wallpaper = ,~/dotfiles/Pictures/Nasa/nasa.jpg
+        preload = ${wallpaper}
+        wallpaper = ,${wallpaper}
         splash = false
       '';
+
+      programs.emacs.package = pkgs.emacs-git-pgtk;
 
       programs.bash.profileExtra = ''
         if [ -z "''${WAYLAND_DISPLAY}" ] && [ "$(tty)" = "/dev/tty1" ]; then

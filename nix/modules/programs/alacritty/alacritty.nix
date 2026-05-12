@@ -79,6 +79,7 @@
               y = 8;
             };
             decorations = "full";
+            opacity = 0.85;
           };
 
           cursor = {

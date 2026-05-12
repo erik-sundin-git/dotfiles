@@ -32,7 +32,23 @@
       '';
 
       airpodsScript = pkgs.writeShellScript "waybar-airpods" ''
-        ${pkgs.local.airpods-status}/bin/airpods-status | ${pkgs.jq}/bin/jq -r '.text // empty'
+        result=$(${pkgs.local.airpods-status}/bin/airpods-status 2>/dev/null)
+        class=$(echo "$result" | ${pkgs.jq}/bin/jq -r '.class // "disconnected"' 2>/dev/null)
+        if [ "$class" != "disconnected" ]; then
+          echo "$result"
+        fi
+      '';
+
+      btBatteryScript = pkgs.writeShellScript "waybar-bt-battery" ''
+        while IFS= read -r line; do
+          mac=$(echo "$line" | awk '{print $2}')
+          battery=$(${pkgs.bluez}/bin/bluetoothctl info "$mac" 2>/dev/null \
+            | grep "Battery Percentage" | grep -oE '\([0-9]+\)' | tr -d '()')
+          if [ -n "$battery" ]; then
+            printf '{"text": "󰥰 %s%%"}\n' "$battery"
+            exit 0
+          fi
+        done < <(${pkgs.bluez}/bin/bluetoothctl devices Connected 2>/dev/null)
       '';
     in
     {
@@ -51,9 +67,9 @@
                 "hyprland/submap"
               ];
               modules-right =
-                [ "tray" "custom/airpods" "custom/vpn" "network" ]
+                [ "tray" "custom/airpods" "custom/bt-battery" "custom/vpn" "network" ]
                 ++ lib.optionals laptop [ "battery" ]
-                ++ [ "memory" "clock" ]
+                ++ [ "disk" "memory" "clock" ]
                 ++ lib.optionals (thermalPath != null) [ "custom/temperature" ];
 
               "hyprland/workspaces" = {
@@ -74,13 +90,18 @@
               };
 
               battery = {
-                format = "BAT {capacity}%";
-                format-charging = " {capacity}%";
-                format-full = "BAT full";
+                format = "{icon} {capacity}%";
+                format-charging = "󱐋 {capacity}%";
+                format-full = "{icon} full";
+                format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
                 full-at = 98;
                 states.low = 30;
-                format-low = "BAT {capacity}%";
                 interval = 30;
+              };
+
+              disk = {
+                format = " {free}";
+                interval = 60;
               };
 
               memory = {
@@ -102,6 +123,13 @@
               };
               "custom/airpods" = {
                 exec = "${airpodsScript}";
+                return-type = "json";
+                interval = 30;
+                format = "{}";
+              };
+              "custom/bt-battery" = {
+                exec = "${btBatteryScript}";
+                return-type = "json";
                 interval = 30;
                 format = "{}";
               };
@@ -160,8 +188,17 @@
             padding: 0 6px;
           }
 
+          #battery.charging {
+            color: ${c.yellow};
+          }
+
           #battery.low {
             color: ${c.red};
+          }
+
+          #disk {
+            color: ${c.blue};
+            padding: 0 6px;
           }
 
           #memory {
@@ -193,6 +230,11 @@
           }
 
           #custom-airpods {
+            color: ${c.cyan};
+            padding: 0 6px;
+          }
+
+          #custom-bt-battery {
             color: ${c.cyan};
             padding: 0 6px;
           }

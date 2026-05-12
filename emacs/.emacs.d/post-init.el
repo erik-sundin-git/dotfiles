@@ -768,6 +768,8 @@
 (set-face-attribute 'default nil
                     :height 130 :weight 'normal :family "DejaVu Sans Mono")
 
+(add-to-list 'default-frame-alist '(alpha-background . 90))
+
 
 (use-package persist-text-scale
   :commands (persist-text-scale-mode

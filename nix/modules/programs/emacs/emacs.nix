@@ -4,7 +4,7 @@
 }:
 {
   flake.modules.homeManager.emacs =
-    { pkgs, config, ... }:
+    { pkgs, lib, config, ... }:
     let
       dotPath = "${inputs.self}/emacs/.emacs.d";
     in
@@ -26,7 +26,7 @@
 
       programs.emacs = {
         enable = true;
-        package = pkgs.emacs-git;
+        package = lib.mkDefault pkgs.emacs-git;
         extraPackages =
           epkgs: with epkgs; [
             nixfmt
