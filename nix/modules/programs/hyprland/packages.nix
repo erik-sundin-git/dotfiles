@@ -27,7 +27,7 @@
         pkgs.grim
         pkgs.slurp
         pkgs.wl-clipboard
-        pkgs.hyprpaper
+        pkgs.swaybg
         pkgs.blueman
         pkgs.nerd-fonts.jetbrains-mono
         screenshotArea

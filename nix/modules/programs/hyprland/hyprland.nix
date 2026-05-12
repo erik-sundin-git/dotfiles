@@ -10,7 +10,7 @@
     let
       c = config.theme;
       isLaptop = config.systemConstants.system.type == "laptop";
-      wallpaper = "${inputs.self}/Pictures/Nasa/Artemis II/art002e012673.jpg";
+      wallpaper = "${inputs.self}/Pictures/Nasa/Artemis_2/crescent-earth.jpeg";
     in
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
@@ -31,8 +31,6 @@
 
           decoration = {
             rounding = 8;
-            active_opacity = 1.0;
-            inactive_opacity = 0.9;
             blur = {
               enabled = true;
               size = 6;
@@ -76,16 +74,10 @@
             "blueman-applet"
             "waybar"
             "dunst"
-            "hyprpaper"
+            "${pkgs.swaybg}/bin/swaybg -i '${wallpaper}' -m fill"
           ];
         };
       };
-
-      xdg.configFile."hypr/hyprpaper.conf".text = ''
-        preload = ${wallpaper}
-        wallpaper = ,${wallpaper}
-        splash = false
-      '';
 
       programs.emacs.package = pkgs.emacs-git-pgtk;
 
