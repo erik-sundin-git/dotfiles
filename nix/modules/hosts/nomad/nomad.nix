@@ -12,6 +12,7 @@
       {
         imports = with inputs.self.modules.nixos; [
           inputs.home-manager.nixosModules.home-manager
+          inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
           commonDesktop
           hyprlandStack
           virtManager
@@ -25,6 +26,7 @@
             commonHome
             hyprlandStack
             alacritty
+            chromium
             vpn
           ];
           systemConstants.system = sysConst;

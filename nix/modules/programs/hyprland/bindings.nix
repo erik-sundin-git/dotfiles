@@ -21,6 +21,7 @@
           { key = "h"; description = "hibernate"; }
           { key = "r"; description = "reboot"; }
           { key = "s"; description = "shutdown"; }
+          { key = "q"; description = "exit hyprland"; }
           { key = "Esc/Spc"; description = "exit"; }
         ];
       };
@@ -112,6 +113,9 @@
         bind = , S, exec, ${powerNotif.exit}
         bind = , S, exec, systemctl poweroff
         bind = , S, submap, reset
+        bind = , Q, exec, ${powerNotif.exit}
+        bind = , Q, exec, uwsm stop
+        bind = , Q, submap, reset
         bind = , escape, exec, ${powerNotif.exit}
         bind = , escape, submap, reset
         bind = , space, exec, ${powerNotif.exit}

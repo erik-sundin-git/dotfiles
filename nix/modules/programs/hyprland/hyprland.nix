@@ -3,8 +3,6 @@
   flake.modules.nixos.hyprland =
     { pkgs, ... }:
     {
-      imports = [ inputs.hyprland.nixosModules.default ];
-
       programs.hyprland.enable = true;
       programs.hyprland.withUWSM = true;
       programs.hyprland.xwayland.enable = true;
@@ -35,7 +33,7 @@
 
       wayland.windowManager.hyprland = {
         enable = true;
-        plugins = [ inputs.hy3.packages.${pkgs.stdenv.hostPlatform.system}.hy3 ];
+        plugins = [ pkgs.hyprlandPlugins.hy3 ];
         systemd.enable = false;
 
         settings = {
