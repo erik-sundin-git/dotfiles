@@ -84,13 +84,13 @@
                           echo "Updating $INSTALL_HOST hardware.nix with UUIDs from this disk..."
                           HW_NIX="$DOTFILES_DIR/nix/modules/hosts/$INSTALL_HOST/hardware.nix"
 
-                          NEW_ROOT_UUID=$(grep -A2 '"/"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
-                          NEW_BOOT_UUID=$(grep -A2 '"/boot"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
-                          NEW_SWAP_UUID=$(grep -A3 'swapDevices' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
+                          NEW_ROOT_UUID=$(grep -A2 '"/"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          NEW_BOOT_UUID=$(grep -A2 '"/boot"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          NEW_SWAP_UUID=$(grep -A3 'swapDevices' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
 
-                          OLD_ROOT_UUID=$(grep -A2 'fileSystems\."/"' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
-                          OLD_BOOT_UUID=$(grep -A2 'fileSystems\."/boot"' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
-                          OLD_SWAP_UUID=$(grep -A3 'swapDevices' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
+                          OLD_ROOT_UUID=$(grep -A2 'fileSystems\."/"' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          OLD_BOOT_UUID=$(grep -A2 'fileSystems\."/boot"' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          OLD_SWAP_UUID=$(grep -A3 'swapDevices' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
 
                           sed -i "s|$OLD_ROOT_UUID|$NEW_ROOT_UUID|g" "$HW_NIX"
                           sed -i "s|$OLD_BOOT_UUID|$NEW_BOOT_UUID|g" "$HW_NIX"
