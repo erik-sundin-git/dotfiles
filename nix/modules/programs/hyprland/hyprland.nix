@@ -3,7 +3,7 @@
   flake.modules.nixos.hyprland =
     { pkgs, ... }:
     {
-      imports = [ inputs.hyprland.nixosModules.hyprland ];
+      imports = [ inputs.hyprland.nixosModules.default ];
 
       programs.hyprland.enable = true;
       programs.hyprland.withUWSM = true;
