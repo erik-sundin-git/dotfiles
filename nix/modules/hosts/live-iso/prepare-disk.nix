@@ -92,9 +92,9 @@
                           OLD_BOOT_UUID=$(grep -A2 'fileSystems\."/boot"' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
                           OLD_SWAP_UUID=$(grep -A3 'swapDevices' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
 
-                          sed -i "s|$OLD_ROOT_UUID|$NEW_ROOT_UUID|g" "$HW_NIX"
-                          sed -i "s|$OLD_BOOT_UUID|$NEW_BOOT_UUID|g" "$HW_NIX"
-                          sed -i "s|$OLD_SWAP_UUID|$NEW_SWAP_UUID|g" "$HW_NIX"
+                          [[ -n "$OLD_ROOT_UUID" && -n "$NEW_ROOT_UUID" ]] && sed -i "s|$OLD_ROOT_UUID|$NEW_ROOT_UUID|g" "$HW_NIX"
+                          [[ -n "$OLD_BOOT_UUID" && -n "$NEW_BOOT_UUID" ]] && sed -i "s|$OLD_BOOT_UUID|$NEW_BOOT_UUID|g" "$HW_NIX"
+                          [[ -n "$OLD_SWAP_UUID" && -n "$NEW_SWAP_UUID" ]] && sed -i "s|$OLD_SWAP_UUID|$NEW_SWAP_UUID|g" "$HW_NIX"
 
                           git -C "$DOTFILES_DIR" add "nix/modules/hosts/$INSTALL_HOST/hardware.nix"
                         fi
