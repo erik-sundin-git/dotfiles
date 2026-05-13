@@ -137,6 +137,14 @@
           consent-o-matic
           vimium
           lockedin-yt
+          (buildFirefoxXpiAddon {
+            pname = "besttimetracker";
+            version = "4.3.0";
+            addonId = "{a8cf72f7-09b7-4cd4-9aaa-7a023bf09916}";
+            url = "https://addons.mozilla.org/firefox/downloads/file/4799246/besttimetracker-4.3.0.xpi";
+            sha256 = "sha256-EQGwx7ps+QV8HdLGQPcNHCWkj10IhDGthrOoYjyQwO0=";
+            meta = { };
+          })
         ];
       };
 
