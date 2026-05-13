@@ -13,6 +13,13 @@
 
       isoImage.squashfsCompression = "lz4";
 
+      console.keyMap = "sv-latin1";
+      services.xserver.xkb.layout = "se";
+
+      services.xserver.enable = true;
+      services.xserver.displayManager.lightdm.enable = true;
+      services.xserver.desktopManager.xfce.enable = true;
+
       environment.etc."dotfiles".source = inputs.self;
 
       environment.systemPackages = [ pkgs.git ];

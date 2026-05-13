@@ -14,6 +14,7 @@
           inputs.home-manager.nixosModules.home-manager
           commonDesktop
           hyprlandStack
+          virtManager
         ];
 
         systemConstants.system = sysConst;
