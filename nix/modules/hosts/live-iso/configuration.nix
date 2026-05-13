@@ -22,7 +22,10 @@
 
       environment.etc."dotfiles".source = inputs.self;
 
-      environment.systemPackages = [ pkgs.git ];
+      environment.systemPackages = [
+        pkgs.git
+        pkgs.claude-code
+      ];
 
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
