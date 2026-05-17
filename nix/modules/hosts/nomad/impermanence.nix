@@ -8,9 +8,8 @@
           inputs.preservation.nixosModules.default
         ];
 
-        # Password hash lives in /persistent so it survives tmpfs wipes.
-        # Create once with: openssl passwd -6 | sudo tee /persistent/etc/password-hash
-        users.users.erik.hashedPasswordFile = "/persistent/etc/password-hash";
+        # Change after first login with: passwd
+        users.users.erik.initialPassword = "12345";
 
         preservation = {
           enable = true;
