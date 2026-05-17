@@ -35,6 +35,8 @@
         settings = {
           START_CHARGE_THRESH_BAT0 = 0;
           STOP_CHARGE_THRESH_BAT0 = 100;
+          # Prevent TLP from powering off bluetooth
+          BLUETOOTH_IDLE_SUSPEND = 0;
         };
       };
       home-manager.useGlobalPkgs = true;
