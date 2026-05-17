@@ -9,10 +9,12 @@
     }:
 
     {
-      home.sessionVariables.MOZ_USE_XINPUT2 = "1";
-      home.sessionVariables.MOZ_ENABLE_WAYLAND = lib.mkIf (builtins.any (v: v.enable or false) (
-        builtins.attrValues config.wayland.windowManager
-      )) "1";
+      home.sessionVariables = lib.mkMerge [
+        { MOZ_USE_XINPUT2 = "1"; }
+        (lib.mkIf (builtins.any (v: v.enable or false) (
+          builtins.attrValues config.wayland.windowManager
+        )) { MOZ_ENABLE_WAYLAND = "1"; })
+      ];
 
       home.file.".librewolf/librewolf.overrides.cfg".text = ''
         lockPref("browser.theme.content-theme", 0);
