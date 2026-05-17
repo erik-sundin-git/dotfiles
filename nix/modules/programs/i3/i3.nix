@@ -1,5 +1,12 @@
 { inputs, ... }:
 {
+  flake.modules.nixos.i3 =
+    { ... }:
+    {
+      services.xserver.displayManager.lightdm.enable = false;
+      services.xserver.displayManager.startx.enable = true;
+    };
+
   flake.modules.homeManager.i3 =
     {
       config,

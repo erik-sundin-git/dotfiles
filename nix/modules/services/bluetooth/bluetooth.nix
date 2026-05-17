@@ -1,5 +1,11 @@
 { ... }:
 {
+  flake.modules.homeManager.bluetooth =
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.blueman ];
+    };
+
   flake.modules.nixos.bluetooth =
     { pkgs, ... }:
     {
@@ -8,7 +14,7 @@
       hardware.bluetooth = {
         enable = true;
         powerOnBoot = true;
-        config.Policy = {
+        settings.Policy = {
           AutoEnable = "true";
         };
       };

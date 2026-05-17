@@ -10,7 +10,6 @@
     }:
     {
       home.packages = [
-        pkgs.blueman
         pkgs.dmenu
         pkgs.nitrogen
         pkgs.maim

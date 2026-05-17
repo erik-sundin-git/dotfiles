@@ -1,6 +1,6 @@
 { ... }:
 {
-  flake.modules.homeManager.hyprland =
+  flake.modules.homeManager.swayfx =
     { config, lib, pkgs, ... }:
     let
       isLaptop = config.systemConstants.system.type == "laptop";
@@ -33,7 +33,6 @@
         pkgs.slurp
         pkgs.wl-clipboard
         pkgs.swaybg
-        pkgs.hyprpolkitagent
         pkgs.nerd-fonts.jetbrains-mono
         screenshotArea
         screenshotFull

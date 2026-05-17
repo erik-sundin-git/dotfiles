@@ -1,20 +1,20 @@
 { inputs, ... }:
 {
-  flake.modules.nixos.hyprlandStack =
+  flake.modules.nixos.swayfxStack =
     { ... }:
     {
       imports = with inputs.self.modules.nixos; [
         bluetooth
-        hyprland
+        swayfx
       ];
     };
 
-  flake.modules.homeManager.hyprlandStack =
+  flake.modules.homeManager.swayfxStack =
     { ... }:
     {
       imports = with inputs.self.modules.homeManager; [
         bluetooth
-        hyprland
+        swayfx
         waybar
         gtk
         dunst
