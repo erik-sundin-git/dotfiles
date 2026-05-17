@@ -20,6 +20,7 @@
       environment.systemPackages = [
         pkgs.git
         pkgs.claude-code
+        inputs.disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
       ];
 
       home-manager.useGlobalPkgs = true;

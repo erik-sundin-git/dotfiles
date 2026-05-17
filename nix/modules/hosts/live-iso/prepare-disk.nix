@@ -11,6 +11,7 @@
             util-linux
             e2fsprogs
             dosfstools
+            btrfs-progs
             git
           ];
           text = ''
@@ -20,50 +21,12 @@
                         DOTFILES_REPO=https://github.com/erik-sundin-git/dotfiles.git
                         HW_CONF=/mnt/etc/nixos/hardware-configuration.nix
 
-                        # ── Disk setup ──────────────────────────────────────────────────
-
-                        echo "Partitioning $DISK (swap: $SWAP)..."
-                        parted "$DISK" -- mklabel gpt
-                        parted "$DISK" -- mkpart ESP fat32 1MB 512MB
-                        parted "$DISK" -- set 1 esp on
-                        parted "$DISK" -- mkpart swap linux-swap 512MB "$SWAP"
-                        parted "$DISK" -- mkpart root ext4 "$SWAP" 100%
-
-                        partprobe "$DISK"
-                        sleep 1
-
-                        if [[ "$DISK" == *nvme* ]]; then
-                          BOOT="''${DISK}p1"
-                          SWAP_DEV="''${DISK}p2"
-                          ROOT="''${DISK}p3"
-                        else
-                          BOOT="''${DISK}1"
-                          SWAP_DEV="''${DISK}2"
-                          ROOT="''${DISK}3"
-                        fi
-
-                        echo "Formatting..."
-                        mkfs.fat -F 32 "$BOOT"
-                        mkswap "$SWAP_DEV"
-                        mkfs.ext4 -F "$ROOT"
-
-                        echo "Mounting..."
-                        mount "$ROOT" /mnt
-                        mkdir -p /mnt/boot
-                        mount "$BOOT" /mnt/boot
-                        swapon "$SWAP_DEV"
-
-                        echo "Generating hardware config..."
-                        nixos-generate-config --root /mnt
-
-                        echo "Cloning dotfiles..."
-                        git clone --depth 1 "$DOTFILES_REPO" "$DOTFILES_DIR"
-
                         # ── Host selection ───────────────────────────────────────────────
+                        # Asked before disk setup so we can pick the right filesystem type.
 
                         echo ""
                         echo "Select host to install:"
-                        echo "  1) nomad   (Hyprland laptop)"
+                        echo "  1) nomad   (Hyprland laptop — disko + preservation)"
                         echo "  2) ether   (XFCE VM — GRUB bootloader, not EFI)"
                         echo "  3) specter (i3 laptop)"
                         echo "  4) New host"
@@ -78,15 +41,68 @@
                           *) echo "Invalid choice: $HOST_CHOICE"; exit 1 ;;
                         esac
 
-                        # ── Existing host: update hardware UUIDs ─────────────────────────
+                        # ── Disk setup ──────────────────────────────────────────────────
 
-                        if [[ "$INSTALL_HOST" != new ]]; then
+                        if [[ "$INSTALL_HOST" == nomad ]]; then
+                          # disko handles partitioning, formatting, and mounting for nomad.
+                          # Clone dotfiles first so disko can read the nomad flake config.
+                          echo "Cloning dotfiles..."
+                          git clone --depth 1 "$DOTFILES_REPO" "$DOTFILES_DIR"
+
+                          echo "Formatting and mounting with disko..."
+                          disko --mode destroy,format,mount --flake "$DOTFILES_DIR#nomad"
+                        else
+                          echo "Partitioning $DISK (swap: $SWAP)..."
+                          parted "$DISK" -- mklabel gpt
+                          parted "$DISK" -- mkpart ESP fat32 1MB 512MB
+                          parted "$DISK" -- set 1 esp on
+                          parted "$DISK" -- mkpart swap linux-swap 512MB "$SWAP"
+                          parted "$DISK" -- mkpart root "$SWAP" 100%
+
+                          partprobe "$DISK"
+                          sleep 1
+
+                          if [[ "$DISK" == *nvme* ]]; then
+                            BOOT="''${DISK}p1"
+                            SWAP_DEV="''${DISK}p2"
+                            ROOT="''${DISK}p3"
+                          else
+                            BOOT="''${DISK}1"
+                            SWAP_DEV="''${DISK}2"
+                            ROOT="''${DISK}3"
+                          fi
+
+                          echo "Formatting..."
+                          mkfs.fat -F 32 "$BOOT"
+                          mkswap "$SWAP_DEV"
+                          mkfs.ext4 -F "$ROOT"
+
+                          echo "Mounting..."
+                          mount "$ROOT" /mnt
+                          mkdir -p /mnt/boot
+                          mount "$BOOT" /mnt/boot
+                          swapon "$SWAP_DEV"
+                        fi
+
+                        # nomad uses disko — no hardware config generation or UUID patching needed.
+                        # For other hosts, generate hardware config and patch UUIDs.
+                        if [[ "$INSTALL_HOST" != nomad ]]; then
+                          echo "Generating hardware config..."
+                          nixos-generate-config --root /mnt
+
+                          echo "Cloning dotfiles..."
+                          git clone --depth 1 "$DOTFILES_REPO" "$DOTFILES_DIR"
+                        fi
+
+                        # ── Existing host: update hardware config ─────────────────────────
+
+                        if [[ "$INSTALL_HOST" != new && "$INSTALL_HOST" != nomad ]]; then
                           echo "Updating $INSTALL_HOST hardware.nix with UUIDs from this disk..."
                           HW_NIX="$DOTFILES_DIR/nix/modules/hosts/$INSTALL_HOST/hardware.nix"
 
-                          NEW_ROOT_UUID=$(grep -A2 '"/"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
                           NEW_BOOT_UUID=$(grep -A2 '"/boot"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
                           NEW_SWAP_UUID=$(grep -A3 'swapDevices' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          NEW_ROOT_UUID=$(grep -A2 '"/"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
 
                           OLD_ROOT_UUID=$(grep -A2 'fileSystems\."/"' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
                           OLD_BOOT_UUID=$(grep -A2 'fileSystems\."/boot"' "$HW_NIX" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
@@ -149,50 +165,50 @@
                           fi
 
                           cat > "$HOST_DIR/hardware.nix" <<NIXEOF
-            { den, lib, ... }:
-            {
-              den.aspects."$INSTALL_HOST" = {
-                nixos =
-                  {
-                    config,
-                    lib,
-                    modulesPath,
-                    ...
-                  }:
-                  {
-                    imports = [
-                      (modulesPath + "/installer/scan/not-detected.nix")
-                    ];
+{ den, lib, ... }:
+{
+  den.aspects."$INSTALL_HOST" = {
+    nixos =
+      {
+        config,
+        lib,
+        modulesPath,
+        ...
+      }:
+      {
+        imports = [
+          (modulesPath + "/installer/scan/not-detected.nix")
+        ];
 
-                    boot.initrd.availableKernelModules = $AVAIL_MODULES;
-                    boot.initrd.kernelModules = [ ];
-                    boot.kernelModules = $KERNEL_MODULES;
-                    boot.extraModulePackages = [ ];
+        boot.initrd.availableKernelModules = $AVAIL_MODULES;
+        boot.initrd.kernelModules = [ ];
+        boot.kernelModules = $KERNEL_MODULES;
+        boot.extraModulePackages = [ ];
 
-                    fileSystems."/" = {
-                      device = "/dev/disk/by-uuid/$ROOT_UUID";
-                      fsType = "ext4";
-                    };
+        fileSystems."/" = {
+          device = "/dev/disk/by-uuid/$ROOT_UUID";
+          fsType = "ext4";
+        };
 
-                    fileSystems."/boot" = {
-                      device = "/dev/disk/by-uuid/$BOOT_UUID";
-                      fsType = "vfat";
-                      options = [
-                        "fmask=0077"
-                        "dmask=0077"
-                      ];
-                    };
+        fileSystems."/boot" = {
+          device = "/dev/disk/by-uuid/$BOOT_UUID";
+          fsType = "vfat";
+          options = [
+            "fmask=0077"
+            "dmask=0077"
+          ];
+        };
 
-                    swapDevices = [
-                      { device = "/dev/disk/by-uuid/$SWAP_UUID"; }
-                    ];
+        swapDevices = [
+          { device = "/dev/disk/by-uuid/$SWAP_UUID"; }
+        ];
 
-                    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-            $CPU_LINE
-                  };
-              };
-            }
-            NIXEOF
+        nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+$CPU_LINE
+      };
+  };
+}
+NIXEOF
 
                           # Generate or copy main config
                           if [[ -n "$TEMPLATE" ]]; then
@@ -201,36 +217,36 @@
                             echo "Note: copied $TEMPLATE config — review thermal zone, lat/lon, and packages after install."
                           else
                             cat > "$HOST_DIR/$INSTALL_HOST.nix" <<NIXEOF
-            { den, inputs, ... }:
-            {
-              den.aspects."$INSTALL_HOST" = {
-                nixos =
-                  { pkgs, ... }:
-                  let
-                    sysConst = {
-                      type = "$SYS_TYPE";
-                      host = "$INSTALL_HOST";
-                    };
-                  in
-                  {
-                    imports = with inputs.self.modules.nixos; [
-                      inputs.home-manager.nixosModules.home-manager
-                      commonDesktop
-                    ];
+{ den, inputs, ... }:
+{
+  den.aspects."$INSTALL_HOST" = {
+    nixos =
+      { pkgs, ... }:
+      let
+        sysConst = {
+          type = "$SYS_TYPE";
+          host = "$INSTALL_HOST";
+        };
+      in
+      {
+        imports = with inputs.self.modules.nixos; [
+          inputs.home-manager.nixosModules.home-manager
+          commonDesktop
+        ];
 
-                    systemConstants.system = sysConst;
+        systemConstants.system = sysConst;
 
-                    home-manager.users.erik = {
-                      imports = with inputs.self.modules.homeManager; [ commonHome ];
-                      systemConstants.system = sysConst;
-                    };
+        home-manager.users.erik = {
+          imports = with inputs.self.modules.homeManager; [ commonHome ];
+          systemConstants.system = sysConst;
+        };
 
-                    boot.loader.systemd-boot.enable = true;
-                    boot.loader.efi.canTouchEfiVariables = true;
-                  };
-              };
-            }
-            NIXEOF
+        boot.loader.systemd-boot.enable = true;
+        boot.loader.efi.canTouchEfiVariables = true;
+      };
+  };
+}
+NIXEOF
                           fi
 
                           # Register in topology.nix
