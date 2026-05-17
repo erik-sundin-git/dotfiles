@@ -57,6 +57,8 @@
       programs.home-manager.enable = true;
       programs.git.enable = true;
       programs.git.signing.format = null;
+      programs.git.userName = config.systemConstants.adminName;
+      programs.git.userEmail = config.systemConstants.adminEmail;
 
       nix.settings.warn-dirty = false;
       nix.settings.substituters = [
