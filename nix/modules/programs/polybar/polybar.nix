@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ ... }:
 {
   flake.modules.homeManager.polybar =
     {
@@ -11,14 +11,8 @@
       laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
       c = config.theme;
-      airpods-status = pkgs.callPackage ../../../packages/airpods-status/package.nix { };
-      airpodsScript = pkgs.writeShellScript "airpods-polybar" ''
-        ${airpods-status}/bin/airpods-status | ${pkgs.jq}/bin/jq -r .text
-      '';
-
       rightModules = lib.concatStringsSep " " (
         [
-          "airpods"
           "vpn"
           "ipv6"
         ]
@@ -42,7 +36,7 @@
       services.polybar = {
         enable = true;
 
-        package = inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.polybarFull;
+        package = pkgs.polybarFull;
 
         script = "polybar main &";
 
@@ -84,13 +78,6 @@
             label-mode = " %mode% ";
             label-mode-foreground = c.black;
             label-mode-background = c.yellow;
-          };
-
-          "module/airpods" = {
-            type = "custom/script";
-            exec = "${airpodsScript}";
-            interval = 30;
-            label = "%output%";
           };
 
           "module/date" = {

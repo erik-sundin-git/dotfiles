@@ -8,6 +8,7 @@
       programs.hyprland.xwayland.enable = true;
 
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
+      environment.sessionVariables.QT_QPA_PLATFORM = "wayland";
 
       xdg.portal = {
         enable = true;
@@ -89,7 +90,6 @@
           "exec-once" = [
             "systemctl --user start hyprpolkitagent"
             "swayosd-server"
-            "blueman-applet"
             "waybar"
             "dunst"
             "${pkgs.swaybg}/bin/swaybg -i '${wallpaper}' -m fill"

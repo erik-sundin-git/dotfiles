@@ -28,12 +28,21 @@
             alacritty
             chromium
             vpn
+            airstatus
           ];
           systemConstants.system = sysConst;
           systemConstants.latitude = 59.33; # Stockholm
           systemConstants.longitude = 18.07; # Stockholm
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone6/temp";
-          home.packages = with pkgs; [ protonmail-desktop ];
+          services.airstatus.enable = true;
+          home.packages = with pkgs; [
+            protonmail-desktop
+            beeper
+            vlc
+            zip
+            ffmpeg
+            yt-dlp
+          ];
         };
 
         services.xserver.displayManager.lightdm.enable = false;

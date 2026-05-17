@@ -5,17 +5,22 @@
     let
       isLaptop = config.systemConstants.system.type == "laptop";
 
-      screenshotArea = pkgs.writeShellScriptBin "screenshot-area" ''
-        mkdir -p ~/Pictures/Screenshots
-        f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-        ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
-      '';
+      mkShot =
+        { name, captureCmd }:
+        pkgs.writeShellScriptBin name ''
+          mkdir -p ~/Pictures/Screenshots
+          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+          ${captureCmd} | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
+        '';
 
-      screenshotFull = pkgs.writeShellScriptBin "screenshot-full" ''
-        mkdir -p ~/Pictures/Screenshots
-        f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-        ${pkgs.grim}/bin/grim - | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
-      '';
+      screenshotArea = mkShot {
+        name = "screenshot-area";
+        captureCmd = "${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" -";
+      };
+      screenshotFull = mkShot {
+        name = "screenshot-full";
+        captureCmd = "${pkgs.grim}/bin/grim -";
+      };
     in
     {
       home.packages = [

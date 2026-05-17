@@ -19,6 +19,7 @@
         generic.theme # consumed by i3, polybar, alacritty — they don't import it themselves
         homeManager.emacs
         homeManager.librewolf
+        homeManager.firefox
         homeManager.bash
         homeManager.nh
       ];

@@ -1,13 +1,18 @@
-{ ... }:
+{ inputs, ... }:
 {
   flake.modules.homeManager.vpn =
     { pkgs, ... }:
+    let
+      pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+    in
     {
       home.packages =
         (with pkgs; [
           wireguard-tools
-          proton-vpn-cli
         ])
+        ++ [
+          pkgsUnstable.proton-vpn-cli
+        ]
         ++ [
           (pkgs.writeShellApplication {
             name = "vpn-status";

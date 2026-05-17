@@ -1,22 +1,17 @@
 { ... }:
 {
   flake.modules.homeManager.waybar =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      hexToRgba,
+      ...
+    }:
     let
       c = config.theme;
       laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
-
-      fromHex = s:
-        let
-          d = { "0"=0;"1"=1;"2"=2;"3"=3;"4"=4;"5"=5;"6"=6;"7"=7;
-                "8"=8;"9"=9;"a"=10;"b"=11;"c"=12;"d"=13;"e"=14;"f"=15; };
-          hi = d.${lib.toLower (lib.substring 0 1 s)};
-          lo = d.${lib.toLower (lib.substring 1 1 s)};
-        in hi * 16 + lo;
-      hexToRgba = hex: alpha:
-        let h = lib.removePrefix "#" hex;
-        in "rgba(${toString (fromHex (lib.substring 0 2 h))}, ${toString (fromHex (lib.substring 2 2 h))}, ${toString (fromHex (lib.substring 4 2 h))}, ${alpha})";
 
       tempScript = pkgs.writeShellScript "waybar-temp" ''
         awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
@@ -31,25 +26,6 @@
         fi
       '';
 
-      airpodsScript = pkgs.writeShellScript "waybar-airpods" ''
-        result=$(${pkgs.local.airpods-status}/bin/airpods-status 2>/dev/null)
-        class=$(echo "$result" | ${pkgs.jq}/bin/jq -r '.class // "disconnected"' 2>/dev/null)
-        if [ "$class" != "disconnected" ]; then
-          echo "$result"
-        fi
-      '';
-
-      btBatteryScript = pkgs.writeShellScript "waybar-bt-battery" ''
-        while IFS= read -r line; do
-          mac=$(echo "$line" | awk '{print $2}')
-          battery=$(${pkgs.bluez}/bin/bluetoothctl info "$mac" 2>/dev/null \
-            | grep "Battery Percentage" | grep -oE '\([0-9]+\)' | tr -d '()')
-          if [ -n "$battery" ]; then
-            printf '{"text": "󰥰 %s%%"}\n' "$battery"
-            exit 0
-          fi
-        done < <(${pkgs.bluez}/bin/bluetoothctl devices Connected 2>/dev/null)
-      '';
     in
     {
       programs.waybar = {
@@ -65,12 +41,24 @@
               modules-left = [
                 "hyprland/workspaces"
                 "hyprland/submap"
+                "tray"
               ];
-              modules-right =
-                [ "tray" "custom/airpods" "custom/bt-battery" "custom/vpn" "network" ]
-                ++ lib.optionals laptop [ "battery" ]
-                ++ [ "disk" "memory" "clock" ]
-                ++ lib.optionals (thermalPath != null) [ "custom/temperature" ];
+              modules-right = [
+                "custom/vpn"
+                "network"
+              ]
+              ++ lib.optionals laptop [ "battery" ]
+              ++ [
+                "disk"
+                "memory"
+                "clock"
+              ]
+              ++ lib.optionals (thermalPath != null) [ "custom/temperature" ];
+
+              tray = {
+                icon-size = 14;
+                spacing = 4;
+              };
 
               "hyprland/workspaces" = {
                 format = "{id}";
@@ -95,7 +83,19 @@
                 format = "{icon} {capacity}%";
                 format-charging = "󱐋 {capacity}%";
                 format-full = "{icon} full";
-                format-icons = [ "󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
+                format-icons = [
+                  "󰂎"
+                  "󰁺"
+                  "󰁻"
+                  "󰁼"
+                  "󰁽"
+                  "󰁾"
+                  "󰁿"
+                  "󰂀"
+                  "󰂁"
+                  "󰂂"
+                  "󰁹"
+                ];
                 full-at = 98;
                 states.low = 30;
                 interval = 30;
@@ -123,18 +123,7 @@
                 interval = 5;
                 format = "{}";
               };
-              "custom/airpods" = {
-                exec = "${airpodsScript}";
-                return-type = "json";
-                interval = 30;
-                format = "{}";
-              };
-              "custom/bt-battery" = {
-                exec = "${btBatteryScript}";
-                return-type = "json";
-                interval = 30;
-                format = "{}";
-              };
+
             }
             // lib.optionalAttrs (thermalPath != null) {
               "custom/temperature" = {
@@ -231,15 +220,6 @@
             color: ${c.green};
           }
 
-          #custom-airpods {
-            color: ${c.cyan};
-            padding: 0 6px;
-          }
-
-          #custom-bt-battery {
-            color: ${c.cyan};
-            padding: 0 6px;
-          }
         '';
       };
     };

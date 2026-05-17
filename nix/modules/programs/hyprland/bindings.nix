@@ -1,30 +1,10 @@
 { ... }:
 {
   flake.modules.homeManager.hyprland =
-    { config, lib, pkgs, mkModeNotif, ... }:
+    { config, lib, pkgs, ... }:
     let
       mod = "SUPER";
       isLaptop = config.systemConstants.system.type == "laptop";
-
-      launchNotif = mkModeNotif {
-        modeTitle = "Launch";
-        bindings = [
-          { key = "e"; description = "emacs"; }
-          { key = "l"; description = "librewolf"; }
-          { key = "Esc/Spc"; description = "exit"; }
-        ];
-      };
-
-      powerNotif = mkModeNotif {
-        modeTitle = "Power";
-        bindings = [
-          { key = "h"; description = "hibernate"; }
-          { key = "r"; description = "reboot"; }
-          { key = "s"; description = "shutdown"; }
-          { key = "q"; description = "exit hyprland"; }
-          { key = "Esc/Spc"; description = "exit"; }
-        ];
-      };
     in
     {
       wayland.windowManager.hyprland.settings = {
@@ -34,6 +14,7 @@
             "${mod}, Return, exec, alacritty"
             "${mod} SHIFT, Q, killactive,"
             "${mod}, D, exec, wofi --show drun"
+            "${mod} SHIFT, Space, togglefloating,"
 
             # Focus (hy3)
             "${mod}, H, hy3:movefocus, l"
@@ -60,13 +41,6 @@
             # Screenshots
             ", Print, exec, screenshot-area"
             "${mod}, Print, exec, screenshot-full"
-
-            # Submap triggers
-            "${mod}, I, exec, ${launchNotif.enter}"
-            "${mod}, I, submap, launch"
-            "${mod} SHIFT, P, exec, ${powerNotif.enter}"
-            "${mod} SHIFT, P, submap, power"
-            "${mod}, R, submap, resize"
           ]
           ++ lib.genList (i: "${mod}, ${toString (i + 1)}, workspace, ${toString (i + 1)}") 9
           ++ lib.genList (i: "${mod} SHIFT, ${toString (i + 1)}, movetoworkspace, ${toString (i + 1)}") 9
@@ -87,49 +61,12 @@
         bindl = [
           ", XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
         ];
+
+        # Mouse binds for floating windows
+        bindm = [
+          "${mod}, mouse:272, movewindow"
+        ];
       };
 
-      wayland.windowManager.hyprland.extraConfig = ''
-        submap = launch
-        bind = , E, exec, ${launchNotif.exit}
-        bind = , E, exec, emacs
-        bind = , E, submap, reset
-        bind = , L, exec, ${launchNotif.exit}
-        bind = , L, exec, librewolf
-        bind = , L, submap, reset
-        bind = , escape, exec, ${launchNotif.exit}
-        bind = , escape, submap, reset
-        bind = , space, exec, ${launchNotif.exit}
-        bind = , space, submap, reset
-        submap = reset
-
-        submap = power
-        bind = , H, exec, ${powerNotif.exit}
-        bind = , H, exec, systemctl hibernate
-        bind = , H, submap, reset
-        bind = , R, exec, ${powerNotif.exit}
-        bind = , R, exec, systemctl reboot
-        bind = , R, submap, reset
-        bind = , S, exec, ${powerNotif.exit}
-        bind = , S, exec, systemctl poweroff
-        bind = , S, submap, reset
-        bind = , Q, exec, ${powerNotif.exit}
-        bind = , Q, exec, uwsm stop
-        bind = , Q, submap, reset
-        bind = , escape, exec, ${powerNotif.exit}
-        bind = , escape, submap, reset
-        bind = , space, exec, ${powerNotif.exit}
-        bind = , space, submap, reset
-        submap = reset
-
-        submap = resize
-        binde = , H, resizeactive, -20 0
-        binde = , J, resizeactive, 0 20
-        binde = , K, resizeactive, 0 -20
-        binde = , L, resizeactive, 20 0
-        bind = , escape, submap, reset
-        bind = , space, submap, reset
-        submap = reset
-      '';
     };
 }

@@ -2,6 +2,9 @@
 {
   flake.modules.nixos.commonDesktop =
     { pkgs, ... }:
+    let
+      pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+    in
     {
       imports = [ inputs.self.modules.nixos.commonConfig ];
       services.xserver.enable = true;
@@ -14,7 +17,7 @@
       environment.systemPackages = with pkgs; [
         claude-code
         xorg.xinit
-        openssh-askpass
+        pkgsUnstable.openssh-askpass
         cmake
         alacritty
         nixfmt
@@ -40,7 +43,7 @@
         inputs.nur.overlays.default
         inputs.emacs-overlay.overlays.default
       ];
-      programs.ssh.askPassword = "${pkgs.openssh-askpass}/libexec/gtk-ssh-askpass";
+      programs.ssh.askPassword = "${pkgsUnstable.openssh-askpass}/libexec/gtk-ssh-askpass";
       services.udev.packages = [ pkgs.brightnessctl ];
       programs.dconf.enable = true;
       services.printing.enable = true;
@@ -51,16 +54,6 @@
         alsa.enable = true;
         alsa.support32Bit = true;
         pulse.enable = true;
-        wireplumber.extraConfig."10-bluez" = {
-          "monitor.bluez.properties" = {
-            "bluez5.enable-sbc-xq" = true;
-            "bluez5.enable-msbc" = true;
-            "bluez5.enable-hw-volume" = true;
-            "bluez5.auto-connect" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-          };
-        };
       };
-
-      hardware.bluetooth.settings.General.Experimental = true;
     };
 }
