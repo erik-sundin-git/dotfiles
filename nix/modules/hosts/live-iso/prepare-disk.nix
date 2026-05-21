@@ -26,9 +26,9 @@
 
                         echo ""
                         echo "Select host to install:"
-                        echo "  1) nomad   (Hyprland laptop — disko + preservation)"
+                        echo "  1) nomad   (SwayFX laptop — disko + preservation)"
                         echo "  2) ether   (XFCE VM — GRUB bootloader, not EFI)"
-                        echo "  3) specter (i3 laptop)"
+                        echo "  3) specter (SwayFX laptop)"
                         echo "  4) New host"
                         echo ""
                         read -rp "Choice [1-4]: " HOST_CHOICE

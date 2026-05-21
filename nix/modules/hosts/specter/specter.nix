@@ -25,8 +25,6 @@
           ];
           systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone8/temp";
-          systemConstants.latitude = 59.33; # Stockholm
-          systemConstants.longitude = 18.07; # Stockholm
         };
 
         boot.kernelParams = [

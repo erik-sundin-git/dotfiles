@@ -31,7 +31,7 @@
       nix.settings.trusted-users = [ "root" "erik" ];
       services.openssh.enable = true;
       services.tlp = {
-        enable = lib.mkDefault config.systemConstants.system.type == "laptop";
+        enable = lib.mkDefault (config.systemConstants.system.type == "laptop");
         settings = {
           START_CHARGE_THRESH_BAT0 = 0;
           STOP_CHARGE_THRESH_BAT0 = 100;

@@ -29,6 +29,14 @@
           maim ${args} | tee "$f" | xclip -selection clipboard -t image/png
         '';
 
+      _module.args.mkShot =
+        { name, captureCmd }:
+        pkgs.writeShellScriptBin name ''
+          mkdir -p ~/Pictures/Screenshots
+          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+          ${captureCmd} | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
+        '';
+
       _module.args.hexToRgba =
         hex: alpha:
         let

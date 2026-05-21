@@ -97,7 +97,7 @@
         };
       };
 
-      programs.emacs.package = pkgs.emacs-git-pgtk;
+      programs.emacs.package = pkgs.emacs-pgtk;
 
       programs.bash.profileExtra = ''
         if [ -z "''${WAYLAND_DISPLAY}" ] && [ "$(tty)" = "/dev/tty1" ]; then

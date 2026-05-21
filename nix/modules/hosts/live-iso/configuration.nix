@@ -4,7 +4,11 @@
     { pkgs, ... }:
     {
       nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = [ inputs.emacs-overlay.overlays.default ];
+      nixpkgs.overlays = [
+        inputs.self.overlays.default
+        inputs.nur.overlays.default
+        inputs.emacs-overlay.overlays.default
+      ];
 
       nix.settings.experimental-features = [
         "nix-command"

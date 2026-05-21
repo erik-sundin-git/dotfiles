@@ -18,12 +18,12 @@
         # location for use with services like redshift
         latitude = lib.mkOption {
           type = lib.types.float;
-          default = 0.0;
+          default = 59.33; # Stockholm
           description = "Geographic latitude of the host, used by redshift.";
         };
         longitude = lib.mkOption {
           type = lib.types.float;
-          default = 0.0;
+          default = 18.07; # Stockholm
           description = "Geographic longitude of the host, used by redshift.";
         };
 

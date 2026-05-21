@@ -66,10 +66,10 @@ nix/modules/
 │   ├── nh.nix                   # programs.nh: flake path + auto-cleanup (keep 7d/5 gens)
 │   └── tools/home-manager [ND]/ # Home Manager NixOS module (not auto-applied)
 ├── hosts/
-│   ├── nomad/                   # NixOS laptop — commonDesktop + hyprlandStack(nixos) + homeManager (commonHome + hyprlandStack + alacritty + chromium + vpn); auto-starts Hyprland via UWSM from tty1
+│   ├── nomad/                   # NixOS laptop — commonDesktop + swayfxStack(nixos) + virtManager; homeManager: commonHome + swayfxStack + alacritty + chromium + vpn + airstatus
 │   ├── forge.nix                # Debian desktop — debianMinimal + commonHome + i3Stack + alacritty; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
-│   ├── specter/                 # NixOS laptop — commonDesktop + i3Stack(nixos) + embedded homeManager (commonHome + i3Stack); uses startx
+│   ├── specter/                 # NixOS laptop — commonDesktop + swayfxStack(nixos); homeManager: commonHome + swayfxStack
 │   ├── live-iso.nix             # Bootable NixOS ISO — TTY-only, git, emacs, claude-code, dotfiles at /etc/dotfiles, prepare-disk install script
 │   ├── common/
 │   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources
@@ -83,13 +83,14 @@ nix/modules/
 ├── stacks/
 │   ├── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst; nixos: bluetooth
 │   ├── hyprland-stack.nix       # homeManager: hyprland + waybar + gtk + dunst + starship; nixos: bluetooth + hyprland
+│   ├── swayfx-stack.nix         # homeManager: swayfx + waybar + gtk + dunst + starship + gammastep; nixos: bluetooth + swayfx
 │   └── xfce-stack.nix           # nixos: xfce + theme; homeManager: gtk (ether only)
 ├── services/
 │   ├── airstatus.nix            # homeManager: services.airstatus.enable + systemd user unit; uses pkgs.local.airstatus
 │   ├── bluetooth/               # NixOS: hardware.bluetooth + blueman
 │   ├── dunst.nix                # Notification daemon; themed via config.theme
 │   ├── redshift.nix
-│   ├── gammastep.nix            # Wayland equivalent of redshift (used by hyprland-stack)
+│   ├── gammastep.nix            # Wayland equivalent of redshift (used by hyprland-stack and swayfx-stack)
 │   ├── virt-manager/            # NixOS: libvirtd + QEMU KVM + spice USB + virt-manager; used by nomad
 │   └── vpn/                     # WireGuard tools, proton-vpn-cli, vpn-status script, gnome-keyring
 ├── browsers/
@@ -102,6 +103,7 @@ nix/modules/
     ├── gtk/                     # Arc-Dark theme; injects selection/accent colors via extraCss
     ├── i3/                      # i3wm, keybindings, modes, picom
     ├── hyprland/                # homeManager: Hyprland (hy3 plugin), keybindings, submaps, packages, swayosd; nixos: programs.hyprland + UWSM + xdg-portal + NIXOS_OZONE_WL
+    ├── swayfx/                  # homeManager: SwayFX compositor, keybindings, modes, packages; nixos: programs.sway + xdg-portal
     ├── polybar/                 # Polybar bar + themed modules (ethernet, wireless, vpn, system, ipv6); uses nixpkgs-stable for polybarFull
     ├── waybar/                  # Waybar config + themed CSS; uses hexToRgba from helpers.nix
     ├── alacritty/               # Alacritty with nixGL wrapping + theme colors

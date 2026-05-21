@@ -37,7 +37,7 @@
           (
             {
               position = "bottom";
-              height = 18;
+              height = 24;
               spacing = 4;
 
               modules-left =
@@ -155,7 +155,7 @@
             border: none;
             border-radius: 0;
             font-family: "JetBrainsMono Nerd Font";
-            font-size: 11px;
+            font-size: 13px;
             min-height: 0;
           }
 

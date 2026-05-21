@@ -19,6 +19,7 @@
 
       config = {
         nixpkgs.overlays = [
+          inputs.self.overlays.default
           inputs.nur.overlays.default
           inputs.emacs-overlay.overlays.default
         ];

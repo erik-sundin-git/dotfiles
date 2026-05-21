@@ -1,17 +1,9 @@
 { ... }:
 {
   flake.modules.homeManager.swayfx =
-    { config, lib, pkgs, ... }:
+    { config, lib, pkgs, mkShot, ... }:
     let
       isLaptop = config.systemConstants.system.type == "laptop";
-
-      mkShot =
-        { name, captureCmd }:
-        pkgs.writeShellScriptBin name ''
-          mkdir -p ~/Pictures/Screenshots
-          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-          ${captureCmd} | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
-        '';
 
       screenshotArea = mkShot {
         name = "screenshot-area";

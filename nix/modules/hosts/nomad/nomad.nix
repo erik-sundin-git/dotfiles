@@ -2,7 +2,7 @@
 {
   den.aspects.nomad = {
     nixos =
-      { pkgs, ... }:
+       { pkgs, ... }:
       let
         sysConst = {
           type = "laptop";
@@ -19,7 +19,6 @@
         ];
 
         systemConstants.system = sysConst;
-        services.tlp.enable = false;
 
         home-manager.backupFileExtension = "backup";
         home-manager.users.erik = {
@@ -32,11 +31,12 @@
             airstatus
           ];
           systemConstants.system = sysConst;
-          systemConstants.latitude = 59.33; # Stockholm
-          systemConstants.longitude = 18.07; # Stockholm
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone6/temp";
           services.airstatus.enable = true;
+          programs.git.extraConfig."credential \"https://github.com\"".helper = "!/usr/bin/env gh auth git-credential";
           home.packages = with pkgs; [
+            gh
+            qbittorrent
             protonmail-desktop
             beeper
             vlc
