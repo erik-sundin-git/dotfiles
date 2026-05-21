@@ -14,17 +14,18 @@
           inputs.home-manager.nixosModules.home-manager
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
           commonDesktop
-          hyprlandStack
+          swayfxStack
           virtManager
         ];
 
         systemConstants.system = sysConst;
+        services.tlp.enable = false;
 
         home-manager.backupFileExtension = "backup";
         home-manager.users.erik = {
           imports = with inputs.self.modules.homeManager; [
             commonHome
-            hyprlandStack
+            swayfxStack
             alacritty
             chromium
             vpn
@@ -42,11 +43,9 @@
             zip
             ffmpeg
             yt-dlp
+            htop
           ];
         };
-
-        services.xserver.displayManager.lightdm.enable = false;
-        services.xserver.displayManager.startx.enable = true;
 
         boot.loader.systemd-boot.enable = true;
         boot.loader.efi.canTouchEfiVariables = true;

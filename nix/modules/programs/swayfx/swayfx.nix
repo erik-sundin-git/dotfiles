@@ -89,7 +89,8 @@
               accel_profile = "flat";
               pointer_accel = "0";
             };
-          } // lib.optionalAttrs isLaptop {
+          }
+          // lib.optionalAttrs isLaptop {
             "type:touchpad" = {
               tap = "enabled";
               natural_scroll = "disabled";
@@ -109,7 +110,7 @@
         '';
       };
 
-      programs.emacs.package = pkgs.emacs-git-pgtk;
+      programs.emacs.package = pkgs.emacs-pgtk;
 
       programs.bash.profileExtra = ''
         if [ -z "''${WAYLAND_DISPLAY}" ] && [ "$(tty)" = "/dev/tty1" ]; then

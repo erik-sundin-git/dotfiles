@@ -26,7 +26,7 @@
 
       programs.emacs = {
         enable = true;
-        package = lib.mkDefault pkgs.emacs-git;
+        package = lib.mkDefault pkgs.emacs;
         extraPackages =
           epkgs: with epkgs; [
             nixfmt
