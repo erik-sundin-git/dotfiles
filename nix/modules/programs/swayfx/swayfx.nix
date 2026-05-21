@@ -37,7 +37,7 @@
       wayland.windowManager.sway = {
         enable = true;
         package = pkgs.swayfx;
-        systemd.enable = false;
+        systemd.enable = true;
         checkConfig = false;
 
         config = {

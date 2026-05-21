@@ -26,8 +26,6 @@
           "${modifier}+Shift+k" = "move up";
           "${modifier}+Shift+l" = "move right";
 
-          "${modifier}+Shift+Space" = "floating toggle";
-
           # Screenshots
           "Print" = "exec screenshot-area";
           "${modifier}+Print" = "exec screenshot-full";
