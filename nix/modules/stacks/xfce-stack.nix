@@ -3,9 +3,9 @@
   flake.modules.nixos.xfceStack =
     { ... }:
     {
-      imports = with inputs.self.modules; [
-        nixos.xfce
-        generic.theme
+      imports = [
+        inputs.self.modules.nixos.xfce
+        inputs.self.modules.generic.theme
       ];
       home-manager.users.erik.imports = [
         inputs.self.modules.homeManager.gtk

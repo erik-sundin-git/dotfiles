@@ -3,18 +3,13 @@
   flake.modules.nixos.hyprland =
     { pkgs, ... }:
     {
+      imports = [ inputs.self.modules.nixos.waylandBase ];
+
       programs.hyprland.enable = true;
       programs.hyprland.withUWSM = true;
       programs.hyprland.xwayland.enable = true;
 
-      environment.sessionVariables.NIXOS_OZONE_WL = "1";
-      environment.sessionVariables.QT_QPA_PLATFORM = "wayland";
-
-      xdg.portal = {
-        enable = true;
-        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-        configPackages = [ pkgs.xdg-desktop-portal-hyprland ];
-      };
+      xdg.portal.configPackages = [ pkgs.xdg-desktop-portal-hyprland ];
     };
 
   flake.modules.homeManager.hyprland =
@@ -22,12 +17,14 @@
       config,
       lib,
       pkgs,
+      hexToHyprRgb,
       ...
     }:
     let
       c = config.theme;
+      kb = config.systemConstants.keyboard;
       isLaptop = config.systemConstants.system.type == "laptop";
-      wallpaper = "${inputs.self}/Pictures/landscapes/mountain_landscape_1.jpg";
+      wallpaper = config.systemConstants.wallpaper;
     in
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
@@ -43,8 +40,8 @@
             gaps_in = 0;
             gaps_out = 0;
             border_size = 2;
-            "col.active_border" = "rgb(${lib.removePrefix "#" c.blue})";
-            "col.inactive_border" = "rgb(${lib.removePrefix "#" c.black})";
+            "col.active_border" = hexToHyprRgb c.blue;
+            "col.inactive_border" = hexToHyprRgb c.black;
           };
 
           decoration = {
@@ -69,8 +66,8 @@
           };
 
           input = {
-            kb_layout = "se";
-            kb_options = "ctrl:swapcaps";
+            kb_layout = kb.layout;
+            kb_options = kb.options;
             accel_profile = "flat";
             sensitivity = 0.0;
           }

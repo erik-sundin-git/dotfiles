@@ -44,6 +44,9 @@ nix flake update
 # Check flake outputs
 nix flake show
 
+# Evaluate every host (catches regressions across refactors without building)
+nix flake check --no-build
+
 # Format Nix files
 nixfmt <file>
 ```
@@ -77,8 +80,8 @@ nix/modules/
 │   ├── debian-minimal.nix       # Debian base: nixGL wrapping, NUR overlay, allowUnfree
 │   └── topology.nix             # Registers hosts: den.homes / den.hosts + stateVersion
 ├── system-constants/
-│   ├── system-constants.nix     # Options: adminName, adminEmail, system.host/type, lat/lon, thermalZonePath
-│   ├── theme.nix                # Options: selectedTheme (str) + theme (attrsOf str palette)
+│   ├── system-constants.nix     # Options: adminName, adminEmail, system.host/type, lat/lon, thermalZonePath, wallpaper, keyboard.{layout,options}, network.forgeHost
+│   ├── theme.nix                # Options: selectedTheme (str) + theme (attrsOf str palette); asserts theme palette is non-empty
 │   └── themes/onedark.nix       # One Dark palette; sets config.theme via mkIf selectedTheme == "onedark"
 ├── stacks/
 │   ├── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst; nixos: bluetooth
@@ -95,15 +98,17 @@ nix/modules/
 │   └── vpn/                     # WireGuard tools, proton-vpn-cli, vpn-status script, gnome-keyring
 ├── browsers/
 │   ├── chromium/
+│   ├── firefox/                 # Defined but not currently wired into any host
 │   └── librewolf/
 ├── shell/bash/                  # Bash aliases (per-host `rebuild`) and config
 └── programs/
-    ├── helpers.nix              # _module.args: mkColors, mkScreenshot (X11/maim), mkModeNotif, hexToRgba
+    ├── helpers.nix              # _module.args (uiHelpers): mkColors, mkScreenshot (X11/maim), mkShot, waylandScreenshots, mkModeNotif, hexToRgba, hexToHyprRgb
+    ├── wayland-base.nix         # nixos.waylandBase: NIXOS_OZONE_WL + QT_QPA_PLATFORM + base xdg.portal; imported by hyprland + swayfx nixos modules
     ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file
     ├── gtk/                     # Arc-Dark theme; injects selection/accent colors via extraCss
     ├── i3/                      # i3wm, keybindings, modes, picom
-    ├── hyprland/                # homeManager: Hyprland (hy3 plugin), keybindings, submaps, packages, swayosd; nixos: programs.hyprland + UWSM + xdg-portal + NIXOS_OZONE_WL
-    ├── swayfx/                  # homeManager: SwayFX compositor, keybindings, modes, packages; nixos: programs.sway + xdg-portal
+    ├── hyprland/                # homeManager: Hyprland (hy3 plugin), keybindings, submaps, packages; nixos: programs.hyprland + UWSM + portal config (imports waylandBase)
+    ├── swayfx/                  # homeManager: SwayFX compositor, keybindings, modes, packages, for_window browser rules; nixos: programs.sway + wlr portal (imports waylandBase)
     ├── polybar/                 # Polybar bar + themed modules (ethernet, wireless, vpn, system, ipv6); uses nixpkgs-stable for polybarFull
     ├── waybar/                  # Waybar config + themed CSS; uses hexToRgba from helpers.nix
     ├── alacritty/               # Alacritty with nixGL wrapping + theme colors
@@ -121,7 +126,7 @@ nix/packages/
 
 **Live ISO**: Built with `nix build .#iso`. The `prepare-disk /dev/nvme0n1` script partitions, formats, mounts, clones the dotfiles repo, patches `hosts/nomad/hardware.nix` with generated UUIDs, and runs `nixos-install --flake /tmp/dotfiles#nomad` in one shot.
 
-**Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk, hyprland, waybar) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all Debian hosts. To add a new theme, add a file to `themes/` following the same pattern. Note: waybar CSS uses a `hexToRgba` Nix helper (defined in `helpers.nix`, available as `_module.args.hexToRgba`) to convert hex theme colors to `rgba()` — GTK CSS does not accept `alpha(#rrggbb, a)` with hex literals.
+**Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk, hyprland, waybar) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all Debian hosts. To add a new theme, add a file to `themes/` following the same pattern. A typo in `selectedTheme` is caught by an assertion in `theme.nix` (empty palette → build failure). Color-format helpers in `helpers.nix`: `hexToRgba` (waybar/GTK CSS — GTK does not accept `alpha(#rrggbb, a)` with hex literals) and `hexToHyprRgb` (hyprland `rgb()` form).
 
 **Custom packages**: Files under `nix/packages/<name>/package.nix` are auto-picked up by `pkgs-by-name` and exposed as `pkgs.local.<name>` via `flake.overlays.default`. After adding a new package directory, `git add` it immediately.
 

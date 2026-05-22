@@ -2,7 +2,7 @@
 {
   den.aspects.nomad = {
     nixos =
-       { pkgs, ... }:
+      { pkgs, ... }:
       let
         sysConst = {
           type = "laptop";
@@ -21,34 +21,43 @@
         systemConstants.system = sysConst;
 
         home-manager.backupFileExtension = "backup";
-        home-manager.users.erik = {
-          imports = with inputs.self.modules.homeManager; [
-            commonHome
-            swayfxStack
-            alacritty
-            chromium
-            vpn
-            airstatus
-          ];
-          systemConstants.system = sysConst;
-          systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone6/temp";
-          services.airstatus.enable = true;
-          programs.git.extraConfig."credential \"https://github.com\"".helper = "!/usr/bin/env gh auth git-credential";
-          home.packages = with pkgs; [
-            gh
-            qbittorrent
-            protonmail-desktop
-            beeper
-            vlc
-            zip
-            ffmpeg
-            yt-dlp
-            htop
-          ];
-        };
+        home-manager.users.erik =
+          { pkgs, pkgsUnstable, ... }:
+          {
+            imports = with inputs.self.modules.homeManager; [
+              commonHome
+              swayfxStack
+              alacritty
+              chromium
+              vpn
+              airstatus
+            ];
+            systemConstants.system = sysConst;
+            systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone6/temp";
+            services.airstatus.enable = true;
+            programs.git.settings."credential \"https://github.com\"".helper =
+              "!/usr/bin/env gh auth git-credential";
+            home.packages = with pkgs; [
+              gh
+              freetube
+              qbittorrent
+              pkgsUnstable.protonmail-desktop
+              beeper
+              vlc
+              zip
+              ffmpeg
+              yt-dlp
+              htop
+            ];
+          };
 
         boot.loader.systemd-boot.enable = true;
         boot.loader.efi.canTouchEfiVariables = true;
+
+        services.pulseaudio = {
+          enable = true;
+          package = pkgs.pulseaudioFull;
+        };
       };
   };
 }

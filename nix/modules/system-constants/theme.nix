@@ -2,7 +2,7 @@
 
 {
   flake.modules.generic.theme =
-    { lib, ... }:
+    { config, lib, ... }:
     {
       options = {
         selectedTheme = lib.mkOption {
@@ -17,5 +17,12 @@
           description = "Resolved color palette for the selected theme.";
         };
       };
+
+      config.assertions = [
+        {
+          assertion = config.theme != { };
+          message = "selectedTheme = \"${config.selectedTheme}\" does not match any theme file in system-constants/themes/.";
+        }
+      ];
     };
 }

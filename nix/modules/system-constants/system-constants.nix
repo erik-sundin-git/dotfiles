@@ -1,8 +1,10 @@
-{ ... }:
+{ inputs, ... }:
 {
   flake.modules.generic.systemConstants =
     { lib, pkgs, ... }:
     {
+      config._module.args.pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+
       options.systemConstants = {
         adminEmail = lib.mkOption {
           type = lib.types.str;
@@ -31,6 +33,25 @@
           type = lib.types.nullOr lib.types.str;
           default = null;
           description = "Sysfs path to the thermal zone for CPU temperature display in the polybar bar. Set to null to disable.";
+        };
+
+        wallpaper = lib.mkOption {
+          type = lib.types.path;
+          default = "${inputs.self}/Pictures/landscapes/mountain_landscape_1.jpg";
+          description = "Path to the desktop wallpaper used by sway/hyprland.";
+        };
+
+        keyboard = {
+          layout = lib.mkOption {
+            type = lib.types.str;
+            default = "se";
+            description = "X11/Wayland keyboard layout (xkb).";
+          };
+          options = lib.mkOption {
+            type = lib.types.str;
+            default = "ctrl:swapcaps";
+            description = "X11/Wayland keyboard options (xkb).";
+          };
         };
 
         network = {

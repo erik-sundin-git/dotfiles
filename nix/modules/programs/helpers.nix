@@ -22,7 +22,10 @@
         };
 
       _module.args.mkScreenshot =
-        { name, args ? "" }:
+        {
+          name,
+          args ? "",
+        }:
         pkgs.writeShellScriptBin name ''
           mkdir -p ~/Pictures/Screenshots
           f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
@@ -37,6 +40,21 @@
           ${captureCmd} | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
         '';
 
+      _module.args.waylandScreenshots = [
+        (pkgs.writeShellScriptBin "screenshot-area" ''
+          mkdir -p ~/Pictures/Screenshots
+          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+          ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
+        '')
+        (pkgs.writeShellScriptBin "screenshot-full" ''
+          mkdir -p ~/Pictures/Screenshots
+          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+          ${pkgs.grim}/bin/grim - | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
+        '')
+      ];
+
+      _module.args.hexToHyprRgb = hex: "rgb(${lib.removePrefix "#" hex})";
+
       _module.args.hexToRgba =
         hex: alpha:
         let
@@ -44,9 +62,22 @@
             s:
             let
               d = {
-                "0" = 0; "1" = 1; "2" = 2; "3" = 3; "4" = 4;
-                "5" = 5; "6" = 6; "7" = 7; "8" = 8; "9" = 9;
-                "a" = 10; "b" = 11; "c" = 12; "d" = 13; "e" = 14; "f" = 15;
+                "0" = 0;
+                "1" = 1;
+                "2" = 2;
+                "3" = 3;
+                "4" = 4;
+                "5" = 5;
+                "6" = 6;
+                "7" = 7;
+                "8" = 8;
+                "9" = 9;
+                "a" = 10;
+                "b" = 11;
+                "c" = 12;
+                "d" = 13;
+                "e" = 14;
+                "f" = 15;
               };
               hi = d.${lib.toLower (lib.substring 0 1 s)};
               lo = d.${lib.toLower (lib.substring 1 1 s)};
@@ -54,7 +85,9 @@
             hi * 16 + lo;
           h = lib.removePrefix "#" hex;
         in
-        "rgba(${toString (fromHex (lib.substring 0 2 h))}, ${toString (fromHex (lib.substring 2 2 h))}, ${toString (fromHex (lib.substring 4 2 h))}, ${alpha})";
+        "rgba(${toString (fromHex (lib.substring 0 2 h))}, ${toString (fromHex (lib.substring 2 2 h))}, ${
+          toString (fromHex (lib.substring 4 2 h))
+        }, ${alpha})";
 
       _module.args.mkModeNotif =
         { modeTitle, bindings }:
@@ -66,9 +99,7 @@
               padding = lib.max 0 (width - lib.stringLength str);
             in
             str + lib.concatStrings (builtins.genList (_: " ") padding);
-          body = lib.concatStringsSep "\n" (
-            map (b: "${rightPad keyWidth b.key}  ${b.description}") bindings
-          );
+          body = lib.concatStringsSep "\n" (map (b: "${rightPad keyWidth b.key}  ${b.description}") bindings);
         in
         {
           enter = pkgs.writeShellScript "i3-mode-notif-enter" ''

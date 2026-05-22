@@ -1,10 +1,7 @@
-{ inputs, ... }:
+{ ... }:
 {
   flake.modules.homeManager.vpn =
-    { pkgs, ... }:
-    let
-      pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-    in
+    { pkgs, pkgsUnstable, ... }:
     {
       home.packages =
         (with pkgs; [

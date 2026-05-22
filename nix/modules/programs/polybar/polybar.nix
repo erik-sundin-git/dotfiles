@@ -29,8 +29,15 @@
     in
     {
       _module.args.mkScript =
-        { exec, interval ? 5, clickLeft ? null }:
-        { type = "custom/script"; inherit exec interval; }
+        {
+          exec,
+          interval ? 5,
+          clickLeft ? null,
+        }:
+        {
+          type = "custom/script";
+          inherit exec interval;
+        }
         // lib.optionalAttrs (clickLeft != null) { click-left = clickLeft; };
 
       services.polybar = {
@@ -82,9 +89,9 @@
 
           "module/date" = {
             type = "internal/date";
-            interval = 1;
+            interval = 5;
             date = "%Y-%m-%d";
-            time = "%H:%M:%S";
+            time = "%H:%M";
             label = "%date% %time%";
           };
         };

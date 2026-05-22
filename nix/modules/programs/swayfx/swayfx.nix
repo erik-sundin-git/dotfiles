@@ -3,19 +3,12 @@
   flake.modules.nixos.swayfx =
     { pkgs, ... }:
     {
+      imports = [ inputs.self.modules.nixos.waylandBase ];
+
       programs.sway.enable = true;
       programs.sway.package = pkgs.swayfx;
 
-      environment.sessionVariables = {
-        NIXOS_OZONE_WL = "1";
-        QT_QPA_PLATFORM = "wayland";
-      };
-
-      xdg.portal = {
-        enable = true;
-        wlr.enable = true;
-        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-      };
+      xdg.portal.wlr.enable = true;
     };
 
   flake.modules.homeManager.swayfx =
@@ -28,8 +21,9 @@
     }:
     let
       c = config.theme;
+      kb = config.systemConstants.keyboard;
       isLaptop = config.systemConstants.system.type == "laptop";
-      wallpaper = "${inputs.self}/Pictures/landscapes/mountain_landscape_1.jpg";
+      wallpaper = config.systemConstants.wallpaper;
     in
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
@@ -54,6 +48,29 @@
           window.border = 2;
           floating.border = 2;
 
+          window.commands = [
+            {
+              criteria.app_id = "firefox";
+              command = "border pixel 2";
+            }
+            {
+              criteria.app_id = "librewolf";
+              command = "border pixel 2";
+            }
+            {
+              criteria.app_id = "chromium";
+              command = "border pixel 2";
+            }
+            {
+              criteria.app_id = "ungoogled-chromium";
+              command = "border pixel 2";
+            }
+            {
+              criteria.app_id = "FreeTube";
+              command = "border pixel 2";
+            }
+          ];
+
           colors = {
             focused = mkColors {
               border = c.blue;
@@ -77,15 +94,14 @@
 
           startup = [
             { command = "swayosd-server"; }
-            { command = "waybar"; }
             { command = "dunst"; }
             { command = "${pkgs.swaybg}/bin/swaybg -i '${wallpaper}' -m fill"; }
           ];
 
           input = {
             "*" = {
-              xkb_layout = "se";
-              xkb_options = "ctrl:swapcaps";
+              xkb_layout = kb.layout;
+              xkb_options = kb.options;
               accel_profile = "flat";
               pointer_accel = "0";
             };

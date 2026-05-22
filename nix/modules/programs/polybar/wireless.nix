@@ -1,7 +1,13 @@
 { ... }:
 {
   flake.modules.homeManager.polybar =
-    { config, lib, pkgs, mkScript, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      mkScript,
+      ...
+    }:
     let
       laptop = config.systemConstants.system.type == "laptop";
       c = config.theme;
@@ -25,7 +31,7 @@
       services.polybar.settings."module/wireless" = mkScript {
         exec = script;
         clickLeft = toggle;
-        interval = 1;
+        interval = 5;
       };
     };
 }

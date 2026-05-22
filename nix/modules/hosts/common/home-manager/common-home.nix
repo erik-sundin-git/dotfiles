@@ -12,6 +12,7 @@
     }:
     let
       isLaptop = config.systemConstants.system.type == "laptop";
+      kb = config.systemConstants.keyboard;
     in
     {
       imports = with inputs.self.modules; [
@@ -35,7 +36,7 @@
       home.file.".xinitrc".source = "${inputs.self}/xorg/.xinitrc";
 
       home.file.".xprofile".text = ''
-        setxkbmap se -option ctrl:swapcaps
+        setxkbmap ${kb.layout} -option ${kb.options}
         ${lib.optionalString isLaptop "xinput set-prop \"Elan Touchpad\" \"libinput Tapping Enabled\" 1"}
 
         # per-device pointer acceleration
@@ -57,8 +58,8 @@
       programs.home-manager.enable = true;
       programs.git.enable = true;
       programs.git.signing.format = null;
-      programs.git.userName = config.systemConstants.adminName;
-      programs.git.userEmail = config.systemConstants.adminEmail;
+      programs.git.settings.user.name = config.systemConstants.adminName;
+      programs.git.settings.user.email = config.systemConstants.adminEmail;
 
       nix.settings.warn-dirty = false;
       nix.settings.substituters = [

@@ -13,7 +13,6 @@
     { ... }:
     {
       imports = with inputs.self.modules.homeManager; [
-        bluetooth
         swayfx
         waybar
         gtk

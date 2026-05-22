@@ -1,18 +1,15 @@
 { ... }:
 {
   flake.modules.homeManager.hyprland =
-    { config, lib, pkgs, mkShot, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      waylandScreenshots,
+      ...
+    }:
     let
       isLaptop = config.systemConstants.system.type == "laptop";
-
-      screenshotArea = mkShot {
-        name = "screenshot-area";
-        captureCmd = "${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" -";
-      };
-      screenshotFull = mkShot {
-        name = "screenshot-full";
-        captureCmd = "${pkgs.grim}/bin/grim -";
-      };
     in
     {
       home.packages = [
@@ -27,9 +24,8 @@
         pkgs.swaybg
         pkgs.hyprpolkitagent
         pkgs.nerd-fonts.jetbrains-mono
-        screenshotArea
-        screenshotFull
       ]
+      ++ waylandScreenshots
       ++ lib.optionals isLaptop [
         pkgs.brightnessctl
       ];

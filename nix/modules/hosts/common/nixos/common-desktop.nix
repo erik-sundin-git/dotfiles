@@ -1,17 +1,17 @@
 { inputs, ... }:
 {
   flake.modules.nixos.commonDesktop =
-    { pkgs, ... }:
+    { config, pkgs, pkgsUnstable, ... }:
     let
-      pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+      kb = config.systemConstants.keyboard;
     in
     {
       imports = [ inputs.self.modules.nixos.commonConfig ];
       services.xserver.enable = true;
       services.xserver.xkb = {
-        layout = "se";
+        layout = kb.layout;
         variant = "";
-        options = "ctrl:swapcaps";
+        options = kb.options;
       };
 
       environment.systemPackages = with pkgs; [
@@ -46,14 +46,9 @@
       programs.ssh.askPassword = "${pkgsUnstable.openssh-askpass}/libexec/gtk-ssh-askpass";
       services.udev.packages = [ pkgs.brightnessctl ];
       programs.dconf.enable = true;
+      services.gnome.gnome-keyring.enable = true;
       services.printing.enable = true;
-      services.pulseaudio.enable = false;
       security.rtkit.enable = true;
-      services.pipewire = {
-        enable = true;
-        alsa.enable = true;
-        alsa.support32Bit = true;
-        pulse.enable = true;
-      };
+      services.pipewire.enable = false;
     };
 }

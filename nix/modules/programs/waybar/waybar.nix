@@ -13,7 +13,6 @@
       laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
       isHyprland = config.wayland.windowManager.hyprland.enable;
-      isSway = config.wayland.windowManager.sway.enable;
 
       tempScript = pkgs.writeShellScript "waybar-temp" ''
         awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
@@ -32,6 +31,7 @@
     {
       programs.waybar = {
         enable = true;
+        systemd.enable = true;
 
         settings = [
           (
@@ -43,11 +43,15 @@
               modules-left =
                 (
                   if isHyprland then
-                    [ "hyprland/workspaces" "hyprland/submap" ]
-                  else if isSway then
-                    [ "sway/workspaces" "sway/mode" ]
+                    [
+                      "hyprland/workspaces"
+                      "hyprland/submap"
+                    ]
                   else
-                    [ ]
+                    [
+                      "sway/workspaces"
+                      "sway/mode"
+                    ]
                 )
                 ++ [ "tray" ];
               modules-right = [
@@ -77,11 +81,11 @@
                 default-submap = "";
               };
 
-              "sway/workspaces" = lib.mkIf isSway {
+              "sway/workspaces" = lib.mkIf (!isHyprland) {
                 format = "{name}";
               };
 
-              "sway/mode" = lib.mkIf isSway {
+              "sway/mode" = lib.mkIf (!isHyprland) {
                 format = "{}";
               };
 
@@ -170,7 +174,8 @@
             background: transparent;
           }
 
-          #workspaces button.active {
+          #workspaces button.active,
+          #workspaces button.focused {
             background: ${c.blue};
             color: ${c.black};
           }
@@ -237,5 +242,7 @@
 
         '';
       };
+
+      systemd.user.services.waybar.Unit.ConditionEnvironment = lib.mkForce [ ];
     };
 }

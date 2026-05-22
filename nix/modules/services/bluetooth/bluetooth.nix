@@ -1,16 +1,15 @@
 { ... }:
 {
-  flake.modules.homeManager.bluetooth =
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.blueman ];
-    };
 
   flake.modules.nixos.bluetooth =
     { pkgs, ... }:
     {
 
       hardware.enableAllFirmware = true;
+      services.pulseaudio.enable = true;
+      services.pulseaudio.extraConfig = "load-module module-switch-on-connect";
+      services.upower.enable = true;
+
       hardware.bluetooth = {
         enable = true;
         powerOnBoot = true;
@@ -19,19 +18,15 @@
         };
       };
 
-      services.pipewire.wireplumber.extraConfig."51-bluez-config" = {
-        "monitor.bluez.properties" = {
-          "bluez5.auto-connect" = [ "a2dp_sink" ];
-          "bluez5.default.rate" = 48000;
-          "bluez5.default.duration" = 1024;
+      services.blueman.enable = true;
+      systemd.services.bluetooth-resume-reset = {
+        description = "Restart bluetooth on resume to clear stale bluez objects";
+        wantedBy = [ "post-resume.target" ];
+        after = [ "post-resume.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.systemd}/bin/systemctl restart bluetooth.service";
         };
       };
-
-      #services.blueman.enable = true;
-      # withApplet = true (default) creates a systemd user unit override that
-      # adds a second ExecStart= to the package's own Type=dbus unit — systemd
-      # refuses that. D-Bus activation still works via the package unit;
-      # blueman-applet starts from Hyprland exec-once instead.
-      #      services.blueman.withApplet = false;
     };
 }
