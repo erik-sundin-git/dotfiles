@@ -66,7 +66,10 @@
               command = "border pixel 2";
             }
             {
-              criteria.app_id = "FreeTube";
+              criteria = {
+                app_id = "electron";
+                title = ".*FreeTube.*";
+              };
               command = "border pixel 2";
             }
           ];

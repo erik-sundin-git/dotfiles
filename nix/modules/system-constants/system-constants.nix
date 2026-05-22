@@ -3,7 +3,10 @@
   flake.modules.generic.systemConstants =
     { lib, pkgs, ... }:
     {
-      config._module.args.pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+      config._module.args.pkgsUnstable = import inputs.nixpkgs-unstable {
+        inherit (pkgs.stdenv.hostPlatform) system;
+        config.allowUnfree = true;
+      };
 
       options.systemConstants = {
         adminEmail = lib.mkOption {

@@ -24,6 +24,14 @@
       );
       services.emacs.enable = true;
 
+      # Build tools needed by emacs packages compiled at runtime (e.g. vterm-module)
+      home.packages = with pkgs; [
+        cmake
+        gcc
+        gnumake
+        libtool
+      ];
+
       programs.emacs = {
         enable = true;
         package = lib.mkDefault pkgs.emacs;

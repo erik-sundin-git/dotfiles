@@ -1,7 +1,12 @@
 { inputs, ... }:
 {
   flake.modules.nixos.commonConfig =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       imports = [
         inputs.self.modules.generic.systemConstants
@@ -28,7 +33,10 @@
         "flakes"
       ];
       nix.settings.warn-dirty = false;
-      nix.settings.trusted-users = [ "root" "erik" ];
+      nix.settings.trusted-users = [
+        "root"
+        "erik"
+      ];
       services.openssh.enable = true;
       services.tlp = {
         enable = lib.mkDefault (config.systemConstants.system.type == "laptop");
@@ -41,6 +49,9 @@
       };
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
-      environment.systemPackages = [ pkgs.python3 ];
+      environment.systemPackages = with pkgs; [
+        python3
+        gnumake
+      ];
     };
 }

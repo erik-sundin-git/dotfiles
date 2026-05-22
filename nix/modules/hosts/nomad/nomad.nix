@@ -33,7 +33,7 @@
               airstatus
             ];
             systemConstants.system = sysConst;
-            systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone6/temp";
+            systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
             services.airstatus.enable = true;
             programs.git.settings."credential \"https://github.com\"".helper =
               "!/usr/bin/env gh auth git-credential";
@@ -42,6 +42,7 @@
               freetube
               qbittorrent
               pkgsUnstable.protonmail-desktop
+              pkgsUnstable.multiviewer-for-f1
               beeper
               vlc
               zip

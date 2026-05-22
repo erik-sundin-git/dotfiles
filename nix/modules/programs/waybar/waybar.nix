@@ -15,7 +15,7 @@
       isHyprland = config.wayland.windowManager.hyprland.enable;
 
       tempScript = pkgs.writeShellScript "waybar-temp" ''
-        awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
+        ${pkgs.gawk}/bin/awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
       '';
 
       vpnScript = pkgs.writeShellScript "waybar-vpn" ''
