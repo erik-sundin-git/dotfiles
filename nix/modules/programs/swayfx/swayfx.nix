@@ -16,11 +16,9 @@
       config,
       lib,
       pkgs,
-      mkColors,
       ...
     }:
     let
-      c = config.theme;
       kb = config.systemConstants.keyboard;
       isLaptop = config.systemConstants.system.type == "laptop";
       wallpaper = config.systemConstants.wallpaper;
@@ -47,60 +45,6 @@
 
           window.border = 2;
           floating.border = 2;
-
-          window.commands = [
-            {
-              criteria.app_id = "firefox";
-              command = "border pixel 2";
-            }
-            {
-              criteria.app_id = "librewolf";
-              command = "border pixel 2";
-            }
-            {
-              criteria.app_id = "chromium";
-              command = "border pixel 2";
-            }
-            {
-              criteria.app_id = "ungoogled-chromium";
-              command = "border pixel 2";
-            }
-            {
-              criteria = {
-                app_id = "electron";
-                title = ".*FreeTube.*";
-              };
-              command = "border pixel 2";
-            }
-            {
-              criteria = {
-                app_id = "electron";
-                title = "^Proton Mail.*";
-              };
-              command = "move to workspace mail";
-            }
-          ];
-
-          colors = {
-            focused = mkColors {
-              border = c.blue;
-              text = c.black;
-              indicator = c.cyan;
-            };
-            focusedInactive = mkColors {
-              border = c.black;
-              text = c.foreground;
-            };
-            unfocused = mkColors {
-              border = c.black;
-              background = c.background;
-              text = c.brightBlack;
-            };
-            urgent = mkColors {
-              border = c.red;
-              text = c.brightWhite;
-            };
-          };
 
           startup = [
             { command = "swayosd-server"; }
