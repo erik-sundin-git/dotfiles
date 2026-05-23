@@ -69,7 +69,7 @@ nix/modules/
 │   ├── nh.nix                   # programs.nh: flake path + auto-cleanup (keep 7d/5 gens)
 │   └── tools/home-manager [ND]/ # Home Manager NixOS module (not auto-applied)
 ├── hosts/
-│   ├── nomad/                   # NixOS laptop — commonDesktop + swayfxStack(nixos) + virtManager; homeManager: commonHome + swayfxStack + alacritty + chromium + vpn + airstatus
+│   ├── nomad/                   # NixOS laptop — commonDesktop + swayfxStack(nixos) + virtManager; homeManager: commonHome + swayfxStack + alacritty + chromium + vpn
 │   ├── forge.nix                # Debian desktop — debianMinimal + commonHome + i3Stack + alacritty; uses nixGLNvidia
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
 │   ├── specter/                 # NixOS laptop — commonDesktop + swayfxStack(nixos); homeManager: commonHome + swayfxStack

@@ -72,6 +72,13 @@
               };
               command = "border pixel 2";
             }
+            {
+              criteria = {
+                app_id = "electron";
+                title = "^Proton Mail.*";
+              };
+              command = "move to workspace mail";
+            }
           ];
 
           colors = {
@@ -98,7 +105,7 @@
           startup = [
             { command = "swayosd-server"; }
             { command = "dunst"; }
-            { command = "${pkgs.swaybg}/bin/swaybg -i '${wallpaper}' -m fill"; }
+            { command = "proton-mail"; }
           ];
 
           input = {

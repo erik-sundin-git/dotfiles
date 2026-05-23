@@ -99,6 +99,15 @@
           "media.ffmpeg.vaapi.enabled" = true;
           "media.hardware-video-decoding.force-enabled" = true;
 
+          # Force sites to serve H.264 instead of AV1/VP9 so VAAPI can decode on
+          # GPUs that lack AV1/VP9 hw decode (otherwise the RDD process burns CPU).
+          # Disabling WebM in MSE is what actually pushes YouTube off VP9 — the
+          # vp9-specific pref alone isn't enough since YT detects support via
+          # other paths. Tradeoff: 1080p cap on YouTube.
+          "media.av1.enabled" = false;
+          "media.mediasource.vp9.enabled" = false;
+          "media.mediasource.webm.enabled" = false;
+
           # Fewer content processes — less RAM and IPC overhead
           #          "dom.ipc.processCount" = 4;
 
@@ -141,6 +150,7 @@
           consent-o-matic
           vimium
           lockedin-yt
+          h264ify
           (buildFirefoxXpiAddon {
             pname = "besttimetracker";
             version = "4.3.0";

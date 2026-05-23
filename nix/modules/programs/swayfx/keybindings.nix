@@ -13,6 +13,9 @@
           "${modifier}+Shift+q" = "kill";
           "${modifier}+d" = "exec wofi --show drun";
 
+          "${modifier}+m" = "workspace mail";
+          "${modifier}+Shift+m" = "move container to workspace mail";
+
           "${modifier}+b" = "splith";
           "${modifier}+v" = "splitv";
 

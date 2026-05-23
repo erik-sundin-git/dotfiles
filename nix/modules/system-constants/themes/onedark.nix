@@ -6,6 +6,7 @@
     {
       config.theme = lib.mkIf (config.selectedTheme == "onedark") {
         background = "#000000";
+        superDark = "#000000";
         foreground = "#abb2bf";
         cursor = "#528bff";
         cursorText = "#282c34";

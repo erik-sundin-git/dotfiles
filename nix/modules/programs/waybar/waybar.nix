@@ -164,7 +164,7 @@
           }
 
           window#waybar {
-            background: ${hexToRgba c.background "0.9"};
+            background: ${hexToRgba c.superDark "0.5"};
             color: ${c.foreground};
           }
 
@@ -242,7 +242,5 @@
 
         '';
       };
-
-      systemd.user.services.waybar.Unit.ConditionEnvironment = lib.mkForce [ ];
     };
 }

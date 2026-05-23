@@ -30,11 +30,9 @@
               alacritty
               chromium
               vpn
-              airstatus
             ];
             systemConstants.system = sysConst;
             systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
-            services.airstatus.enable = true;
             programs.git.settings."credential \"https://github.com\"".helper =
               "!/usr/bin/env gh auth git-credential";
             home.packages = with pkgs; [
