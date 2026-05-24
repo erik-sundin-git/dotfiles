@@ -28,7 +28,6 @@
               commonHome
               swayfxStack
               alacritty
-              chromium
               vpn
             ];
             systemConstants.system = sysConst;
