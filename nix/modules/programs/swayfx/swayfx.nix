@@ -30,6 +30,11 @@
         enable = true;
         package = pkgs.swayfx;
         systemd.enable = true;
+        # pam_systemd activates graphical-session.target at login (before sway
+        # runs), so waybar.service gets triggered and skipped via
+        # ConditionEnvironment=WAYLAND_DISPLAY before env is imported. Start
+        # it manually after dbus-update-activation-environment.
+        systemd.extraCommands = lib.mkBefore [ "systemctl --user start waybar.service" ];
         checkConfig = false;
 
         config = {
