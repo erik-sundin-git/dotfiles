@@ -17,7 +17,7 @@ Personal dotfiles for Erik Sundin. The Nix flake manages Home Manager and NixOS 
 | Name | Type | Flake target | Config file |
 |------|------|-------------|-------------|
 | `nomad` | NixOS laptop (nixosConfigurations) | `#nomad` | `hosts/nomad/` |
-| `forge` | Debian desktop (homeConfigurations) | `#forge` | `hosts/forge.nix` |
+| `forge` | NixOS desktop (nixosConfigurations) | `#forge` | `hosts/forge/` |
 | `ether` | NixOS VM (nixosConfigurations) | `#ether` | `hosts/ether/` |
 | `specter` | NixOS laptop (nixosConfigurations) | `#specter` | `hosts/specter/` |
 
@@ -30,13 +30,13 @@ Each host configuration sets `systemConstants.system.host` and `systemConstants.
 rebuild                                        # per-host alias: nh home/os switch ~/dotfiles -c <host>
 
 # Apply (direct fallback)
-home-manager switch -b backup --flake ~/dotfiles#forge
+sudo nixos-rebuild switch --flake ~/dotfiles#forge
 sudo nixos-rebuild switch --flake ~/dotfiles#ether
 sudo nixos-rebuild switch --flake ~/dotfiles#specter
 sudo nixos-rebuild switch --flake ~/dotfiles#nomad
 
 # Build without applying
-home-manager build --flake ~/dotfiles#forge
+nix build .#nixosConfigurations.forge.config.system.build.toplevel
 
 # Update flake inputs
 nix flake update
@@ -69,28 +69,28 @@ nix/modules/
 │   ├── nh.nix                   # programs.nh: flake path + auto-cleanup (keep 7d/5 gens)
 │   └── tools/home-manager [ND]/ # Home Manager NixOS module (not auto-applied)
 ├── hosts/
-│   ├── nomad/                   # NixOS laptop — commonDesktop + swayfxStack(nixos) + virtManager; homeManager: commonHome + swayfxStack + alacritty + chromium + vpn
-│   ├── forge.nix                # Debian desktop — debianMinimal + commonHome + i3Stack + alacritty; uses nixGLNvidia
+│   ├── nomad/                   # NixOS laptop — commonDesktop + swayfxStack(nixos) + virtManager; homeManager: commonHome + swayfxStack + alacritty + vpn
+│   ├── forge/                   # NixOS desktop — commonDesktop + i3Stack(nixos); homeManager: commonHome + i3Stack + alacritty + vpn
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
 │   ├── specter/                 # NixOS laptop — commonDesktop + swayfxStack(nixos); homeManager: commonHome + swayfxStack
-│   ├── live-iso.nix             # Bootable NixOS ISO — TTY-only, git, emacs, claude-code, dotfiles at /etc/dotfiles, prepare-disk install script
+│   ├── live-iso/                # Bootable NixOS ISO — TTY-only, git, emacs, claude-code, dotfiles at /etc/dotfiles, prepare-disk install script
 │   ├── common/
 │   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources
 │   │   └── nixos/               # commonConfig (base NixOS + trusted-users) + commonDesktop (X server, pipewire, users)
-│   ├── debian-minimal.nix       # Debian base: nixGL wrapping, NUR overlay, allowUnfree
-│   └── topology.nix             # Registers hosts: den.homes / den.hosts + stateVersion
+│   ├── debian-minimal.nix       # Debian base: nixGL wrapping, NUR overlay, allowUnfree (for standalone home-manager on non-NixOS)
+│   └── topology.nix             # Registers hosts: den.hosts (NixOS) + den.homes (standalone HM) + stateVersion
 ├── system-constants/
 │   ├── system-constants.nix     # Options: adminName, adminEmail, system.host/type, lat/lon, thermalZonePath, wallpaper, keyboard.{layout,options}, network.forgeHost
 │   ├── theme.nix                # Options: selectedTheme (str) + theme (attrsOf str palette); asserts theme palette is non-empty
 │   └── themes/onedark.nix       # One Dark palette; sets config.theme via mkIf selectedTheme == "onedark"
 ├── stacks/
-│   ├── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst; nixos: bluetooth
-│   ├── hyprland-stack.nix       # homeManager: hyprland + waybar + gtk + dunst + starship; nixos: bluetooth + hyprland
+│   ├── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst + starship; nixos: bluetooth + i3
+│   ├── hyprland-stack.nix       # homeManager: hyprland + waybar + gtk + dunst + starship + gammastep; nixos: bluetooth + hyprland
 │   ├── swayfx-stack.nix         # homeManager: swayfx + waybar + gtk + dunst + starship + gammastep; nixos: bluetooth + swayfx
 │   └── xfce-stack.nix           # nixos: xfce + theme; homeManager: gtk (ether only)
 ├── services/
 │   ├── airstatus.nix            # homeManager: services.airstatus.enable + systemd user unit; uses pkgs.local.airstatus
-│   ├── bluetooth/               # NixOS: hardware.bluetooth + blueman
+│   ├── bluetooth/               # NixOS-only module (hardware.bluetooth + blueman) — no homeManager variant exists
 │   ├── dunst.nix                # Notification daemon; themed via config.theme
 │   ├── redshift.nix
 │   ├── gammastep.nix            # Wayland equivalent of redshift (used by hyprland-stack and swayfx-stack)
@@ -120,13 +120,15 @@ nix/packages/
 └── airstatus/                   # AirPods battery monitor (Python + bleak); exposes pkgs.local.airstatus
 ```
 
-**Host wiring via `den`**: Hosts are defined using `den.aspects.<host> = { homeManager = ...; }` (or `nixos = ...`). The `topology.nix` registers them into `homeConfigurations`/`nixosConfigurations` via `den.homes.x86_64-linux.<host>` and `den.hosts.x86_64-linux.<host>`. There is no `lib.nix` with `mkNixos`/`mkHomeManager`.
+**Host wiring via `den`**: Hosts are defined using `den.aspects.<host> = { nixos = ...; }` (or `homeManager = ...` for standalone Home Manager). `topology.nix` registers NixOS hosts via `den.hosts.x86_64-linux.<host>` and standalone HM hosts via `den.homes.x86_64-linux.<host>`. There is no `lib.nix` with `mkNixos`/`mkHomeManager`.
 
-**nixGL on Debian**: The `debianMinimal` module provides a `debianGL.nixGLPackage` option. When set, it wraps GL-dependent binaries (alacritty, kitty) with the specified nixGL package so they work on non-NixOS systems. forge uses `nixGLNvidia`.
+**Critical**: `den.aspects.<name>` must exactly match the name registered in `topology.nix`. A mismatch means the aspect is never applied to the host — NixOS gets an empty config and fails with "boot loader not configured".
+
+**nixGL on Debian**: The `debianMinimal` module provides a `debianGL.nixGLPackage` option. When set, it wraps GL-dependent binaries (alacritty, kitty) with the specified nixGL package so they work on non-NixOS systems.
 
 **Live ISO**: Built with `nix build .#iso`. The `prepare-disk /dev/nvme0n1` script partitions, formats, mounts, clones the dotfiles repo, patches `hosts/nomad/hardware.nix` with generated UUIDs, and runs `nixos-install --flake /tmp/dotfiles#nomad` in one shot.
 
-**Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk, hyprland, waybar) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all Debian hosts. To add a new theme, add a file to `themes/` following the same pattern. A typo in `selectedTheme` is caught by an assertion in `theme.nix` (empty palette → build failure). Color-format helpers in `helpers.nix`: `hexToRgba` (waybar/GTK CSS — GTK does not accept `alpha(#rrggbb, a)` with hex literals) and `hexToHyprRgb` (hyprland `rgb()` form).
+**Theme system**: `config.theme` is a flat `attrsOf str` map (semantic name → `#rrggbb`). The active theme is selected via `config.selectedTheme` (default `"onedark"`). Each theme file in `system-constants/themes/` sets `config.theme` via `mkIf`. UI modules (i3, alacritty, polybar, gtk, hyprland, waybar) consume it via `let c = config.theme; in ...`. `generic.theme` must be imported before any UI module that reads `config.theme` — `commonHome` does this for all hosts. To add a new theme, add a file to `themes/` following the same pattern. A typo in `selectedTheme` is caught by an assertion in `theme.nix` (empty palette → build failure). Color-format helpers in `helpers.nix`: `hexToRgba` (waybar/GTK CSS — GTK does not accept `alpha(#rrggbb, a)` with hex literals) and `hexToHyprRgb` (hyprland `rgb()` form).
 
 **Custom packages**: Files under `nix/packages/<name>/package.nix` are auto-picked up by `pkgs-by-name` and exposed as `pkgs.local.<name>` via `flake.overlays.default`. After adding a new package directory, `git add` it immediately.
 

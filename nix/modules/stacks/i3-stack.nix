@@ -13,7 +13,6 @@
     { ... }:
     {
       imports = with inputs.self.modules.homeManager; [
-        bluetooth
         i3
         polybar
         picom
