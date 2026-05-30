@@ -87,18 +87,19 @@ nix/modules/
 │   ├── i3-stack.nix             # homeManager: i3 + polybar + gtk + redshift + dunst + starship; nixos: bluetooth + i3
 │   ├── hyprland-stack.nix       # homeManager: hyprland + waybar + gtk + dunst + starship + gammastep; nixos: bluetooth + hyprland
 │   ├── swayfx-stack.nix         # homeManager: swayfx + waybar + gtk + dunst + starship + gammastep; nixos: bluetooth + swayfx
-│   └── xfce-stack.nix           # nixos: xfce + theme; homeManager: gtk (ether only)
+│   └── xfce-stack.nix           # nixos: xfce + theme; homeManager: gtk (ether only — host imports xfceStack explicitly on both layers)
 ├── services/
 │   ├── airstatus.nix            # homeManager: services.airstatus.enable + systemd user unit; uses pkgs.local.airstatus
 │   ├── bluetooth/               # NixOS-only module (hardware.bluetooth + blueman) — no homeManager variant exists
 │   ├── dunst.nix                # Notification daemon; themed via config.theme
 │   ├── redshift.nix
 │   ├── gammastep.nix            # Wayland equivalent of redshift (used by hyprland-stack and swayfx-stack)
+│   ├── picom.nix                # X11 compositor; used by i3-stack
 │   ├── virt-manager/            # NixOS: libvirtd + QEMU KVM + spice USB + virt-manager; used by nomad
 │   └── vpn/                     # WireGuard tools, proton-vpn-cli, vpn-status script, gnome-keyring
 ├── browsers/
 │   ├── chromium/
-│   ├── firefox/                 # Defined but not currently wired into any host
+│   ├── firefox/                 # Imported by commonHome
 │   └── librewolf/
 ├── shell/bash/                  # Bash aliases (per-host `rebuild`) and config
 └── programs/
@@ -106,7 +107,7 @@ nix/modules/
     ├── wayland-base.nix         # nixos.waylandBase: NIXOS_OZONE_WL + QT_QPA_PLATFORM + base xdg.portal; imported by hyprland + swayfx nixos modules
     ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file
     ├── gtk/                     # Arc-Dark theme; injects selection/accent colors via extraCss
-    ├── i3/                      # i3wm, keybindings, modes, picom
+    ├── i3/                      # i3wm, keybindings, modes
     ├── hyprland/                # homeManager: Hyprland (hy3 plugin), keybindings, submaps, packages; nixos: programs.hyprland + UWSM + portal config (imports waylandBase)
     ├── swayfx/                  # homeManager: SwayFX compositor, keybindings, modes, packages, for_window browser rules; nixos: programs.sway + wlr portal (imports waylandBase)
     ├── polybar/                 # Polybar bar + themed modules (ethernet, wireless, vpn, system, ipv6); uses nixpkgs-stable for polybarFull

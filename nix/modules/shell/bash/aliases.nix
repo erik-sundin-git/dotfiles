@@ -16,11 +16,7 @@
         gp = "git push";
 
         ssh-desktop = "ssh erik@${config.systemConstants.network.forgeHost}";
-        rebuild =
-          if host == "ether" || host == "specter" || host == "nomad" then
-            "nh os switch ~/dotfiles#${host}"
-          else
-            "nh home switch ~/dotfiles -c ${host}";
+        rebuild = "nh os switch ~/dotfiles#${host}";
       };
     };
 }

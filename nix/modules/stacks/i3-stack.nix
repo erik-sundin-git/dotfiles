@@ -7,6 +7,9 @@
         bluetooth
         i3
       ];
+      home-manager.sharedModules = [
+        inputs.self.modules.homeManager.i3Stack
+      ];
     };
 
   flake.modules.homeManager.i3Stack =

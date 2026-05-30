@@ -7,7 +7,15 @@
         inputs.self.modules.nixos.xfce
         inputs.self.modules.generic.theme
       ];
-      home-manager.users.erik.imports = [
+      home-manager.sharedModules = [
+        inputs.self.modules.homeManager.xfceStack
+      ];
+    };
+
+  flake.modules.homeManager.xfceStack =
+    { ... }:
+    {
+      imports = [
         inputs.self.modules.homeManager.gtk
       ];
     };

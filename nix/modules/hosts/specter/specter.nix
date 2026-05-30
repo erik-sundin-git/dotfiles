@@ -19,10 +19,6 @@
         systemConstants.system = sysConst;
 
         home-manager.users.erik = {
-          imports = with inputs.self.modules.homeManager; [
-            commonHome
-            swayfxStack
-          ];
           systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone8/temp";
         };
@@ -31,9 +27,6 @@
           "usbcore.autosuspend=-1"
           "acpi_osi=Linux"
         ];
-
-        boot.loader.systemd-boot.enable = true;
-        boot.loader.efi.canTouchEfiVariables = true;
       };
   };
 }

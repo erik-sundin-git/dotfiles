@@ -7,6 +7,9 @@
         bluetooth
         hyprland
       ];
+      home-manager.sharedModules = [
+        inputs.self.modules.homeManager.hyprlandStack
+      ];
     };
 
   flake.modules.homeManager.hyprlandStack =

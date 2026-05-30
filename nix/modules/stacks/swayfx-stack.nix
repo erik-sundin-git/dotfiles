@@ -7,6 +7,9 @@
         bluetooth
         swayfx
       ];
+      home-manager.sharedModules = [
+        inputs.self.modules.homeManager.swayfxStack
+      ];
     };
 
   flake.modules.homeManager.swayfxStack =

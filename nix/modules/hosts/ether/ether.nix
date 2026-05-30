@@ -19,10 +19,10 @@
         systemConstants.system = sysConst;
 
         home-manager.users.erik = {
-          imports = [ inputs.self.modules.homeManager.commonHome ];
           systemConstants.system = sysConst;
         };
 
+        commonDesktop.bootEFI = false;
         boot.loader.grub.enable = true;
         boot.loader.grub.device = "/dev/vda";
         boot.loader.grub.useOSProber = true;
