@@ -1,7 +1,13 @@
 { inputs, ... }:
 {
   flake.modules.nixos.commonDesktop =
-    { config, lib, pkgs, pkgsUnstable, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      pkgsUnstable,
+      ...
+    }:
     let
       kb = config.systemConstants.keyboard;
       cfg = config.commonDesktop;
@@ -36,6 +42,7 @@
           claude-code
           xorg.xinit
           pkgsUnstable.openssh-askpass
+          quickemu
           cmake
           alacritty
           nixfmt
@@ -68,6 +75,7 @@
         services.printing.enable = true;
         security.rtkit.enable = true;
         services.pipewire.enable = false;
+        services.flatpak.enable = true;
       };
     };
 }
