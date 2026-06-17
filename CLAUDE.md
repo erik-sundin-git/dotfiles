@@ -95,8 +95,10 @@ nix/modules/
 │   ├── redshift.nix
 │   ├── gammastep.nix            # Wayland equivalent of redshift (used by hyprland-stack and swayfx-stack)
 │   ├── picom.nix                # X11 compositor; used by i3-stack
+│   ├── pulseaudio.nix           # NixOS: services.pulseaudio with pulseaudioFull (used where pipewire isn't)
+│   ├── steam.nix                # NixOS: programs.steam + remotePlay/dedicatedServer firewall holes
 │   ├── virt-manager/            # NixOS: libvirtd + QEMU KVM + spice USB + virt-manager; used by nomad
-│   └── vpn/                     # WireGuard tools, proton-vpn-cli, vpn-status script, gnome-keyring
+│   └── vpn/                     # WireGuard tools, proton-vpn-cli, vpn-status + vpn-toggle scripts, gnome-keyring
 ├── browsers/
 │   ├── chromium/
 │   ├── firefox/                 # Imported by commonHome
@@ -105,7 +107,10 @@ nix/modules/
 └── programs/
     ├── helpers.nix              # _module.args (uiHelpers): mkColors, mkScreenshot (X11/maim), mkShot, waylandScreenshots, mkModeNotif, hexToRgba, hexToHyprRgb
     ├── wayland-base.nix         # nixos.waylandBase: NIXOS_OZONE_WL + QT_QPA_PLATFORM + base xdg.portal; imported by hyprland + swayfx nixos modules
+    ├── desktop-apps.nix         # homeManager bundle: freetube, qbittorrent, protonmail-desktop, beeper, multiviewer-for-f1, vlc, htop, ffmpeg, yt-dlp
     ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file
+    ├── gaming/                  # nixos.gaming: Intel iGPU (i915 kernel params + iHD VA-API), latest kernel, thermald, zramSwap
+    ├── gh.nix                   # homeManager: gh CLI + git credential helper for github.com
     ├── gtk/                     # Arc-Dark theme; injects selection/accent colors via extraCss
     ├── i3/                      # i3wm, keybindings, modes
     ├── hyprland/                # homeManager: Hyprland (hy3 plugin), keybindings, submaps, packages; nixos: programs.hyprland + UWSM + portal config (imports waylandBase)
