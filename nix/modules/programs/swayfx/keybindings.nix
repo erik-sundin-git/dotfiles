@@ -16,6 +16,9 @@
           "${modifier}+m" = "workspace mail";
           "${modifier}+Shift+m" = "move container to workspace mail";
 
+          "${modifier}+e" = "workspace emacs";
+          "${modifier}+Shift+e" = "move container to workspace emacs";
+
           "${modifier}+b" = "splith";
           "${modifier}+v" = "splitv";
 

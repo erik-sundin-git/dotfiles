@@ -34,6 +34,10 @@
           };
           command = "move to workspace mail";
         }
+        {
+          criteria.app_id = "^[Ee]macs$";
+          command = "move to workspace emacs";
+        }
       ];
     };
 }
