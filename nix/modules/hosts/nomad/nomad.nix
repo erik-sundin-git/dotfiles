@@ -17,20 +17,16 @@
           swayfxStack
           pulseaudio
           virtManager
+          gaming
         ];
-
-        programs.steam = {
-          enable = true;
-          remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-          dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-          localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
-        };
-        programs.steam.gamescopeSession.enable = true;
 
         systemConstants.system = sysConst;
 
         home-manager.users.erik = {
-          imports = [ inputs.self.modules.homeManager.gh ];
+          imports = with inputs.self.modules.homeManager; [
+            gh
+            chromium
+          ];
           systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
         };
