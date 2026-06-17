@@ -1,13 +1,13 @@
-{ ... }:
+{ inputs, ... }:
 {
   flake.modules.homeManager.nh =
     { ... }:
     {
       programs.nh = {
         enable = true;
-        flake = "/home/erik/dotfiles";
+        flake = "${inputs.self}";
         clean.enable = true;
-        clean.extraArgs = "--keep-since 7d --keep 5"; # keep last 7 days and 5 generations
+        clean.extraArgs = "--keep-since 7d --keep 5";
       };
     };
 }

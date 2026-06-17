@@ -27,7 +27,10 @@
       wallpaper = config.systemConstants.wallpaper;
     in
     {
-      imports = [ inputs.self.modules.homeManager.uiHelpers ];
+      imports = with inputs.self.modules.homeManager; [
+        uiHelpers
+        waylandBase
+      ];
 
       wayland.windowManager.hyprland = {
         enable = true;
@@ -93,8 +96,6 @@
           ];
         };
       };
-
-      programs.emacs.package = pkgs.emacs-pgtk;
 
       programs.bash.profileExtra = ''
         if [ -z "''${WAYLAND_DISPLAY}" ] && [ "$(tty)" = "/dev/tty1" ]; then

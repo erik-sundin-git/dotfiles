@@ -26,31 +26,45 @@
           name,
           args ? "",
         }:
-        pkgs.writeShellScriptBin name ''
-          mkdir -p ~/Pictures/Screenshots
-          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-          maim ${args} | tee "$f" | xclip -selection clipboard -t image/png
-        '';
-
-      _module.args.mkShot =
-        { name, captureCmd }:
-        pkgs.writeShellScriptBin name ''
-          mkdir -p ~/Pictures/Screenshots
-          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-          ${captureCmd} | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
-        '';
+        pkgs.writeShellApplication {
+          inherit name;
+          runtimeInputs = [
+            pkgs.maim
+            pkgs.xclip
+          ];
+          text = ''
+            mkdir -p ~/Pictures/Screenshots
+            f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+            maim ${args} | tee "$f" | xclip -selection clipboard -t image/png
+          '';
+        };
 
       _module.args.waylandScreenshots = [
-        (pkgs.writeShellScriptBin "screenshot-area" ''
-          mkdir -p ~/Pictures/Screenshots
-          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-          ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" - | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
-        '')
-        (pkgs.writeShellScriptBin "screenshot-full" ''
-          mkdir -p ~/Pictures/Screenshots
-          f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
-          ${pkgs.grim}/bin/grim - | tee "$f" | ${pkgs.wl-clipboard}/bin/wl-copy
-        '')
+        (pkgs.writeShellApplication {
+          name = "screenshot-area";
+          runtimeInputs = [
+            pkgs.grim
+            pkgs.slurp
+            pkgs.wl-clipboard
+          ];
+          text = ''
+            mkdir -p ~/Pictures/Screenshots
+            f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+            grim -g "$(slurp)" - | tee "$f" | wl-copy
+          '';
+        })
+        (pkgs.writeShellApplication {
+          name = "screenshot-full";
+          runtimeInputs = [
+            pkgs.grim
+            pkgs.wl-clipboard
+          ];
+          text = ''
+            mkdir -p ~/Pictures/Screenshots
+            f=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
+            grim - | tee "$f" | wl-copy
+          '';
+        })
       ];
 
       _module.args.hexToHyprRgb = hex: "rgb(${lib.removePrefix "#" hex})";

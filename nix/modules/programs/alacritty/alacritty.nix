@@ -1,26 +1,14 @@
 {
   flake.modules.homeManager.alacritty =
-    { config, lib, pkgs, ... }:
+    { config, pkgs, ... }:
     let
       c = config.theme;
-      nixGLPkg = config.debianGL.nixGLPackage;
       fontFamily = "AdwaitaMono Nerd Font";
     in
     {
-      options.debianGL.nixGLPackage = lib.mkOption {
-        type = lib.types.nullOr lib.types.package;
-        default = null;
-      };
-
-      config.programs.alacritty = {
+      programs.alacritty = {
         enable = true;
-        package =
-          if nixGLPkg == null then
-            pkgs.alacritty
-          else
-            pkgs.writeShellScriptBin "alacritty" ''
-              exec ${lib.getExe nixGLPkg} ${pkgs.alacritty}/bin/alacritty "$@"
-            '';
+        package = pkgs.alacritty;
         settings = {
           font = {
             size = 12.0;

@@ -13,4 +13,10 @@
         extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
       };
     };
+
+  flake.modules.homeManager.waylandBase =
+    { pkgs, ... }:
+    {
+      programs.emacs.package = pkgs.emacs-pgtk;
+    };
 }

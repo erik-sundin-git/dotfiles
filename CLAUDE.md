@@ -77,7 +77,6 @@ nix/modules/
 │   ├── common/
 │   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources
 │   │   └── nixos/               # commonConfig (base NixOS + trusted-users) + commonDesktop (X server, pipewire, users)
-│   ├── debian-minimal.nix       # Debian base: nixGL wrapping, NUR overlay, allowUnfree (for standalone home-manager on non-NixOS)
 │   └── topology.nix             # Registers hosts: den.hosts (NixOS) + den.homes (standalone HM) + stateVersion
 ├── system-constants/
 │   ├── system-constants.nix     # Options: adminName, adminEmail, system.host/type, lat/lon, thermalZonePath, wallpaper, keyboard.{layout,options}, network.forgeHost
@@ -105,8 +104,8 @@ nix/modules/
 │   └── librewolf/
 ├── shell/bash/                  # Bash aliases (per-host `rebuild`) and config
 └── programs/
-    ├── helpers.nix              # _module.args (uiHelpers): mkColors, mkScreenshot (X11/maim), mkShot, waylandScreenshots, mkModeNotif, hexToRgba, hexToHyprRgb
-    ├── wayland-base.nix         # nixos.waylandBase: NIXOS_OZONE_WL + QT_QPA_PLATFORM + base xdg.portal; imported by hyprland + swayfx nixos modules
+    ├── helpers.nix              # _module.args (uiHelpers): mkColors, mkScreenshot (X11/maim), waylandScreenshots, mkModeNotif, hexToRgba, hexToHyprRgb
+    ├── wayland-base.nix         # nixos.waylandBase: NIXOS_OZONE_WL + QT_QPA_PLATFORM + base xdg.portal; homeManager.waylandBase: emacs-pgtk; imported by hyprland + swayfx (both layers)
     ├── desktop-apps.nix         # homeManager bundle: freetube, qbittorrent, protonmail-desktop, beeper, multiviewer-for-f1, vlc, htop, ffmpeg, yt-dlp
     ├── emacs/                   # Symlinks emacs dotfiles from repo via home.file
     ├── gaming/                  # nixos.gaming: Intel iGPU (i915 kernel params + iHD VA-API), latest kernel, thermald, zramSwap
@@ -117,7 +116,7 @@ nix/modules/
     ├── swayfx/                  # homeManager: SwayFX compositor, keybindings, modes, packages, for_window browser rules; nixos: programs.sway + wlr portal (imports waylandBase)
     ├── polybar/                 # Polybar bar + themed modules (ethernet, wireless, vpn, system, ipv6); uses nixpkgs-stable for polybarFull
     ├── waybar/                  # Waybar config + themed CSS; uses hexToRgba from helpers.nix
-    ├── alacritty/               # Alacritty with nixGL wrapping + theme colors
+    ├── alacritty/               # Alacritty + theme colors
     ├── xfce/                    # XFCE (ether only)
     ├── cli-tools/               # CLI packages (generic + NixOS-specific)
     └── mail/                    # ProtonMail Bridge + mbsync + notmuch + msmtp
@@ -129,8 +128,6 @@ nix/packages/
 **Host wiring via `den`**: Hosts are defined using `den.aspects.<host> = { nixos = ...; }` (or `homeManager = ...` for standalone Home Manager). `topology.nix` registers NixOS hosts via `den.hosts.x86_64-linux.<host>` and standalone HM hosts via `den.homes.x86_64-linux.<host>`. There is no `lib.nix` with `mkNixos`/`mkHomeManager`.
 
 **Critical**: `den.aspects.<name>` must exactly match the name registered in `topology.nix`. A mismatch means the aspect is never applied to the host — NixOS gets an empty config and fails with "boot loader not configured".
-
-**nixGL on Debian**: The `debianMinimal` module provides a `debianGL.nixGLPackage` option. When set, it wraps GL-dependent binaries (alacritty, kitty) with the specified nixGL package so they work on non-NixOS systems.
 
 **Live ISO**: Built with `nix build .#iso`. The `prepare-disk /dev/nvme0n1` script partitions, formats, mounts, clones the dotfiles repo, patches `hosts/nomad/hardware.nix` with generated UUIDs, and runs `nixos-install --flake /tmp/dotfiles#nomad` in one shot.
 

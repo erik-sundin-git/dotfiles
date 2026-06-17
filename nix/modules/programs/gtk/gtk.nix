@@ -3,8 +3,8 @@
   flake.modules.homeManager.gtk =
     { pkgs, config, ... }:
     let
-      t = config.theme;
-      accent = t.blue;
+      c = config.theme;
+      accent = c.blue;
     in
     {
       gtk = {
@@ -27,11 +27,11 @@
         gtk4.theme = null;
         gtk3.extraCss = ''
           @define-color theme_selected_bg_color ${accent};
-          @define-color theme_selected_fg_color ${t.black};
-          @define-color theme_unfocused_selected_bg_color ${t.brightBlack};
+          @define-color theme_selected_fg_color ${c.black};
+          @define-color theme_unfocused_selected_bg_color ${c.brightBlack};
           @define-color accent_color ${accent};
           @define-color accent_bg_color ${accent};
-          @define-color accent_fg_color ${t.black};
+          @define-color accent_fg_color ${c.black};
         '';
       };
     };

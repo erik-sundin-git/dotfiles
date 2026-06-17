@@ -15,7 +15,6 @@
           commonDesktop
           i3Stack
           pulseaudio
-          steam
           virtManager
         ];
 

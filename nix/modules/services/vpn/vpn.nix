@@ -13,11 +13,21 @@
         ++ [
           (pkgs.writeShellApplication {
             name = "vpn-status";
-            text = builtins.readFile ./vpn-status.sh;
+            runtimeInputs = [ pkgsUnstable.proton-vpn-cli ];
+            text = ''
+              protonvpn status 2>/dev/null | grep '^Server:' | sed 's/Server: \(\S*\).*/VPN: \1/'
+            '';
           })
           (pkgs.writeShellApplication {
             name = "vpn-toggle";
-            text = builtins.readFile ./vpn-toggle.sh;
+            runtimeInputs = [ pkgsUnstable.proton-vpn-cli ];
+            text = ''
+              if protonvpn status 2>/dev/null | grep -q '^Server:'; then
+                protonvpn disconnect
+              else
+                protonvpn connect
+              fi
+            '';
           })
         ];
 
