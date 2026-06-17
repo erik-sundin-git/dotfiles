@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, inputs, ... }:
 {
   flake.modules.homeManager.librewolf =
     {
@@ -7,7 +7,12 @@
       lib,
       ...
     }:
-
+    let
+      pkgsUnstable = import inputs.nixpkgs-unstable {
+        inherit (pkgs.stdenv.hostPlatform) system;
+        config.allowUnfree = true;
+      };
+    in
     {
       home.sessionVariables = lib.mkMerge [
         { MOZ_USE_XINPUT2 = "1"; }
@@ -23,6 +28,7 @@
 
       programs.librewolf = {
         enable = true;
+        package = pkgsUnstable.librewolf;
 
         policies.DontCheckDefaultBrowser = true;
 
