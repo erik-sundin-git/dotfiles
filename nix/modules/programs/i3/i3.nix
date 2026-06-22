@@ -9,13 +9,10 @@
 
   flake.modules.homeManager.i3 =
     {
-      config,
       pkgs,
-      mkColors,
       ...
     }:
     let
-      c = config.theme;
       importEnv = pkgs.writeShellScript "i3-import-env" ''
         systemctl --user import-environment \
           DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS
@@ -32,11 +29,33 @@
 
         config = {
           modifier = "Mod4";
+          bars = [ ];
+          workspaceAutoBackAndForth = true;
+          defaultWorkspace = "workspace number 1";
+
+          gaps = {
+            inner = 0;
+            outer = 0;
+          };
+
+          window.border = 2;
+          floating.border = 2;
 
           startup = [
-            { command = "nitrogen --restore"; notification = false; }
+            {
+              command = "nitrogen --restore";
+              notification = false;
+            }
             {
               command = "blueman-applet";
+              notification = false;
+            }
+            {
+              command = "dunst";
+              notification = false;
+            }
+            {
+              command = "proton-mail";
               notification = false;
             }
             {
@@ -54,31 +73,6 @@
               notification = false;
             }
           ];
-
-          bars = [ ];
-          workspaceAutoBackAndForth = true;
-          defaultWorkspace = "1";
-
-          colors = {
-            focused = mkColors {
-              border = c.blue;
-              text = c.black;
-              indicator = c.cyan;
-            };
-            focusedInactive = mkColors {
-              border = c.black;
-              text = c.foreground;
-            };
-            unfocused = mkColors {
-              border = c.black;
-              background = c.background;
-              text = c.brightBlack;
-            };
-            urgent = mkColors {
-              border = c.red;
-              text = c.brightWhite;
-            };
-          };
         };
       };
     };

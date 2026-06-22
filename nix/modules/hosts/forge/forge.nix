@@ -16,6 +16,7 @@
           i3Stack
           pulseaudio
           virtManager
+          gaming
         ];
 
         systemConstants.system = sysConst;
