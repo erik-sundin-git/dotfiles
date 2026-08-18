@@ -49,6 +49,7 @@
           fastfetch
           wineWow64Packages.stable
           winetricks
+          spotify
         ];
 
         hardware.graphics.enable32Bit = true;
