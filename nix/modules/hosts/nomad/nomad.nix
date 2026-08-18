@@ -15,9 +15,9 @@
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
           commonDesktop
           swayfxStack
+          gaming
           pulseaudio
           virtManager
-          gaming
         ];
 
         systemConstants.system = sysConst;
