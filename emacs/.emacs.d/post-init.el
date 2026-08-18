@@ -698,7 +698,9 @@
              avy-goto-char-2
              avy-next)
   :init
-  (global-set-key (kbd "C-'") 'avy-goto-char-2))
+  (global-set-key (kbd "C-'") 'avy-goto-char-2)
+  (with-eval-after-load 'org
+    (define-key org-mode-map (kbd "C-'") #'avy-goto-char-2)))
 
 
 ;; Enables automatic indentation of code while typing
