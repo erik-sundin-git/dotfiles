@@ -12,6 +12,7 @@
           "${modifier}+Return" = "exec alacritty";
           "${modifier}+Shift+q" = "kill";
           "${modifier}+d" = "exec wofi --show drun";
+          "${modifier}+Shift+a" = "exec nix-add-package";
 
           "${modifier}+m" = "workspace mail";
           "${modifier}+Shift+m" = "move container to workspace mail";

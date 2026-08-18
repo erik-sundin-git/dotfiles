@@ -85,6 +85,8 @@
           corner_radius 8
           default_dim_inactive 0.1
           shadows disable
+
+          for_window [app_id="ai-add-pkg"] floating enable, resize set 1000 720, move position center
         '';
       };
 
