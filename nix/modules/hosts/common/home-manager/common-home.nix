@@ -53,7 +53,10 @@
       home.file.".local/share/fonts/static".source = "${inputs.self}/fonts";
 
       home.file.".config/nitrogen/nitrogen.cfg".source = "${inputs.self}/nitrogen/nitrogen.cfg";
-      home.packages = with pkgs; [ ledger ];
+      home.packages = with pkgs; [
+        ledger
+        kdePackages.kdeconnect-kde
+      ];
 
       programs.home-manager.enable = true;
       programs.git.enable = true;
