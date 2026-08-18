@@ -52,6 +52,9 @@
       environment.systemPackages = with pkgs; [
         python3
         gnumake
+        unzip
+        wget
+        clang-tools
       ];
     };
 }
