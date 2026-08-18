@@ -50,6 +50,10 @@
             description = "shutdown";
           }
           {
+            key = "e";
+            description = "logout";
+          }
+          {
             key = "Esc/Spc";
             description = "exit";
           }
@@ -100,6 +104,7 @@
           "h" = "exec ${powerNotif.exit}; exec systemctl hibernate; mode default";
           "r" = "exec ${powerNotif.exit}; exec systemctl reboot; mode default";
           "s" = "exec ${powerNotif.exit}; exec systemctl poweroff; mode default";
+          "e" = "exec ${powerNotif.exit}; mode default; exec swaymsg exit";
         };
         options = optionsExit // {
           "v" = "exec ${optionsNotif.exit}; exec vpn-toggle; mode default";
