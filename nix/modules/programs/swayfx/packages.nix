@@ -20,18 +20,32 @@
           pkgs.claude-code
         ];
         text = ''
+          # Interactive helper: pick a nixpkgs package name and a target file,
+          # then hand off to claude to make the edit. Bound to mod+Shift+a.
+
           default_target="$HOME/dotfiles/nix/modules/hosts/${host}/${host}.nix"
 
-          pkg=$(wofi --dmenu --prompt "Package to add: " --lines 0 < /dev/null) || exit 0
+          pkg=$(wofi --dmenu \
+              --prompt "nixpkgs package (e.g. htop): " \
+              --lines 0 < /dev/null) || exit 0
           [[ -z "$pkg" ]] && exit 0
 
-          target=$(printf '%s\n' \
-              "$default_target" \
-              "$HOME/dotfiles/nix/modules/hosts/common/nixos/common-desktop.nix" \
-              "$HOME/dotfiles/nix/modules/programs/desktop-apps.nix" \
-              "$HOME/dotfiles/nix/modules/programs/gaming/gaming.nix" \
-              | wofi --dmenu --prompt "Add to file: ") || exit 0
-          [[ -z "$target" ]] && exit 0
+          # Friendly labels → real paths. Selecting a label maps back to the path.
+          declare -A targets=(
+            ["this host (${host}.nix)"]="$default_target"
+            ["system-wide (common-desktop.nix)"]="$HOME/dotfiles/nix/modules/hosts/common/nixos/common-desktop.nix"
+            ["user apps (desktop-apps.nix)"]="$HOME/dotfiles/nix/modules/programs/desktop-apps.nix"
+            ["gaming (gaming.nix)"]="$HOME/dotfiles/nix/modules/programs/gaming/gaming.nix"
+          )
+          # Print keys in a fixed order — associative array iteration is unordered.
+          label=$(printf '%s\n' \
+              "this host (${host}.nix)" \
+              "system-wide (common-desktop.nix)" \
+              "user apps (desktop-apps.nix)" \
+              "gaming (gaming.nix)" \
+              | wofi --dmenu --prompt "Add \"$pkg\" to: ") || exit 0
+          [[ -z "$label" ]] && exit 0
+          target="''${targets[$label]}"
 
           prompt="Add the package \`$pkg\` to the appropriate packages list in \`$target\`. If the file has no packages list yet, create one in the correct spot for its module type (environment.systemPackages for NixOS modules, home.packages for Home Manager modules). Preserve the \`with pkgs;\` style if present. After the edit, remind me to run \`rebuild\`."
 
