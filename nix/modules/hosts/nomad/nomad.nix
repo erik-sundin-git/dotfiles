@@ -22,6 +22,8 @@
 
         systemConstants.system = sysConst;
 
+        services.hardware.bolt.enable = true;
+
         home-manager.users.erik = {
           imports = with inputs.self.modules.homeManager; [
             gh
