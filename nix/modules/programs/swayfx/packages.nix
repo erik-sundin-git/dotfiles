@@ -53,6 +53,46 @@
               -e claude "$prompt"
         '';
       };
+
+      sway-help = pkgs.writeShellApplication {
+        name = "sway-help";
+        runtimeInputs = [ pkgs.wofi ];
+        text = ''
+          # Read-only shortcut cheatsheet. Selecting a row is a no-op — this is
+          # just a viewer. Update this list when adding/removing custom binds.
+          wofi --dmenu \
+              --prompt "Sway shortcuts" \
+              --width 700 --height 500 \
+              --insensitive > /dev/null <<'EOF' || true
+          mod+Return          Terminal (alacritty)
+          mod+d               App launcher (wofi drun)
+          mod+Shift+q         Kill focused window
+          mod+Shift+a         Add nix package (interactive claude flow)
+          mod+F1              This help menu
+
+          mod+h / j / k / l           Focus left / down / up / right
+          mod+Shift+h / j / k / l     Move window left / down / up / right
+          mod+b                       Split horizontal
+          mod+v                       Split vertical
+
+          mod+1 .. 9              Switch to workspace N
+          mod+Shift+1 .. 9        Move focused window to workspace N
+          mod+m / Shift+m         Workspace mail / move to mail
+          mod+e / Shift+e         Workspace emacs / move to emacs
+
+          Print                   Screenshot area
+          mod+Print               Screenshot full screen
+
+          XF86AudioRaiseVolume    Volume up
+          XF86AudioLowerVolume    Volume down
+          XF86AudioMute           Mute toggle
+
+          XF86MonBrightnessUp     Screen brightness up (laptop)
+          XF86MonBrightnessDown   Screen brightness down (laptop)
+          mod+XF86MonBrightness*  Keyboard backlight up/down (laptop)
+          EOF
+        '';
+      };
     in
     {
       home.packages = [
@@ -66,6 +106,7 @@
         pkgs.swaybg
         pkgs.nerd-fonts.jetbrains-mono
         nix-add-package
+        sway-help
       ]
       ++ waylandScreenshots
       ++ lib.optionals isLaptop [
