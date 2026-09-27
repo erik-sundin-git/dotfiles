@@ -1,12 +1,12 @@
 { ... }:
 {
   flake.modules.homeManager.gammastep =
-    { config, ... }:
+    { ... }:
     {
       services.gammastep = {
         enable = true;
-        latitude = config.systemConstants.latitude;
-        longitude = config.systemConstants.longitude;
+        dawnTime = "07:00";
+        duskTime = "21:00";
         temperature.day = 6500;
         temperature.night = 2500;
       };
