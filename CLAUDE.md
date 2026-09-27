@@ -20,6 +20,7 @@ Personal dotfiles for Erik Sundin. The Nix flake manages Home Manager and NixOS 
 | `forge` | NixOS desktop (nixosConfigurations) | `#forge` | `hosts/forge/` |
 | `ether` | NixOS VM (nixosConfigurations) | `#ether` | `hosts/ether/` |
 | `specter` | NixOS laptop (nixosConfigurations) | `#specter` | `hosts/specter/` |
+| `wisp` | NixOS laptop (nixosConfigurations) | `#wisp` | `hosts/wisp/` |
 
 Each host configuration sets `systemConstants.system.host` and `systemConstants.system.type`, which downstream modules (e.g. `shell/bash/aliases.nix`) use to vary behavior per host.
 
@@ -73,6 +74,7 @@ nix/modules/
 │   ├── forge/                   # NixOS desktop — commonDesktop + i3Stack(nixos); homeManager: commonHome + i3Stack + alacritty + vpn
 │   ├── ether/                   # NixOS VM — full NixOS config + embedded homeManager
 │   ├── specter/                 # NixOS laptop — commonDesktop + swayfxStack(nixos); homeManager: commonHome + swayfxStack
+│   ├── wisp/                    # NixOS laptop (Lenovo Yoga S740-14IIL) — commonDesktop + swayfxStack(nixos) + virtManager; homeManager: commonHome + swayfxStack + gh + chromium
 │   ├── live-iso/                # Bootable NixOS ISO — TTY-only, git, emacs, claude-code, dotfiles at /etc/dotfiles, prepare-disk install script
 │   ├── common/
 │   │   ├── home-manager/commonHome # Import hub: systemConstants, theme, emacs, librewolf, bash, nh; sets .xinitrc/.xprofile/.Xresources

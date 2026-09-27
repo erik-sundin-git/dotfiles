@@ -4,5 +4,6 @@
   den.hosts.x86_64-linux.forge = { };
   den.hosts.x86_64-linux.ether = { };
   den.hosts.x86_64-linux.specter = { };
+  den.hosts.x86_64-linux.wisp = { };
   den.default.nixos.system.stateVersion = "25.11";
 }
