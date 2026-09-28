@@ -3,6 +3,21 @@
   flake.modules.nixos.gaming =
     { pkgs, ... }:
     {
+      programs.nix-ld.libraries = with pkgs; [
+        libGL
+        mesa
+        xorg.libX11
+        xorg.libXrandr
+        xorg.libXcursor
+        xorg.libXi
+        xorg.libXext
+        xorg.libXtst
+        xorg.libXxf86vm
+        libpulseaudio
+        udev
+        stdenv.cc.cc
+        openssl
+      ];
       hardware.graphics = {
         enable = true;
         enable32Bit = true;
