@@ -33,6 +33,8 @@
 
       boot.kernel.sysctl."vm.max_map_count" = 2147483642;
 
+      programs.nix-ld.enable = true;
+
       programs.gamemode.enable = true;
 
       programs.steam = {
@@ -48,6 +50,7 @@
         mangohud
         protonup-qt
         bolt-launcher
+        jdk
       ];
     };
 }

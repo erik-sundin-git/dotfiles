@@ -17,6 +17,8 @@
   libappindicator-gtk3,
   alsa-lib,
   mesa,
+  libglvnd,
+  openssl,
 }:
 
 stdenv.mkDerivation {
@@ -46,6 +48,7 @@ stdenv.mkDerivation {
     libappindicator-gtk3
     alsa-lib
     mesa
+    libglvnd
   ];
 
   unpackPhase = "dpkg-deb -x $src .";
@@ -65,7 +68,8 @@ stdenv.mkDerivation {
       --replace-fail "/opt/CurseForge/curseforge" "$out/bin/curseforge"
 
     makeWrapper $out/opt/CurseForge/curseforge $out/bin/curseforge \
-      --prefix PATH : ${lib.makeBinPath [ xdg-utils ]}
+      --prefix PATH : ${lib.makeBinPath [ xdg-utils ]} \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ mesa libglvnd openssl ]}
 
     runHook postInstall
   '';
