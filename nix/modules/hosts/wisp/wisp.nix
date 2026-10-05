@@ -15,6 +15,7 @@
           commonDesktop
           swayfxStack
           gaming
+          geforcenow
           pulseaudio
           virtManager
         ];
@@ -29,6 +30,7 @@
             imports = with inputs.self.modules.homeManager; [
               gh
               chromium
+              geforcenow
             ];
             home.packages = [ pkgs.local.curseforge ];
             systemConstants.system = sysConst;
