@@ -1,0 +1,17 @@
+{
+	id: "12a16279-1f3e-432e-852d-9d4de3331d3c"
+	type: "player"
+	player_name: "Erkovich"
+	ranks: {
+		12a16279-1f3e-432e-852d-9d4de3331d3c: "owner"
+	}
+	properties: {
+		"ftbteams:display_name": "Erkovich"
+		"ftbteams:description": ""
+		"ftbteams:color": "#59E4FF"
+		"ftbteams:free_to_join": 0b
+		"ftbteams:max_msg_history_size": 1000
+	}
+	message_history: [ ]
+	extra: { }
+}

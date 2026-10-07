@@ -1,0 +1,142 @@
+
+[playerConfig]
+	customPlayerGroups = []
+	bonusPlayerGroups = 0
+	bonusPlayerGroupSpace = 0
+	version = 11
+
+	[playerConfig.claims]
+		usedSub = "main"
+		usedServerSub = "main"
+		name = ""
+		color = 0
+		protectClaimedChunks = true
+		bonusChunkClaims = 0
+		bonusChunkForceloads = 0
+
+		[playerConfig.claims.protection]
+			fluidBarrier = true
+			pistonBarrier = true
+			neighborChunksItemUse = true
+			dispenserBarrier = true
+			playerDeathLoot = "N"
+			overrideMobGriefingRule = true
+
+			[playerConfig.claims.protection.exceptions]
+				platesByOther = "E"
+				platesByMobs = "N"
+				targetsByProjectiles = "N"
+				tripwireByMobs = "N"
+				tripwireByPlayers = "N"
+				buttonsByProjectiles = "N"
+				platesByPlayers = "N"
+				tripwireByOther = "N"
+				netherPortalsPlayers = "N"
+				itemUse = "N"
+				itemTossPlayers = "E"
+				playersByOther = true
+				itemTossOther = "E"
+				spawnersFriendly = true
+				blocksByOther = "N"
+				netherPortalsMobs = "N"
+				itemPickupPlayers = "E"
+				entitiesByExplosions = false
+				playersByMobs = true
+				itemTossMobs = "E"
+				itemPickupMobs = "E"
+				spawnersHostile = true
+				xpPickup = "E"
+				itemPickupRedirect = false
+				blocksRedirect = true
+				playerLightning = "N"
+				entitiesByOther = "N"
+				entitiesByMobs = "N"
+				mobLoot = "E"
+				playersByPlayers = true
+				entitiesRedirect = true
+				projectileHitHostileSpawn = "N"
+				projectileHitFriendlySpawn = "N"
+				chorusFruitTeleport = "N"
+				naturalSpawnHostile = true
+				raids = false
+				naturalSpawnFriendly = true
+				netherPortalsOther = "N"
+				blocksByMobs = "N"
+				blocksByExplosions = false
+				entitiesByPlayers = "N"
+				playersRedirect = true
+				entitiesByFire = false
+				frostWalking = "N"
+				cropTrample = true
+				blocksByPlayers = "N"
+				itemTossRedirect = true
+				fullAccess = "P"
+				fireSpread = false
+
+				[playerConfig.claims.protection.exceptions.groups]
+
+					[playerConfig.claims.protection.exceptions.groups.block]
+
+						[playerConfig.claims.protection.exceptions.groups.block.interact]
+							Doors = "N"
+							Barrels = "N"
+							Hoppers = "N"
+							Beds = "N"
+							Dispenser-like = "N"
+							Furnaces = "N"
+							Chests = "N"
+							Beacons = "N"
+							Anvils = "N"
+							Shulker_Boxes = "N"
+							Enchanting_Tables = "N"
+							Ender_Chests = "N"
+							Controls = "N"
+							Create_Shops = "N"
+							Create_Depot = "N"
+
+						[playerConfig.claims.protection.exceptions.groups.block.break]
+							Crops = "N"
+
+					[playerConfig.claims.protection.exceptions.groups.entity]
+
+						[playerConfig.claims.protection.exceptions.groups.entity.blockAccess]
+							Villagers = "N"
+
+						[playerConfig.claims.protection.exceptions.groups.entity.barrier]
+							Ender_Pearls = "E"
+							Players = "E"
+
+						[playerConfig.claims.protection.exceptions.groups.entity.break]
+							Livestock = "N"
+
+						[playerConfig.claims.protection.exceptions.groups.entity.entityAccess]
+							Zombies = "N"
+
+						[playerConfig.claims.protection.exceptions.groups.entity.interact]
+							Traders = "N"
+							Armor_Stands = "N"
+
+						[playerConfig.claims.protection.exceptions.groups.entity.droppedItemAccess]
+							Foxes = "N"
+							Villagers = "N"
+							Piglins = "N"
+
+						[playerConfig.claims.protection.exceptions.groups.entity.handInteract]
+							Item_Frames = "N"
+
+					[playerConfig.claims.protection.exceptions.groups.item]
+
+						[playerConfig.claims.protection.exceptions.groups.item.interact]
+							Books = "N"
+
+		[playerConfig.claims.forceload]
+			enabled = true
+			offlineForceload = false
+
+	[playerConfig.parties]
+		name = ""
+		shareLocationWithParty = true
+		shareLocationWithMutualAllyParties = false
+		receiveLocationsFromParty = true
+		receiveLocationsFromMutualAllyParties = false
+
