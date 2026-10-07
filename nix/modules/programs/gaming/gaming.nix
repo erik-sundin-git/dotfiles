@@ -1,8 +1,10 @@
-{ ... }:
+{ inputs, ... }:
 {
   flake.modules.nixos.gaming =
     { pkgs, ... }:
     {
+      imports = [ inputs.self.modules.nixos.geforcenow ];
+
       programs.nix-ld.libraries = with pkgs; [
         libGL
         mesa
