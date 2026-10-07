@@ -23,11 +23,11 @@
 
 stdenv.mkDerivation {
   pname = "curseforge";
-  version = "1.321.1";
+  version = "1.322.0";
 
   src = fetchurl {
     url = "https://curseforge.overwolf.com/downloads/curseforge-latest-linux.deb";
-    hash = "sha256-D/AemSwEFlO/xRMdwruzMw51wM5XhsFyA5E0T9xbOZs=";
+    hash = "sha256-3N8LXroBKdLji4Eeal9NudOyUn76kfNqegXxqpuOgU8=";
   };
 
   nativeBuildInputs = [

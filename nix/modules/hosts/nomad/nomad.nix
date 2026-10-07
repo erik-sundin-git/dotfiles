@@ -32,11 +32,15 @@
           ];
         };
 
-        home-manager.users.erik = {
+        home-manager.users.erik =
+          { pkgs, ... }:
+          {
           imports = with inputs.self.modules.homeManager; [
             gh
             chromium
+            geforcenow
           ];
+          home.packages = [ pkgs.local.curseforge ];
           systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
           selectedTheme = "catppuccin";
