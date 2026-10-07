@@ -1,10 +1,9 @@
 { ... }:
 {
   flake.modules.homeManager.hyprland =
-    { config, lib, pkgs, ... }:
+    { lib, isLaptop, ... }:
     let
       mod = "SUPER";
-      isLaptop = config.systemConstants.system.type == "laptop";
     in
     {
       wayland.windowManager.hyprland.settings = {
@@ -14,6 +13,7 @@
             "${mod}, Return, exec, alacritty"
             "${mod} SHIFT, Q, killactive,"
             "${mod}, D, exec, wofi --show drun"
+            "${mod} CTRL, L, exec, loginctl lock-session"
             "${mod} SHIFT, Space, togglefloating,"
 
             # Focus (hy3)
@@ -60,6 +60,9 @@
         # Works even when screen is locked
         bindl = [
           ", XF86AudioMute, exec, swayosd-client --output-volume mute-toggle"
+        ]
+        ++ lib.optionals isLaptop [
+          ", switch:on:Lid Switch, exec, loginctl lock-session"
         ];
 
         # Mouse binds for floating windows

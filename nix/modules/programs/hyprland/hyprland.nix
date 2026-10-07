@@ -18,12 +18,12 @@
       lib,
       pkgs,
       hexToHyprRgb,
+      isLaptop,
       ...
     }:
     let
       c = config.theme;
       kb = config.systemConstants.keyboard;
-      isLaptop = config.systemConstants.system.type == "laptop";
       wallpaper = config.systemConstants.wallpaper;
     in
     {
@@ -40,17 +40,17 @@
         settings = {
           general = {
             layout = "hy3";
-            gaps_in = 0;
-            gaps_out = 0;
+            gaps_in = c.gaps;
+            gaps_out = c.gaps;
             border_size = 2;
             "col.active_border" = hexToHyprRgb c.blue;
             "col.inactive_border" = hexToHyprRgb c.black;
           };
 
           decoration = {
-            rounding = 8;
+            rounding = c.rounding;
             blur = {
-              enabled = true;
+              enabled = c.blur;
               size = 6;
               passes = 2;
               new_optimizations = true;

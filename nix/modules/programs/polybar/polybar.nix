@@ -5,10 +5,10 @@
       pkgs,
       config,
       lib,
+      isLaptop,
       ...
     }:
     let
-      laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
       c = config.theme;
       rightModules = lib.concatStringsSep " " (
@@ -16,9 +16,9 @@
           "vpn"
           "ipv6"
         ]
-        ++ lib.optionals laptop [ "wireless" ]
+        ++ lib.optionals isLaptop [ "wireless" ]
         ++ [ "ethernet" ]
-        ++ lib.optionals laptop [ "battery" ]
+        ++ lib.optionals isLaptop [ "battery" ]
         ++ [ "disk" ]
         ++ lib.optionals (thermalPath != null) [ "temperature" ]
         ++ [
@@ -54,7 +54,7 @@
             height = 22;
             background = c.background;
             foreground = c.foreground;
-            font-0 = "JetBrainsMono Nerd Font:size=12;3";
+            font-0 = "${c.fontFamily}:size=12;3";
             modules-left = "i3 tray";
             modules-right = rightModules;
             radius = 0;

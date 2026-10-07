@@ -14,6 +14,7 @@
         ffmpeg
         yt-dlp
         htop
+        local.irealpro
       ];
     };
 }

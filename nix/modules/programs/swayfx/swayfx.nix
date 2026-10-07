@@ -16,12 +16,13 @@
       config,
       lib,
       pkgs,
+      isLaptop,
       ...
     }:
     let
       kb = config.systemConstants.keyboard;
-      isLaptop = config.systemConstants.system.type == "laptop";
       wallpaper = config.systemConstants.wallpaper;
+      t = config.theme;
     in
     {
       imports = with inputs.self.modules.homeManager; [
@@ -47,8 +48,8 @@
           defaultWorkspace = "workspace number 1";
 
           gaps = {
-            inner = 0;
-            outer = 0;
+            inner = t.gaps;
+            outer = t.gaps;
           };
 
           window.border = 2;
@@ -79,11 +80,9 @@
         };
 
         extraConfig = ''
-          blur enable
-          blur_passes 2
-          blur_radius 6
-          corner_radius 8
-          default_dim_inactive 0.1
+          ${lib.optionalString t.blur "blur enable\nblur_passes 2\nblur_radius 6"}
+          corner_radius ${toString t.rounding}
+          default_dim_inactive ${if t.opacity < 1.0 then "0.1" else "0.0"}
           shadows disable
 
           for_window [app_id="ai-add-pkg"] floating enable, resize set 1000 720, move position center

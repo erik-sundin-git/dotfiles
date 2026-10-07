@@ -5,6 +5,16 @@
     let
       c = config.theme;
       frameColor = c.blue;
+      # Dunst invokes the script with 6 positional args (appname, summary, body,
+      # icon, urgency, raw_icon); we ignore them and just play a sound.
+      playSound =
+        name:
+        toString (
+          pkgs.writeShellScript "dunst-sound-${name}" ''
+            exec ${pkgs.pulseaudio}/bin/paplay \
+              ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/${name}.oga
+          ''
+        );
     in
     {
       home.packages = [ pkgs.libnotify ];
@@ -15,8 +25,8 @@
           global = {
             frame_color = frameColor;
             separator_color = "frame";
-            font = "Monospace 10";
-            corner_radius = 4;
+            font = "${c.fontFamily} 10";
+            corner_radius = c.rounding;
             frame_width = 2;
           };
           urgency_low = {
@@ -36,6 +46,7 @@
             foreground = c.red;
             frame_color = c.red;
             timeout = 0;
+            script = playSound "dialog-warning";
           };
         };
       };

@@ -14,6 +14,7 @@
           inputs.home-manager.nixosModules.home-manager
           commonDesktop
           swayfxStack
+          pulseaudio
         ];
 
         systemConstants.system = sysConst;

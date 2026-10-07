@@ -17,6 +17,7 @@
     {
       imports = with inputs.self.modules.homeManager; [
         i3
+        i3Lock
         polybar
         picom
         gtk

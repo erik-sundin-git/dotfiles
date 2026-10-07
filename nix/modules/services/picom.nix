@@ -1,17 +1,21 @@
 { ... }:
 {
   flake.modules.homeManager.picom =
-    { ... }:
+    { config, lib, ... }:
+    let
+      t = config.theme;
+      opacityPct = toString (builtins.floor (t.opacity * 100));
+    in
     {
       services.picom = {
         enable = true;
         inactiveOpacity = 1;
-        opacityRules = [
-          "90:class_g = 'Alacritty'"
-          "90:class_g = 'Emacs'"
+        opacityRules = lib.optionals (t.opacity < 1.0) [
+          "${opacityPct}:class_g = 'Alacritty'"
+          "${opacityPct}:class_g = 'Emacs'"
         ];
         settings = {
-          corner-radius = 0;
+          corner-radius = t.rounding;
         };
       };
     };

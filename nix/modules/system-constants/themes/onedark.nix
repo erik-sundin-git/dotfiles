@@ -5,6 +5,13 @@
     { lib, config, ... }:
     {
       config.theme = lib.mkIf (config.selectedTheme == "onedark") {
+        # Shape/opacity: onedark stays as before — sharp corners, translucent,
+        # windows flush against each other.
+        rounding = 0;
+        gaps = 0;
+        opacity = 0.85;
+        blur = true;
+
         background = "#000000";
         superDark = "#000000";
         foreground = "#abb2bf";

@@ -6,10 +6,11 @@
       lib,
       pkgs,
       waylandScreenshots,
+      isLaptop,
+      swayBindingsData,
       ...
     }:
     let
-      isLaptop = config.systemConstants.system.type == "laptop";
       host = config.systemConstants.system.host;
 
       nix-add-package = pkgs.writeShellApplication {
@@ -54,49 +55,62 @@
         '';
       };
 
+      # ---- sway-help: rendered from swayBindingsData ----
+      keyColWidth = 24;
+      pad = s: s + lib.concatStrings (
+        builtins.genList (_: " ") (lib.max 1 (keyColWidth - lib.stringLength s))
+      );
+
+      # A bind is displayed as either "mod+<key>" or the raw key.
+      displayKey = b:
+        if (b.mod or true) then "mod+${b.key}" else b.key;
+
+      renderBindRow = b: "  ${pad (displayKey b)}${b.desc}";
+
+      renderSection = s:
+        let
+          rows =
+            if s ? helpSummary
+            then map (line: "  ${line}") s.helpSummary
+            else map renderBindRow s.binds;
+        in
+        "${s.title}\n" + lib.concatStringsSep "\n" rows;
+
+      renderMode = name: m:
+        let
+          modPrefix = if m.entryMod == "" then "" else "${m.entryMod}+";
+          entryDisplay = "mod+${modPrefix}${m.entryKey}";
+          innerRows = map (b: "      ${pad b.key}${b.desc}") m.bindings;
+        in
+        "  ${pad entryDisplay}${m.title} mode\n" + lib.concatStringsSep "\n" innerRows;
+
+      helpBody = lib.concatStringsSep "\n\n" (
+        (map renderSection swayBindingsData.sections)
+        ++ lib.optional isLaptop (renderSection swayBindingsData.laptopSection)
+        ++ [
+          ("Modes\n" + lib.concatStringsSep "\n\n"
+            (lib.mapAttrsToList renderMode swayBindingsData.modes))
+        ]
+      );
+
       sway-help = pkgs.writeShellApplication {
         name = "sway-help";
         runtimeInputs = [ pkgs.wofi ];
         text = ''
           # Read-only shortcut cheatsheet. Selecting a row is a no-op — this is
-          # just a viewer. Update this list when adding/removing custom binds.
+          # just a viewer. All rows are generated from swayBindingsData, so
+          # adding a bind in bindings-data.nix updates this list automatically.
           wofi --dmenu \
               --prompt "Sway shortcuts" \
-              --width 700 --height 500 \
+              --width 700 --height 600 \
               --insensitive > /dev/null <<'EOF' || true
-          mod+Return          Terminal (alacritty)
-          mod+d               App launcher (wofi drun)
-          mod+Shift+q         Kill focused window
-          mod+Shift+a         Add nix package (interactive claude flow)
-          mod+F1              This help menu
-
-          mod+h / j / k / l           Focus left / down / up / right
-          mod+Shift+h / j / k / l     Move window left / down / up / right
-          mod+b                       Split horizontal
-          mod+v                       Split vertical
-
-          mod+1 .. 9              Switch to workspace N
-          mod+Shift+1 .. 9        Move focused window to workspace N
-          mod+m / Shift+m         Workspace mail / move to mail
-          mod+e / Shift+e         Workspace emacs / move to emacs
-
-          Print                   Screenshot area
-          mod+Print               Screenshot full screen
-
-          XF86AudioRaiseVolume    Volume up
-          XF86AudioLowerVolume    Volume down
-          XF86AudioMute           Mute toggle
-
-          XF86MonBrightnessUp     Screen brightness up (laptop)
-          XF86MonBrightnessDown   Screen brightness down (laptop)
-          mod+XF86MonBrightness*  Keyboard backlight up/down (laptop)
+          ${helpBody}
           EOF
         '';
       };
     in
     {
       home.packages = [
-        pkgs.wofi
         pkgs.jq
         pkgs.pavucontrol
         pkgs.swayosd

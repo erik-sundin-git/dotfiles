@@ -2,18 +2,14 @@
 {
   flake.modules.homeManager.hyprland =
     {
-      config,
       lib,
       pkgs,
       waylandScreenshots,
+      isLaptop,
       ...
     }:
-    let
-      isLaptop = config.systemConstants.system.type == "laptop";
-    in
     {
       home.packages = [
-        pkgs.wofi
         pkgs.jq
         pkgs.pavucontrol
         pkgs.pulseaudio

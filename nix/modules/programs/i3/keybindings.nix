@@ -1,10 +1,9 @@
 { ... }:
 {
   flake.modules.homeManager.i3 =
-    { config, lib, ... }:
+    { config, lib, isLaptop, ... }:
     let
       modifier = config.xsession.windowManager.i3.config.modifier;
-      isLaptop = config.systemConstants.system.type == "laptop";
     in
     {
       xsession.windowManager.i3.config.keybindings = lib.mkOptionDefault (
@@ -12,6 +11,7 @@
           "${modifier}+Return" = "exec alacritty";
           "${modifier}+Shift+q" = "kill";
           "${modifier}+d" = "exec --no-startup-id dmenu_run";
+          "${modifier}+Ctrl+l" = "exec --no-startup-id loginctl lock-session";
 
           "${modifier}+m" = "workspace mail";
           "${modifier}+Shift+m" = "move container to workspace mail";

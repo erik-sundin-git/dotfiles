@@ -9,10 +9,12 @@
 
   flake.modules.homeManager.i3 =
     {
+      config,
       pkgs,
       ...
     }:
     let
+      t = config.theme;
       importEnv = pkgs.writeShellScript "i3-import-env" ''
         systemctl --user import-environment \
           DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS
@@ -34,8 +36,8 @@
           defaultWorkspace = "workspace number 1";
 
           gaps = {
-            inner = 0;
-            outer = 0;
+            inner = t.gaps;
+            outer = t.gaps;
           };
 
           window.border = 2;

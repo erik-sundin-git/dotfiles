@@ -117,10 +117,10 @@
         in
         {
           enter = pkgs.writeShellScript "i3-mode-notif-enter" ''
-            notify-send -u low -t 0 --print-id "${modeTitle}" "${body}" > $XDG_RUNTIME_DIR/i3-mode-notif
+            notify-send -u low -t 0 --print-id "${modeTitle}" "${body}" > "$XDG_RUNTIME_DIR/i3-mode-notif"
           '';
           exit = pkgs.writeShellScript "i3-mode-notif-exit" ''
-            dunstctl close "$(cat $XDG_RUNTIME_DIR/i3-mode-notif 2>/dev/null)" 2>/dev/null
+            dunstctl close "$(cat "$XDG_RUNTIME_DIR/i3-mode-notif" 2>/dev/null)" 2>/dev/null
           '';
         };
 

@@ -3,7 +3,7 @@
     { config, pkgs, ... }:
     let
       c = config.theme;
-      fontFamily = "AdwaitaMono Nerd Font";
+      fontFamily = c.fontFamily;
     in
     {
       programs.alacritty = {
@@ -67,7 +67,7 @@
               y = 8;
             };
             decorations = "full";
-            opacity = 0.85;
+            opacity = c.opacity;
           };
 
           cursor = {

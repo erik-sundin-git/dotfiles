@@ -6,11 +6,11 @@
       lib,
       pkgs,
       hexToRgba,
+      isLaptop,
       ...
     }:
     let
       c = config.theme;
-      laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
       isHyprland = config.wayland.windowManager.hyprland.enable;
 
@@ -58,7 +58,7 @@
                 "custom/vpn"
                 "network"
               ]
-              ++ lib.optionals laptop [ "battery" ]
+              ++ lib.optionals isLaptop [ "battery" ]
               ++ [
                 "disk"
                 "memory"
@@ -158,13 +158,13 @@
           * {
             border: none;
             border-radius: 0;
-            font-family: "JetBrainsMono Nerd Font";
+            font-family: "${c.fontFamily}";
             font-size: 13px;
             min-height: 0;
           }
 
           window#waybar {
-            background: ${hexToRgba c.superDark "0.5"};
+            background: ${hexToRgba c.superDark (if c.blur then "0.5" else "1.0")};
             color: ${c.foreground};
           }
 
@@ -172,6 +172,7 @@
             color: ${c.brightBlack};
             padding: 0 4px;
             background: transparent;
+            border-radius: ${toString (c.rounding / 2)}px;
           }
 
           #workspaces button.active,

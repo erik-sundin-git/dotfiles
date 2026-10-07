@@ -45,6 +45,7 @@
           quickemu
           cmake
           alacritty
+          xfce.thunar
           nixfmt
           fastfetch
           wineWow64Packages.stable
@@ -71,6 +72,7 @@
         ];
         programs.ssh.askPassword = "${pkgsUnstable.openssh-askpass}/libexec/gtk-ssh-askpass";
         services.udev.packages = [ pkgs.brightnessctl ];
+        programs.kdeconnect.enable = true;
         programs.dconf.enable = true;
         services.gnome.gnome-keyring.enable = true;
         services.printing.enable = true;

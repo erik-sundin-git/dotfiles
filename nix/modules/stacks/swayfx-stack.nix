@@ -17,7 +17,9 @@
     {
       imports = with inputs.self.modules.homeManager; [
         swayfx
+        swayLock
         waybar
+        wofi
         gtk
         dunst
         starship

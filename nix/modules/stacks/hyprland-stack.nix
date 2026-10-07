@@ -17,7 +17,9 @@
     {
       imports = with inputs.self.modules.homeManager; [
         hyprland
+        hyprlandLock
         waybar
+        wofi
         gtk
         dunst
         starship

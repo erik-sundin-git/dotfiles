@@ -3,9 +3,9 @@
   flake.modules.homeManager.i3 =
     {
       pkgs,
-      config,
       lib,
       mkScreenshot,
+      isLaptop,
       ...
     }:
     {
@@ -23,7 +23,7 @@
         })
         (mkScreenshot { name = "screenshot-full"; })
       ]
-      ++ lib.optionals (config.systemConstants.system.type == "laptop") [
+      ++ lib.optionals isLaptop [
         pkgs.brightnessctl
       ];
     };

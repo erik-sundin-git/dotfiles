@@ -5,110 +5,51 @@
       config,
       lib,
       mkModeNotif,
+      swayBindingsData,
       ...
     }:
     let
       modifier = config.wayland.windowManager.sway.config.modifier;
-      exit = {
-        "Escape" = "mode default";
-        "space" = "mode default";
-      };
-      launchNotif = mkModeNotif {
-        modeTitle = "Launch";
-        bindings = [
-          {
-            key = "e";
-            description = "emacs";
-          }
-          {
-            key = "l";
-            description = "librewolf";
-          }
-          {
-            key = "Esc/Spc";
-            description = "exit";
-          }
-        ];
-      };
-      launchExit = {
-        "Escape" = "exec ${launchNotif.exit}; mode default";
-        "space" = "exec ${launchNotif.exit}; mode default";
-      };
-      powerNotif = mkModeNotif {
-        modeTitle = "Power";
-        bindings = [
-          {
-            key = "h";
-            description = "hibernate";
-          }
-          {
-            key = "r";
-            description = "reboot";
-          }
-          {
-            key = "s";
-            description = "shutdown";
-          }
-          {
-            key = "e";
-            description = "logout";
-          }
-          {
-            key = "Esc/Spc";
-            description = "exit";
-          }
-        ];
-      };
-      powerExit = {
-        "Escape" = "exec ${powerNotif.exit}; mode default";
-        "space" = "exec ${powerNotif.exit}; mode default";
-      };
-      optionsNotif = mkModeNotif {
-        modeTitle = "Options";
-        bindings = [
-          {
-            key = "v";
-            description = "toggle vpn";
-          }
-          {
-            key = "Esc/Spc";
-            description = "exit";
-          }
-        ];
-      };
-      optionsExit = {
-        "Escape" = "exec ${optionsNotif.exit}; mode default";
-        "space" = "exec ${optionsNotif.exit}; mode default";
-      };
+
+      # Build the OSD popup, entry bind, and inner mode attrset for one mode.
+      buildMode = name: mode:
+        let
+          notif = mkModeNotif {
+            modeTitle = mode.title;
+            bindings = (map (b: { key = b.key; description = b.desc; }) mode.bindings)
+              ++ [ { key = "Esc/Spc"; description = "exit"; } ];
+          };
+          exitAction = "exec ${notif.exit}; mode default";
+          entryPrefix = if mode.entryMod == "" then "" else "${mode.entryMod}+";
+          entryBind = lib.nameValuePair
+            "${modifier}+${entryPrefix}${mode.entryKey}"
+            "exec ${notif.enter}; mode ${name}";
+          stay = mode.stayInMode or false;
+          innerBinds = lib.listToAttrs (map (b:
+            lib.nameValuePair b.key (
+              if stay
+              then b.action
+              else "exec ${notif.exit}; ${b.action}; mode default"
+            )
+          ) mode.bindings);
+          exitBinds = {
+            "Escape" = exitAction;
+            "space" = exitAction;
+          };
+        in
+        {
+          inherit entryBind;
+          attrs = lib.nameValuePair name (exitBinds // innerBinds);
+        };
+
+      modeNames = builtins.attrNames swayBindingsData.modes;
+      built = map (n: buildMode n swayBindingsData.modes.${n}) modeNames;
     in
     {
-      wayland.windowManager.sway.config.keybindings = lib.mkOptionDefault {
-        "${modifier}+i" = "exec ${launchNotif.enter}; mode launch";
-        "${modifier}+Shift+p" = "exec ${powerNotif.enter}; mode power";
-        "${modifier}+o" = "exec ${optionsNotif.enter}; mode options";
-        "${modifier}+r" = "mode resize";
-      };
+      wayland.windowManager.sway.config.keybindings = lib.mkOptionDefault (
+        lib.listToAttrs (map (m: m.entryBind) built)
+      );
 
-      wayland.windowManager.sway.config.modes = {
-        launch = launchExit // {
-          "e" = "exec ${launchNotif.exit}; exec emacs; mode default";
-          "l" = "exec ${launchNotif.exit}; exec librewolf; mode default";
-        };
-        resize = exit // {
-          "h" = "resize shrink width 10 px or 10 ppt";
-          "j" = "resize grow height 10 px or 10 ppt";
-          "k" = "resize shrink height 10 px or 10 ppt";
-          "l" = "resize grow width 10 px or 10 ppt";
-        };
-        power = powerExit // {
-          "h" = "exec ${powerNotif.exit}; exec systemctl hibernate; mode default";
-          "r" = "exec ${powerNotif.exit}; exec systemctl reboot; mode default";
-          "s" = "exec ${powerNotif.exit}; exec systemctl poweroff; mode default";
-          "e" = "exec ${powerNotif.exit}; mode default; exec swaymsg exit";
-        };
-        options = optionsExit // {
-          "v" = "exec ${optionsNotif.exit}; exec vpn-toggle; mode default";
-        };
-      };
+      wayland.windowManager.sway.config.modes = lib.listToAttrs (map (m: m.attrs) built);
     };
 }

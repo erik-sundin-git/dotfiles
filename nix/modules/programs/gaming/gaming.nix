@@ -18,6 +18,7 @@
         stdenv.cc.cc
         openssl
       ];
+
       hardware.graphics = {
         enable = true;
         enable32Bit = true;
@@ -66,6 +67,7 @@
         protonup-qt
         bolt-launcher
         jdk
+        prismlauncher
       ];
     };
 }

@@ -5,10 +5,10 @@
       config,
       lib,
       mkScript,
+      isLaptop,
       ...
     }:
     let
-      laptop = config.systemConstants.system.type == "laptop";
       thermalPath = config.systemConstants.thermalZonePath;
       c = config.theme;
     in
@@ -30,7 +30,7 @@
           label-warn-foreground = c.yellow;
         };
       }
-      // lib.optionalAttrs laptop {
+      // lib.optionalAttrs isLaptop {
         "module/battery" = {
           type = "internal/battery";
           battery = "BAT0";
