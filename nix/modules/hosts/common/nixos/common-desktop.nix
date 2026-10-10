@@ -10,19 +10,11 @@
     }:
     let
       kb = config.systemConstants.keyboard;
-      cfg = config.commonDesktop;
     in
     {
       imports = [ inputs.self.modules.nixos.commonConfig ];
 
-      options.commonDesktop.bootEFI = lib.mkEnableOption "systemd-boot EFI bootloader" // {
-        default = true;
-      };
-
       config = {
-        boot.loader.systemd-boot.enable = lib.mkIf cfg.bootEFI true;
-        boot.loader.efi.canTouchEfiVariables = lib.mkIf cfg.bootEFI true;
-
         home-manager.backupFileExtension = "backup";
         home-manager.sharedModules = with inputs.self.modules.homeManager; [
           commonHome

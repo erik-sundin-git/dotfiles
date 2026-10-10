@@ -23,7 +23,7 @@
           systemConstants.system = sysConst;
         };
 
-        commonDesktop.bootEFI = false;
+        commonConfig.bootEFI = false;
         boot.loader.grub.enable = true;
         boot.loader.grub.device = "/dev/vda";
         boot.loader.grub.useOSProber = true;

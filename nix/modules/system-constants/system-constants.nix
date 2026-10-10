@@ -70,6 +70,7 @@
             type = lib.types.enum [
               "desktop"
               "laptop"
+              "server"
             ];
             description = "Form factor of the host; controls laptop-specific features like touchpad and brightness keys.";
           };
