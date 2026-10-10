@@ -90,6 +90,12 @@
           "extensions.autoDisableScopes" = 0;
 
           "browser.translations.automaticallyPopup" = false;
+
+          # VA-API hardware video decode; AV1 off since Intel UHD 620 can't decode it in hardware
+          "media.ffmpeg.vaapi.enabled" = true;
+          "media.hardware-video-decoding.force-enabled" = true;
+          "media.av1.enabled" = false;
+          "gfx.webrender.all" = true;
         };
 
         profiles."default".extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
