@@ -1,3 +1,5 @@
 /emacs/.emacs.d/var/
 /emacs/.emacs.d/eln-cache/
 *.backup
+/result
+/result-*
