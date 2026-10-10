@@ -18,15 +18,6 @@
         ${pkgs.gawk}/bin/awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
       '';
 
-      vpnScript = pkgs.writeShellScript "waybar-vpn" ''
-        result=$(vpn-status 2>/dev/null)
-        if [ -n "$result" ]; then
-          echo "{\"text\": \"$result\", \"class\": \"connected\"}"
-        else
-          echo "{\"text\": \"VPN\", \"class\": \"disconnected\"}"
-        fi
-      '';
-
     in
     {
       programs.waybar = {
@@ -55,7 +46,6 @@
                 )
                 ++ [ "tray" ];
               modules-right = [
-                "custom/vpn"
                 "network"
               ]
               ++ lib.optionals isLaptop [ "battery" ]
@@ -134,15 +124,6 @@
                 format = "{:%Y-%m-%d %H:%M:%S}";
                 interval = 1;
               };
-            }
-            // {
-              "custom/vpn" = {
-                exec = "${vpnScript}";
-                return-type = "json";
-                interval = 5;
-                format = "{}";
-              };
-
             }
             // lib.optionalAttrs (thermalPath != null) {
               "custom/temperature" = {
@@ -230,15 +211,6 @@
           #custom-temperature {
             color: ${c.yellow};
             padding: 0 6px;
-          }
-
-          #custom-vpn {
-            color: ${c.red};
-            padding: 0 6px;
-          }
-
-          #custom-vpn.connected {
-            color: ${c.green};
           }
 
         '';
