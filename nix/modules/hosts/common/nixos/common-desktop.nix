@@ -31,7 +31,7 @@
         };
 
         environment.systemPackages = with pkgs; [
-          claude-code
+          pkgsUnstable.claude-code
           xorg.xinit
           pkgsUnstable.openssh-askpass
           quickemu
