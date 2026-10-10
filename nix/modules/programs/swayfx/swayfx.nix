@@ -1,14 +1,16 @@
 { inputs, ... }:
 {
   flake.modules.nixos.swayfx =
-    { pkgs, ... }:
+    { config, lib, pkgs, ... }:
     {
       imports = [ inputs.self.modules.nixos.waylandBase ];
 
       programs.sway.enable = true;
       programs.sway.package = pkgs.swayfx;
 
-      xdg.portal.wlr.enable = true;
+      # xdg-desktop-portal-wlr crash-loops without PipeWire, which stalls
+      # xdg-desktop-portal startup and makes waybar time out (~25s per try)
+      xdg.portal.wlr.enable = lib.mkForce config.services.pipewire.enable;
     };
 
   flake.modules.homeManager.swayfx =
