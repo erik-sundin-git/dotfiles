@@ -34,6 +34,8 @@
           AllowSuspendThenHibernate=no
         '';
 
+        programs.ssh.askPassword = "";
+
         nixpkgs.overlays = [
           inputs.self.overlays.default
           inputs.nur.overlays.default
