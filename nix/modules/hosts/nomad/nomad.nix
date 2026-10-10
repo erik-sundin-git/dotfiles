@@ -24,6 +24,12 @@
 
         services.hardware.bolt.enable = true;
 
+        # Snappier on battery than TLP's default balance_power
+        services.tlp.settings = {
+          CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
+          PLATFORM_PROFILE_ON_BAT = "balanced";
+        };
+
         networking.nat = {
           enable = true;
           externalInterface = "wlp61s0";
