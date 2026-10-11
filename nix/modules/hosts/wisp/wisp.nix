@@ -2,7 +2,7 @@
 {
   den.aspects.wisp = {
     nixos =
-      { ... }:
+      { pkgsUnstable, ... }:
       let
         sysConst = {
           type = "server";
@@ -35,6 +35,8 @@
         '';
 
         programs.ssh.askPassword = "";
+
+        environment.systemPackages = [ pkgsUnstable.claude-code ];
 
         nixpkgs.overlays = [
           inputs.self.overlays.default
