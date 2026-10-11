@@ -35,8 +35,6 @@
         LC_ALL = "en_US.UTF-8";
       };
 
-      home.file.".xinitrc".source = "${inputs.self}/xorg/.xinitrc";
-
       services.poweralertd.enable = isLaptop;
 
       home.file.".xprofile".text = ''
@@ -54,9 +52,6 @@
 
       home.file.".Xresources".text = lib.optionalString isLaptop "Xft.dpi: 120\n";
 
-      home.file.".local/share/fonts/static".source = "${inputs.self}/fonts";
-
-      home.file.".config/nitrogen/nitrogen.cfg".source = "${inputs.self}/nitrogen/nitrogen.cfg";
       home.packages = with pkgs; [
         ledger
       ];

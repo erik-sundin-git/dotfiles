@@ -1,5 +1,5 @@
-/emacs/.emacs.d/var/
-/emacs/.emacs.d/eln-cache/
+/nix/assets/emacs.d/var/
+/nix/assets/emacs.d/eln-cache/
 *.backup
 /result
 /result-*

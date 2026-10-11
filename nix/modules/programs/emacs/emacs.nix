@@ -6,7 +6,7 @@
   flake.modules.homeManager.emacs =
     { pkgs, lib, config, ... }:
     let
-      dotPath = "${inputs.self}/emacs/.emacs.d";
+      dotPath = "${inputs.self}/nix/assets/emacs.d";
       # Falls back for hosts that pull in emacs without the theme module (live-iso).
       opacity = config.theme.opacity or 1.0;
       alphaBg = builtins.floor (opacity * 100);

@@ -40,7 +40,7 @@
 
         wallpaper = lib.mkOption {
           type = lib.types.path;
-          default = "${inputs.self}/Pictures/landscapes/mountain_landscape_1.jpg";
+          default = "${inputs.self}/nix/assets/wallpapers/mountain_landscape_1.jpg";
           description = "Path to the desktop wallpaper used by sway/hyprland.";
         };
 
