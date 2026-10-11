@@ -12,7 +12,7 @@ When the user says "push", commit all pending changes as one or more logically g
 
 ## What This Repo Is
 
-Personal dotfiles for Erik Sundin: a single Nix flake producing NixOS configurations (with Home Manager embedded as a NixOS module) for several hosts, plus static dotfiles (`emacs/`, `xorg/`, `nitrogen/`, `fonts/`) that Nix modules link into place. `minecraft/` holds world saves, not config.
+Personal dotfiles for Erik Sundin: a single Nix flake producing NixOS configurations (with Home Manager embedded as a NixOS module) for several hosts. Everything lives under `nix/`; the repo root holds only `flake.nix`/`flake.lock`. Keep it that way: non-Nix files that modules reference go in `nix/assets/`, which is outside `nix/modules/`, so import-tree never tries to import them.
 
 ## Hosts
 
@@ -75,10 +75,19 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 - `gaming` imports the `geforcenow` NixOS module (flatpak + a oneshot install service), so any host that imports `gaming` gets it. It also sets `linuxPackages_latest`, i915 params, zram, nix-ld and Steam.
 - To override a value nixpkgs sets at normal priority (e.g. `xdg.portal.wlr.enable` from the sway module), use `lib.mkForce`; a plain assignment will error with conflicting definitions.
 
-## Static Dotfiles
+## Assets (`nix/assets/`)
 
-- `emacs/.emacs.d/`: based on minimal-emacs.d, using straight.el + use-package. Customisation lives in `post-init.el`; `pre-init.el` bootstraps straight. Linked by `programs/emacs/emacs.nix` via `home.file`. Wayland hosts get `emacs-pgtk` via `homeManager.waylandBase`.
-- `xorg/.xinitrc`, `nitrogen/nitrogen.cfg`, `fonts/`: linked by `commonHome`.
+- `emacs.d/`: based on minimal-emacs.d, using straight.el + use-package. Customisation lives in `post-init.el`; `pre-init.el` bootstraps straight. Linked into `~/.emacs.d/` by `programs/emacs/emacs.nix` via `home.file`. Wayland hosts get `emacs-pgtk` via `homeManager.waylandBase`.
+- `wallpapers/`: default `systemConstants.wallpaper`.
+
+forge (i3, started via `startx`) is no longer in use. Its `~/.xinitrc` was removed, so it would need one (or LightDM re-enabled) before booting into i3 again.
+
+## Secrets (`nix/secrets/`)
+
+The repo is public, so private data goes in `nix/secrets/`, which sits outside `nix/modules/`.
+- `hosts.nix`: the LAN inventory (`{ <name> = { ip; user ? "erik"; }; }`). It's **git-crypt encrypted**, so the repo must be unlocked (`git-crypt unlock ~/.config/git-crypt/dotfiles.key`) or eval fails. It's exposed as `systemConstants.network.hosts`, and `homeManager.ssh` (`shell/ssh.nix`) turns every entry into an ssh `matchBlock`, so use `ssh <host>` (e.g. `ssh wisp`) to reach hosts. Read the file for IPs. Never hardcode a LAN IP in a module.
+- Encryption is driven by `nix/secrets/.gitattributes`. Add a file's entry there **before** `git add`ing the file, then confirm with `git-crypt status nix/secrets`.
+- Runtime secrets (passwords, tokens) go in `secrets.yaml` via **sops-nix** (`nix/modules/nix/sops.nix`, imported by `commonConfig`). It stays inactive until `secrets.yaml` exists. Recipients are in `nix/secrets/.sops.yaml` (admin key + one age key per host from `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub`), and `sops` must run from `nix/secrets/`. Declare `sops.secrets.<name>` and read `config.sops.secrets.<name>.path`. The values never enter the nix store.
 
 ## Mail
 
