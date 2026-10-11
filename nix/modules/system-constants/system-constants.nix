@@ -58,10 +58,24 @@
         };
 
         network = {
-          forgeHost = lib.mkOption {
-            type = lib.types.str;
-            default = "192.168.1.224";
-            description = "LAN address of the forge desktop, used by the ssh-desktop alias.";
+          hosts = lib.mkOption {
+            type = lib.types.attrsOf (
+              lib.types.submodule {
+                options = {
+                  ip = lib.mkOption {
+                    type = lib.types.str;
+                    description = "LAN address of the host.";
+                  };
+                  user = lib.mkOption {
+                    type = lib.types.str;
+                    default = "erik";
+                    description = "Login user for ssh.";
+                  };
+                };
+              }
+            );
+            default = import "${inputs.self}/nix/secrets/hosts.nix";
+            description = "LAN inventory from nix/secrets/hosts.nix (git-crypt encrypted; the repo must be unlocked).";
           };
         };
 

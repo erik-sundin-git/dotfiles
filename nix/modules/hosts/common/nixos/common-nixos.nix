@@ -10,6 +10,7 @@
     {
       imports = [
         inputs.self.modules.generic.systemConstants
+        inputs.self.modules.nixos.sops
       ];
 
       options.commonConfig.bootEFI = lib.mkEnableOption "systemd-boot EFI bootloader" // {
@@ -64,6 +65,10 @@
           unzip
           wget
           clang-tools
+          git-crypt
+          sops
+          ssh-to-age
+          age
         ];
       };
     };

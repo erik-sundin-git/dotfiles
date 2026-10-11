@@ -23,6 +23,7 @@
         homeManager.firefox
         homeManager.bash
         homeManager.nh
+        homeManager.ssh
       ];
       _module.args.isLaptop = isLaptop;
 

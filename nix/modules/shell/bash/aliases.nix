@@ -15,7 +15,7 @@
         gc = "git commit -m";
         gp = "git push";
 
-        ssh-desktop = "ssh erik@${config.systemConstants.network.forgeHost}";
+        ssh-desktop = "ssh forge";
         rebuild = "nh os switch ~/dotfiles#${host}";
       };
     };

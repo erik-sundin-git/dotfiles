@@ -2,7 +2,7 @@
 {
   den.aspects.nomad = {
     nixos =
-      { ... }:
+      { config, ... }:
       let
         sysConst = {
           type = "laptop";
@@ -34,7 +34,7 @@
           enable = true;
           externalInterface = "wlp61s0";
           forwardPorts = [
-            { destination = "192.168.122.5:8123"; proto = "tcp"; sourcePort = 8123; }
+            { destination = "${config.systemConstants.network.hosts.hass-vm.ip}:8123"; proto = "tcp"; sourcePort = 8123; }
           ];
         };
 
