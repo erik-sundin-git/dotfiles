@@ -74,6 +74,8 @@
         xdg.portal = {
           enable = true;
           extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+          # Pre-1.17 behaviour (first portal found); sway overrides this via config.sway
+          config.common.default = "*";
         };
       };
     };
