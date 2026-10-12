@@ -53,7 +53,7 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 **Host wiring via `den`:** `hosts/topology.nix` registers `den.hosts.x86_64-linux.<host>`; each host file defines `den.aspects.<host>.nixos`. The names must match exactly — a mismatch silently applies nothing and NixOS fails with "boot loader not configured". Home Manager is pulled in per host via `inputs.home-manager.nixosModules.home-manager`; user config goes in `home-manager.users.erik`, shared HM modules via `home-manager.sharedModules`.
 
 **Layering for desktop hosts:**
-- `commonConfig` (`hosts/common/nixos/common-nixos.nix`): base system, nix settings, TLP, systemd-boot, `useGlobalPkgs`.
+- `commonConfig` (`hosts/common/nixos/common-nixos.nix`): base system, nix settings, TLP, systemd-boot, `useGlobalPkgs`, and key-only OpenSSH (the authorized key for `erik` lives here; password login is disabled).
 - `commonDesktop` (`common-desktop.nix`): imports `commonConfig`; X server/xkb (which also enables **LightDM**), users, overlays, and HM `sharedModules` = `commonHome` + alacritty + desktopApps + vpn.
 - `commonHome` (`hosts/common/home-manager/common-home.nix`): imports `generic.systemConstants` + `generic.theme`, emacs, browsers, bash, nh; sets `_module.args.isLaptop`.
 - Stacks (`stacks/*-stack.nix`) bundle a WM's NixOS side + HM side. A stack's `nixos` module adds its HM half through `home-manager.sharedModules`, so hosts only import the NixOS stack.
@@ -66,13 +66,15 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 
 **Theme system** (`system-constants/theme.nix` + `themes/*.nix`): `selectedTheme` is an **enum**, so adding a theme means adding a `themes/<name>.nix` (setting `config.theme` under `mkIf (selectedTheme == "<name>")`) *and* extending the enum. `config.theme` is a submodule: free-form `name = "#rrggbb"` colors plus typed knobs `rounding`, `gaps`, `opacity`, `blur`, `fontFamily`. UI modules read it as `let c = config.theme; in …`. An assertion fails the build if the palette is empty. GTK CSS doesn't accept `alpha(#hex, a)`; use `hexToRgba`.
 
-**Custom packages:** `nix/packages/<name>/package.nix` (airstatus, curseforge, geforcenow, irealpro) is auto-discovered by pkgs-by-name and exposed as `pkgs.local.<name>` via `flake.overlays.default`. A host needs that overlay in `nixpkgs.overlays` (`commonDesktop` adds it; `wisp` adds it itself).
+**Custom packages:** `nix/packages/<name>/package.nix` (curseforge, geforcenow, irealpro) is auto-discovered by pkgs-by-name and exposed as `pkgs.local.<name>` via `flake.overlays.default`. A host needs that overlay in `nixpkgs.overlays` (`commonDesktop` adds it; `wisp` adds it itself).
 
 ## Gotchas
 
 - **Audio is PulseAudio on all desktop hosts** (`commonDesktop` sets `services.pipewire.enable = false`; the `pulseaudio` and `bluetooth` modules enable PulseAudio). As a result, `xdg-desktop-portal-wlr` is gated on PipeWire in `programs/swayfx/swayfx.nix`, because without PipeWire it crash-loops and stalls the portal (waybar then hangs on startup). It also means Wayland screen sharing doesn't work.
 - **Sway hosts start sway from LightDM**, not from the `exec sway` on tty1 in the swayfx module's `bash.profileExtra`. Disabling the display manager kills the running session during `switch`.
-- `gaming` imports the `geforcenow` NixOS module (flatpak + a oneshot install service), so any host that imports `gaming` gets it. It also sets `linuxPackages_latest`, i915 params, zram, nix-ld and Steam.
+- `gaming` imports the `geforcenow` NixOS module (flatpak + a oneshot install service), so any host that imports `gaming` gets it. It also sets `linuxPackages_latest`, zram, nix-ld and Steam. Intel GPU settings (i915 params, VA-API, thermald) live in `nomad.nix`.
+- Firefox and LibreWolf share search engines, base prefs and extensions through the `mozillaShared` module arg (`browsers/mozilla-shared.nix`); edit shared bits there.
+- `homeManager.nh` points `programs.nh.flake` at `~/dotfiles`, so a bare `nh os switch` uses the working tree.
 - To override a value nixpkgs sets at normal priority (e.g. `xdg.portal.wlr.enable` from the sway module), use `lib.mkForce`; a plain assignment will error with conflicting definitions.
 
 ## Assets (`nix/assets/`)
@@ -80,7 +82,7 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 - `emacs.d/`: based on minimal-emacs.d, using straight.el + use-package. Customisation lives in `post-init.el`; `pre-init.el` bootstraps straight. Linked into `~/.emacs.d/` by `programs/emacs/emacs.nix` via `home.file`. Wayland hosts get `emacs-pgtk` via `homeManager.waylandBase`.
 - `wallpapers/`: default `systemConstants.wallpaper`.
 
-forge (i3, started via `startx`) is no longer in use. Its `~/.xinitrc` was removed, so it would need one (or LightDM re-enabled) before booting into i3 again.
+forge (i3) is not in active use. Its i3 session starts from LightDM via a `home-manager` session that runs the HM-generated `~/.hm-xsession` (`nixos.i3` + `xsession.enable` in `homeManager.i3`).
 
 ## Secrets (`nix/secrets/`)
 
