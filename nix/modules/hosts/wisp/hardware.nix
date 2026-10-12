@@ -41,7 +41,6 @@
         boot.kernelModules = [ "kvm-intel" ];
         boot.extraModulePackages = [ ];
 
-        # Required for preservation's inInitrd symlinks
         boot.initrd.systemd.enable = true;
 
         nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

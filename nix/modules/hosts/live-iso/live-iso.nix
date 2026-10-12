@@ -10,9 +10,6 @@
     ];
   };
 
-  perSystem =
-    { ... }:
-    {
-      packages.iso = inputs.self.nixosConfigurations.live-iso.config.system.build.isoImage;
-    };
+  flake.packages.x86_64-linux.iso =
+    inputs.self.nixosConfigurations.live-iso.config.system.build.isoImage;
 }

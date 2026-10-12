@@ -13,20 +13,22 @@
             dosfstools
             btrfs-progs
             git
+            git-crypt
+            systemd
           ];
           text = ''
-                        DISK=''${1:?Usage: prepare-disk /dev/nvme0n1 [swap-size]}
-                        SWAP=''${2:-16G}
+                        DISK=''${1:?Usage: prepare-disk /dev/nvme0n1 [swap-GiB]}
+                        SWAP_GIB=''${2:-16}
                         DOTFILES_DIR=/tmp/dotfiles
                         DOTFILES_REPO=https://github.com/erik-sundin-git/dotfiles.git
                         HW_CONF=/mnt/etc/nixos/hardware-configuration.nix
 
                         # ── Host selection ───────────────────────────────────────────────
-                        # Asked before disk setup so we can pick the right filesystem type.
+                        # Asked before disk setup so we can pick the right partition layout.
 
                         echo ""
                         echo "Select host to install:"
-                        echo "  1) nomad   (SwayFX laptop — disko + preservation)"
+                        echo "  1) nomad   (SwayFX laptop)"
                         echo "  2) ether   (XFCE VM — GRUB bootloader, not EFI)"
                         echo "  3) specter (SwayFX laptop)"
                         echo "  4) New host"
@@ -43,60 +45,75 @@
 
                         # ── Disk setup ──────────────────────────────────────────────────
 
-                        if [[ "$INSTALL_HOST" == nomad ]]; then
-                          # disko handles partitioning, formatting, and mounting for nomad.
-                          # Clone dotfiles first so disko can read the nomad flake config.
-                          echo "Cloning dotfiles..."
-                          git clone --depth 1 "$DOTFILES_REPO" "$DOTFILES_DIR"
+                        if [[ ! -b "$DISK" ]]; then
+                          echo "$DISK is not a block device"; exit 1
+                        fi
+                        lsblk "$DISK"
+                        echo ""
+                        read -rp "This ERASES everything on $DISK. Type the device path to confirm: " CONFIRM
+                        if [[ "$CONFIRM" != "$DISK" ]]; then
+                          echo "Aborted."; exit 1
+                        fi
 
-                          echo "Formatting and mounting with disko..."
-                          disko --mode destroy,format,mount --flake "$DOTFILES_DIR#nomad"
+                        # Partition names: /dev/nvme0n1 -> /dev/nvme0n1p1, /dev/sda -> /dev/sda1
+                        if [[ "$DISK" =~ [0-9]$ ]]; then PART="''${DISK}p"; else PART="$DISK"; fi
+                        SWAP_END="$((512 + SWAP_GIB * 1024))MiB"
+
+                        echo "Partitioning $DISK (swap: ''${SWAP_GIB}GiB)..."
+                        parted -s "$DISK" -- mklabel gpt
+                        if [[ "$INSTALL_HOST" == ether ]]; then
+                          # ether boots BIOS GRUB from a GPT disk, which needs a bios_grub partition.
+                          parted -s "$DISK" -- mkpart bios 1MiB 2MiB
+                          parted -s "$DISK" -- set 1 bios_grub on
+                          parted -s "$DISK" -- mkpart swap linux-swap 2MiB "$SWAP_END"
+                          parted -s "$DISK" -- mkpart root "$SWAP_END" 100%
+                          BOOT=""
+                          SWAP_DEV="''${PART}2"
+                          ROOT="''${PART}3"
                         else
-                          echo "Partitioning $DISK (swap: $SWAP)..."
-                          parted "$DISK" -- mklabel gpt
-                          parted "$DISK" -- mkpart ESP fat32 1MB 512MB
-                          parted "$DISK" -- set 1 esp on
-                          parted "$DISK" -- mkpart swap linux-swap 512MB "$SWAP"
-                          parted "$DISK" -- mkpart root "$SWAP" 100%
+                          parted -s "$DISK" -- mkpart ESP fat32 1MiB 512MiB
+                          parted -s "$DISK" -- set 1 esp on
+                          parted -s "$DISK" -- mkpart swap linux-swap 512MiB "$SWAP_END"
+                          parted -s "$DISK" -- mkpart root "$SWAP_END" 100%
+                          BOOT="''${PART}1"
+                          SWAP_DEV="''${PART}2"
+                          ROOT="''${PART}3"
+                        fi
 
-                          partprobe "$DISK"
-                          sleep 1
+                        partprobe "$DISK"
+                        udevadm settle
 
-                          if [[ "$DISK" == *nvme* ]]; then
-                            BOOT="''${DISK}p1"
-                            SWAP_DEV="''${DISK}p2"
-                            ROOT="''${DISK}p3"
-                          else
-                            BOOT="''${DISK}1"
-                            SWAP_DEV="''${DISK}2"
-                            ROOT="''${DISK}3"
-                          fi
+                        echo "Formatting..."
+                        if [[ -n "$BOOT" ]]; then mkfs.fat -F 32 "$BOOT"; fi
+                        mkswap "$SWAP_DEV"
+                        mkfs.ext4 -F "$ROOT"
 
-                          echo "Formatting..."
-                          mkfs.fat -F 32 "$BOOT"
-                          mkswap "$SWAP_DEV"
-                          mkfs.ext4 -F "$ROOT"
-
-                          echo "Mounting..."
-                          mount "$ROOT" /mnt
+                        echo "Mounting..."
+                        mount "$ROOT" /mnt
+                        if [[ -n "$BOOT" ]]; then
                           mkdir -p /mnt/boot
                           mount "$BOOT" /mnt/boot
-                          swapon "$SWAP_DEV"
+                        fi
+                        swapon "$SWAP_DEV"
+
+                        echo "Generating hardware config..."
+                        nixos-generate-config --root /mnt
+
+                        echo "Cloning dotfiles..."
+                        git clone --depth 1 "$DOTFILES_REPO" "$DOTFILES_DIR"
+
+                        # nix/secrets/hosts.nix is git-crypt encrypted and evaluated by every host.
+                        read -rp "Path to git-crypt key (e.g. a USB stick; empty to skip): " CRYPT_KEY
+                        if [[ -n "$CRYPT_KEY" ]]; then
+                          git -C "$DOTFILES_DIR" crypt unlock "$CRYPT_KEY"
+                        else
+                          echo "Warning: repo left locked; evaluation will fail on nix/secrets/hosts.nix."
                         fi
 
-                        # nomad uses disko — no hardware config generation or UUID patching needed.
-                        # For other hosts, generate hardware config and patch UUIDs.
-                        if [[ "$INSTALL_HOST" != nomad ]]; then
-                          echo "Generating hardware config..."
-                          nixos-generate-config --root /mnt
-
-                          echo "Cloning dotfiles..."
-                          git clone --depth 1 "$DOTFILES_REPO" "$DOTFILES_DIR"
-                        fi
 
                         # ── Existing host: update hardware config ─────────────────────────
 
-                        if [[ "$INSTALL_HOST" != new && "$INSTALL_HOST" != nomad ]]; then
+                        if [[ "$INSTALL_HOST" != new ]]; then
                           echo "Updating $INSTALL_HOST hardware.nix with UUIDs from this disk..."
                           HW_NIX="$DOTFILES_DIR/nix/modules/hosts/$INSTALL_HOST/hardware.nix"
 
@@ -119,6 +136,9 @@
 
                         if [[ "$INSTALL_HOST" == new ]]; then
                           read -rp "Hostname: " INSTALL_HOST
+                          if [[ ! "$INSTALL_HOST" =~ ^[a-z][a-z0-9-]*$ || -e "$DOTFILES_DIR/nix/modules/hosts/$INSTALL_HOST" ]]; then
+                            echo "Invalid or existing hostname: $INSTALL_HOST"; exit 1
+                          fi
 
                           echo ""
                           echo "System type:"
@@ -133,8 +153,8 @@
 
                           echo ""
                           echo "Template for main config:"
-                          echo "  1) nomad   (Hyprland laptop)"
-                          echo "  2) specter (i3 laptop)"
+                          echo "  1) nomad   (SwayFX laptop)"
+                          echo "  2) specter (SwayFX laptop)"
                           echo "  3) None    (minimal scaffold)"
                           read -rp "Choice [1-3]: " TMPL_CHOICE
                           case "$TMPL_CHOICE" in
@@ -148,9 +168,12 @@
                           mkdir -p "$HOST_DIR"
 
                           # Generate hardware.nix in den.aspects format
-                          ROOT_UUID=$(grep -A2 '"/"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
-                          BOOT_UUID=$(grep -A2 '"/boot"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
-                          SWAP_UUID=$(grep -A3 'swapDevices' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||')
+                          ROOT_UUID=$(grep -A2 '"/"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          BOOT_UUID=$(grep -A2 '"/boot"' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          SWAP_UUID=$(grep -A3 'swapDevices' "$HW_CONF" | grep 'by-uuid' | sed 's|.*/by-uuid/||;s|".*||' || true)
+                          if [[ -z "$ROOT_UUID" || -z "$BOOT_UUID" || -z "$SWAP_UUID" ]]; then
+                            echo "Could not read filesystem UUIDs from $HW_CONF"; exit 1
+                          fi
 
                           AVAIL_MODULES=$(grep 'boot.initrd.availableKernelModules' "$HW_CONF" \
                             | sed 's/.*= \[/[/;s/\].*/]/' | sed 's/\s\+/ /g' | xargs)
@@ -263,6 +286,12 @@ NIXEOF
                         echo ""
                         echo "Installing NixOS for host: $INSTALL_HOST"
                         nixos-install --flake "$DOTFILES_DIR#$INSTALL_HOST"
+
+                        # /tmp is gone after reboot; keep the clone (with any patched hardware.nix).
+                        mkdir -p /mnt/home/erik
+                        cp -a "$DOTFILES_DIR" /mnt/home/erik/dotfiles
+                        chown -R 1000:100 /mnt/home/erik
+                        echo "Dotfiles copied to /home/erik/dotfiles — commit the hardware.nix changes after first boot."
           '';
         })
       ];

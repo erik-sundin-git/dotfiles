@@ -30,12 +30,9 @@
       services.displayManager.autoLogin.enable = true;
       services.displayManager.autoLogin.user = "nixos";
 
-      environment.etc."dotfiles".source = inputs.self;
-
       environment.systemPackages = [
         pkgs.git
         pkgs.claude-code
-        inputs.disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
       ];
 
       home-manager.useGlobalPkgs = true;

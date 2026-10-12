@@ -90,7 +90,7 @@ stdenv.mkDerivation {
     xorg.libXrender
     xorg.libXtst
     xorg.libxcb
-    xorg.libxkbfile or null
+    xorg.libxkbfile
     xorg.libxshmfence
   ];
 
@@ -118,7 +118,8 @@ stdenv.mkDerivation {
       "''${gappsWrapperArgs[@]}" \
       --prefix PATH : ${lib.makeBinPath [ xdg-utils ]} \
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libglvnd ]} \
-      --add-flags "--no-sandbox"
+      --add-flags "--no-sandbox" \
+      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto}}"
 
     runHook postInstall
   '';

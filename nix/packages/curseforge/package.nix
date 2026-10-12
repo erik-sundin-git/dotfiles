@@ -5,6 +5,7 @@
   autoPatchelfHook,
   dpkg,
   makeWrapper,
+  wrapGAppsHook3,
   gtk3,
   libnotify,
   nss,
@@ -34,6 +35,7 @@ stdenv.mkDerivation {
     autoPatchelfHook
     dpkg
     makeWrapper
+    wrapGAppsHook3
   ];
 
   buildInputs = [
@@ -50,6 +52,8 @@ stdenv.mkDerivation {
     mesa
     libglvnd
   ];
+
+  dontWrapGApps = true;
 
   unpackPhase = "dpkg-deb -x $src .";
 
@@ -68,8 +72,10 @@ stdenv.mkDerivation {
       --replace-fail "/opt/CurseForge/curseforge" "$out/bin/curseforge"
 
     makeWrapper $out/opt/CurseForge/curseforge $out/bin/curseforge \
+      "''${gappsWrapperArgs[@]}" \
       --prefix PATH : ${lib.makeBinPath [ xdg-utils ]} \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ mesa libglvnd openssl ]}
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ mesa libglvnd openssl ]} \
+      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto}}"
 
     runHook postInstall
   '';
