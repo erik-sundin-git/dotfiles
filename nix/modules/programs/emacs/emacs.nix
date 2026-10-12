@@ -38,7 +38,7 @@
         gcc
         gnumake
         libtool
-        texlive.combined.scheme-full
+        texliveFull
       ];
 
       programs.emacs = {

@@ -2,7 +2,7 @@
 {
   den.aspects.nomad = {
     nixos =
-      { config, ... }:
+      { config, pkgs, ... }:
       let
         sysConst = {
           type = "laptop";
@@ -23,6 +23,21 @@
         systemConstants.system = sysConst;
 
         services.hardware.bolt.enable = true;
+
+        # Intel UHD 620 (Kaby Lake-R): VA-API, GuC/HuC firmware, thermald
+        hardware.graphics.extraPackages = with pkgs; [
+          intel-media-driver
+          libvdpau-va-gl
+        ];
+        environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
+        boot.initrd.kernelModules = [ "i915" ];
+        boot.kernelParams = [
+          "i915.enable_guc=2"
+          "i915.enable_fbc=1"
+          "i915.enable_psr=1"
+          "i915.fastboot=1"
+        ];
+        services.thermald.enable = true;
 
         # Snappier on battery than TLP's default balance_power
         services.tlp.settings = {

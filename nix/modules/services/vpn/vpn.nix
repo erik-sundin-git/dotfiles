@@ -31,11 +31,6 @@
           })
         ];
 
-      services.gnome-keyring = {
-        enable = true;
-        components = [ "secrets" ];
-      };
-
       programs.bash.shellAliases = {
         vpnup = "protonvpn connect";
         vpndown = "protonvpn disconnect";

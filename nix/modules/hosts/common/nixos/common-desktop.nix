@@ -35,7 +35,6 @@
           xorg.xinit
           pkgsUnstable.openssh-askpass
           quickemu
-          cmake
           alacritty
           xfce.thunar
           nixfmt

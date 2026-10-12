@@ -11,6 +11,8 @@
       ...
     }:
     {
+      home.sessionPath = [ "$HOME/.local/bin" ];
+
       programs.bash = {
         enable = true;
         enableCompletion = true;
@@ -28,8 +30,6 @@
             test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
             alias ls='ls --color=auto'
           fi
-
-          export PATH="$HOME/.local/bin:$PATH"
 
           if [ -z "$SSH_AUTH_SOCK" ] && [ -S "$XDG_RUNTIME_DIR/gcr/ssh" ]; then
             export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"

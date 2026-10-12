@@ -70,7 +70,6 @@
         users.groups.${cfg.group} = { };
 
         networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [ 25565 ];
-        networking.firewall.allowedUDPPorts = lib.mkIf cfg.openFirewall [ 25565 ];
 
         boot.kernel.sysctl."vm.max_map_count" = 2147483642;
 
@@ -86,10 +85,31 @@
             ExecStart = "${startScript}";
             Restart = "on-failure";
             RestartSec = "10s";
-            TimeoutStopSec = "60";
+            # Large GTNH worlds can take minutes to save on shutdown
+            TimeoutStopSec = "180";
             PrivateTmp = true;
             ProtectSystem = "strict";
             ReadWritePaths = [ cfg.dataDir ];
+            ProtectHome = true;
+            PrivateDevices = true;
+            NoNewPrivileges = true;
+            ProtectKernelTunables = true;
+            ProtectKernelModules = true;
+            ProtectKernelLogs = true;
+            ProtectControlGroups = true;
+            ProtectClock = true;
+            ProtectHostname = true;
+            RestrictAddressFamilies = [
+              "AF_INET"
+              "AF_INET6"
+              "AF_UNIX"
+            ];
+            RestrictNamespaces = true;
+            RestrictRealtime = true;
+            RestrictSUIDSGID = true;
+            LockPersonality = true;
+            CapabilityBoundingSet = "";
+            SystemCallArchitectures = "native";
           };
         };
       };
