@@ -13,10 +13,16 @@
     };
 
   flake.modules.homeManager.xfceStack =
-    { ... }:
+    { config, ... }:
     {
       imports = [
         inputs.self.modules.homeManager.gtk
       ];
+
+      # xfsettingsd pushes XSETTINGS that override gtk's settings.ini.
+      xfconf.settings.xsettings = {
+        "Net/ThemeName" = config.gtk.theme.name;
+        "Net/IconThemeName" = config.gtk.iconTheme.name;
+      };
     };
 }

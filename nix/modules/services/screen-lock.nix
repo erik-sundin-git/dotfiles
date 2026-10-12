@@ -122,7 +122,7 @@
     let
       c = config.theme;
       hex = lib.removePrefix "#";
-      lockCmd = "${pkgs.i3lock-color}/bin/i3lock-color --color=${hex c.background} --clock --insidecolor=${hex c.background}ff --ringcolor=${hex c.blue}ff --keyhlcolor=${hex c.green}ff --bshlcolor=${hex c.red}ff --textcolor=${hex c.foreground}ff --nofork";
+      lockCmd = "${pkgs.i3lock-color}/bin/i3lock-color --color=${hex c.background} --clock --inside-color=${hex c.background}ff --ring-color=${hex c.blue}ff --keyhl-color=${hex c.green}ff --bshl-color=${hex c.red}ff --time-color=${hex c.foreground}ff --date-color=${hex c.foreground}ff --nofork";
     in
     {
       home.packages = [ pkgs.i3lock-color ];
@@ -132,7 +132,6 @@
         lockCmd = lockCmd;
         inactiveInterval = 20;
         xautolock.enable = isLaptop;
-        xss-lock.extraOptions = [ "--ignore-sleep" ];
       };
     };
 }

@@ -1,10 +1,21 @@
 { inputs, ... }:
 {
   flake.modules.nixos.i3 =
-    { ... }:
+    { pkgs, ... }:
     {
-      services.xserver.displayManager.lightdm.enable = false;
-      services.xserver.displayManager.startx.enable = true;
+      # LightDM runs the Home Manager generated ~/.hm-xsession, which starts
+      # i3 and hm-graphical-session.target (polybar, picom, ...).
+      services.xserver.desktopManager.session = [
+        {
+          name = "home-manager";
+          start = ''
+            ${pkgs.runtimeShell} $HOME/.hm-xsession &
+            waitPID=$!
+          '';
+        }
+      ];
+      services.displayManager.defaultSession = "home-manager";
+      security.pam.services.i3lock = { };
     };
 
   flake.modules.homeManager.i3 =
@@ -25,6 +36,9 @@
     in
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
+
+      xsession.enable = true;
+      xsession.scriptPath = ".hm-xsession";
 
       xsession.windowManager.i3 = {
         enable = true;
@@ -53,25 +67,11 @@
               notification = false;
             }
             {
-              command = "dunst";
-              notification = false;
-            }
-            {
               command = "proton-mail";
               notification = false;
             }
             {
               command = "${importEnv}";
-              notification = false;
-            }
-            {
-              command = "pkill polybar; polybar main";
-              always = true;
-              notification = false;
-            }
-            {
-              command = "pkill picom; picom";
-              always = true;
               notification = false;
             }
           ];
