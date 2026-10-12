@@ -44,14 +44,22 @@
           "root"
           "erik"
         ];
-        services.openssh.enable = true;
+        services.openssh = {
+          enable = true;
+          settings = {
+            PasswordAuthentication = false;
+            KbdInteractiveAuthentication = false;
+            PermitRootLogin = "no";
+          };
+        };
+        users.users.erik.openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINLYub6F3p047lqIQgzoygdVEnohBMdrJe75tYx/ZuCT erik@nomad"
+        ];
         services.tlp = {
           enable = lib.mkDefault (config.systemConstants.system.type == "laptop");
           settings = {
-            START_CHARGE_THRESH_BAT0 = 0;
-            STOP_CHARGE_THRESH_BAT0 = 100;
-            # Prevent TLP from powering off bluetooth
-            BLUETOOTH_IDLE_SUSPEND = 0;
+            # Keep TLP's USB autosuspend away from the bluetooth adapter
+            USB_EXCLUDE_BTUSB = 1;
           };
         };
         home-manager.useGlobalPkgs = true;
