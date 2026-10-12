@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.hyprland =
-    { pkgs, ... }:
+    { ... }:
     {
       imports = [ inputs.self.modules.nixos.waylandBase ];
 
@@ -9,7 +9,7 @@
       programs.hyprland.withUWSM = true;
       programs.hyprland.xwayland.enable = true;
 
-      xdg.portal.configPackages = [ pkgs.xdg-desktop-portal-hyprland ];
+      security.pam.services.hyprlock = { };
     };
 
   flake.modules.homeManager.hyprland =
@@ -58,6 +58,11 @@
             shadow.enabled = false;
           };
 
+          layerrule = lib.optionals c.blur [
+            "blur, waybar"
+            "blur, wofi"
+          ];
+
           animations = {
             enabled = true;
             bezier = "ease, 0.4, 0.0, 0.2, 1.0";
@@ -90,8 +95,6 @@
           "exec-once" = [
             "systemctl --user start hyprpolkitagent"
             "swayosd-server"
-            "waybar"
-            "dunst"
             "${pkgs.swaybg}/bin/swaybg -i '${wallpaper}' -m fill"
           ];
         };

@@ -11,6 +11,7 @@
           [
             # Applications
             "${mod}, Return, exec, alacritty"
+            "${mod} SHIFT, Return, exec, firefox"
             "${mod} SHIFT, Q, killactive,"
             "${mod}, D, exec, wofi --show drun"
             "${mod} CTRL, L, exec, loginctl lock-session"

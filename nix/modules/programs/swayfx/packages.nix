@@ -5,6 +5,7 @@
       config,
       lib,
       pkgs,
+      pkgsUnstable,
       waylandScreenshots,
       isLaptop,
       swayBindingsData,
@@ -18,7 +19,7 @@
         runtimeInputs = [
           pkgs.wofi
           pkgs.alacritty
-          pkgs.claude-code
+          pkgsUnstable.claude-code
         ];
         text = ''
           # Interactive helper: pick a nixpkgs package name and a target file,
