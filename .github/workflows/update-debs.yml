@@ -1,0 +1,48 @@
+name: update-debs
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Refresh source.json files
+        id: update
+        run: |
+          changes=$(nix run .#update-debs)
+          {
+            echo 'changes<<EOF'
+            echo "$changes"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build changed packages
+        if: steps.update.outputs.changes != ''
+        run: |
+          for pkg in $(git diff --name-only -- nix/packages | cut -d/ -f3 | sort -u); do
+            nix build ".#$pkg" --no-link -L
+          done
+
+      - name: Open pull request
+        if: steps.update.outputs.changes != ''
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: update-debs
+          delete-branch: true
+          commit-message: |
+            packages: update .deb sources
+
+            ${{ steps.update.outputs.changes }}
+          title: "packages: update .deb sources"
+          body: ${{ steps.update.outputs.changes }}

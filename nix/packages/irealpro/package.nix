@@ -35,14 +35,14 @@
   xorg,
 }:
 
+let
+  source = lib.importJSON ./source.json;
+in
 stdenv.mkDerivation {
   pname = "irealpro";
-  version = "2026.7.5";
+  inherit (source) version;
 
-  src = fetchurl {
-    url = "https://linux.irealpro.com/irealpro_latest_amd64.deb";
-    hash = "sha256-GxdY0m0vg/0eJ+AFGmWTodDsJ91kc1fjenF0cEVA0F8=";
-  };
+  src = fetchurl { inherit (source) url hash; };
 
   nativeBuildInputs = [
     dpkg

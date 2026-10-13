@@ -22,14 +22,14 @@
   openssl,
 }:
 
+let
+  source = lib.importJSON ./source.json;
+in
 stdenv.mkDerivation {
   pname = "curseforge";
-  version = "1.322.0";
+  inherit (source) version;
 
-  src = fetchurl {
-    url = "https://curseforge.overwolf.com/downloads/curseforge-latest-linux.deb";
-    hash = "sha256-3N8LXroBKdLji4Eeal9NudOyUn76kfNqegXxqpuOgU8=";
-  };
+  src = fetchurl { inherit (source) url hash; };
 
   nativeBuildInputs = [
     autoPatchelfHook

@@ -66,11 +66,13 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 
 **Theme system** (`system-constants/theme.nix` + `themes/*.nix`): `selectedTheme` is an **enum**, so adding a theme means adding a `themes/<name>.nix` (setting `config.theme` under `mkIf (selectedTheme == "<name>")`) *and* extending the enum. `config.theme` is a submodule: free-form `name = "#rrggbb"` colors plus typed knobs `rounding`, `gaps`, `opacity`, `blur`, `fontFamily`. UI modules read it as `let c = config.theme; in …`. An assertion fails the build if the palette is empty. GTK CSS doesn't accept `alpha(#hex, a)`; use `hexToRgba`.
 
-**Custom packages:** `nix/packages/<name>/package.nix` (curseforge, geforcenow, irealpro) is auto-discovered by pkgs-by-name and exposed as `pkgs.local.<name>` via `flake.overlays.default`. A host needs that overlay in `nixpkgs.overlays` (`commonDesktop` adds it; `wisp` adds it itself).
+**Custom packages:** `nix/packages/<name>/package.nix` (curseforge, geforcenow, irealpro, update-debs) is auto-discovered by pkgs-by-name and exposed as `pkgs.local.<name>` via `flake.overlays.default`. A host needs that overlay in `nixpkgs.overlays` (`commonDesktop` adds it; `wisp` adds it itself).
+
+Packages fetched from an unversioned "latest" URL (curseforge, irealpro) keep `version`/`url`/`hash`/`etag` in a sibling `source.json` that `package.nix` reads with `lib.importJSON`. `nix run .#update-debs` refreshes every `nix/packages/*/source.json`, and `.github/workflows/update-debs.yml` runs it daily, builds what changed and opens a PR. On a hash mismatch, run `nix run .#update-debs` or merge that PR.
 
 ## Gotchas
 
-- **Audio is PulseAudio on all desktop hosts** (`commonDesktop` sets `services.pipewire.enable = false`; the `pulseaudio` and `bluetooth` modules enable PulseAudio). As a result, `xdg-desktop-portal-wlr` is gated on PipeWire in `programs/swayfx/swayfx.nix`, because without PipeWire it crash-loops and stalls the portal (waybar then hangs on startup). It also means Wayland screen sharing doesn't work.
+- **Audio is PulseAudio on all desktop hosts** (`commonDesktop` sets `services.pipewire.enable = false`; each desktop host imports the `pulseaudio` module, and `bluetooth` only adds `extraConfig` to it). As a result, `xdg-desktop-portal-wlr` is gated on PipeWire in `programs/swayfx/swayfx.nix`, because without PipeWire it crash-loops and stalls the portal (waybar then hangs on startup). It also means Wayland screen sharing doesn't work.
 - **Sway hosts start sway from LightDM**, not from the `exec sway` on tty1 in the swayfx module's `bash.profileExtra`. Disabling the display manager kills the running session during `switch`.
 - `gaming` imports the `geforcenow` NixOS module (flatpak + a oneshot install service), so any host that imports `gaming` gets it. It also sets `linuxPackages_latest`, zram, nix-ld and Steam. Intel GPU settings (i915 params, VA-API, thermald) live in `nomad.nix`.
 - Firefox and LibreWolf share search engines, base prefs and extensions through the `mozillaShared` module arg (`browsers/mozilla-shared.nix`); edit shared bits there.
