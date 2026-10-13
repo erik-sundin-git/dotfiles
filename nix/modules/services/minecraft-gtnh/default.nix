@@ -10,12 +10,17 @@
     let
       cfg = config.services.gtnh;
 
+      # Forge's log4j2.xml with %msg{nolookups}: the bundled log4j 2.0-beta9 is
+      # vulnerable to Log4Shell and predates -Dlog4j2.formatMsgNoLookups.
+      log4jConfig = ../../../assets/minecraft/log4j2-nolookups.xml;
+
       startScript = pkgs.writeShellScript "start-gtnh" ''
         set -euo pipefail
         cd ${cfg.dataDir}
         exec ${cfg.javaPackage}/bin/java \
           -Xmx${cfg.maxRam} -Xms${cfg.minRam} \
           @${cfg.dataDir}/java9args.txt \
+          -Dlog4j.configurationFile=${log4jConfig} \
           -jar ${cfg.dataDir}/lwjgl3ify-forgePatches.jar nogui
       '';
     in
