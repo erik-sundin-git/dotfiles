@@ -1,11 +1,8 @@
-{ inputs, ... }:
+{ ... }:
 {
-
   flake.modules.nixos.bluetooth =
     { pkgs, ... }:
     {
-      imports = [ inputs.self.modules.nixos.pulseaudio ];
-
       hardware.enableAllFirmware = true;
       services.pulseaudio.extraConfig = "load-module module-switch-on-connect";
       services.upower.enable = true;
