@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ ... }:
 {
   flake.modules.homeManager.librewolf =
     {
@@ -8,8 +8,6 @@
       ...
     }:
     {
-      imports = [ inputs.self.modules.homeManager.mozillaShared ];
-
       home.file.".librewolf/librewolf.overrides.cfg".text = ''
         lockPref("browser.theme.content-theme", 0);
         lockPref("browser.theme.toolbar-theme", 0);

@@ -1,10 +1,8 @@
-{ inputs, ... }:
+{ ... }:
 {
   flake.modules.homeManager.firefox =
     { mozillaShared, ... }:
     {
-      imports = [ inputs.self.modules.homeManager.mozillaShared ];
-
       programs.firefox = {
         enable = true;
 
