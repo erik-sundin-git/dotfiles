@@ -114,7 +114,6 @@
       home.packages = [
         pkgs.jq
         pkgs.pavucontrol
-        pkgs.swayosd
         pkgs.grim
         pkgs.slurp
         pkgs.wl-clipboard
@@ -127,5 +126,9 @@
       ++ lib.optionals isLaptop [
         pkgs.brightnessctl
       ];
+
+      # User service with Restart=always: swayosd-server panics in GTK
+      # (gtk_widget_map) now and then, which killed the OSD for the session
+      services.swayosd.enable = true;
     };
 }
