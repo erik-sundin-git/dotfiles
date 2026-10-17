@@ -53,8 +53,9 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 **Host wiring via `den`:** `hosts/topology.nix` registers `den.hosts.x86_64-linux.<host>`; each host file defines `den.aspects.<host>.nixos`. The names must match exactly — a mismatch silently applies nothing and NixOS fails with "boot loader not configured". Home Manager is pulled in per host via `inputs.home-manager.nixosModules.home-manager`; user config goes in `home-manager.users.erik`, shared HM modules via `home-manager.sharedModules`.
 
 **Layering for desktop hosts:**
-- `commonConfig` (`hosts/common/nixos/common-nixos.nix`): base system, nix settings, TLP, systemd-boot, `useGlobalPkgs`, and key-only OpenSSH (the authorized key for `erik` lives here; password login is disabled).
-- `commonDesktop` (`common-desktop.nix`): imports `commonConfig`; X server/xkb (which also enables **LightDM**), users, overlays, and HM `sharedModules` = `commonHome` + alacritty + desktopApps + vpn.
+- `commonConfig` (`hosts/common/nixos/common-nixos.nix`): base system, nix settings, TLP, systemd-boot (1 s menu timeout), dbus-broker, `useGlobalPkgs`, and key-only OpenSSH (the authorized key for `erik` lives here; password login is disabled). It imports `nixDaemon` (`nix/daemon.nix`: batch CPU scheduling for builds, weekly store optimise, substituters) and `nixos.nh` (system-wide `nh clean`, which prunes system generations).
+- `memory` (`services/memory.nix`): zram plus zram sysctls (swappiness 180 etc.) and earlyoom. Imported by `commonDesktop` and `wisp`. The disk swap partitions stay because hibernate uses them. Use earlyoom, not systemd-oomd user slices: under LightDM, sway shares a session scope with its apps, so oomd would kill the whole desktop.
+- `commonDesktop` (`common-desktop.nix`): imports `commonConfig` and `memory`; X server/xkb (which also enables **LightDM**), users, overlays, and HM `sharedModules` = `commonHome` + alacritty + desktopApps + vpn.
 - `commonHome` (`hosts/common/home-manager/common-home.nix`): imports `generic.systemConstants` + `generic.theme`, emacs, browsers, bash, nh; sets `_module.args.isLaptop`.
 - Stacks (`stacks/*-stack.nix`) bundle a WM's NixOS side + HM side. A stack's `nixos` module adds its HM half through `home-manager.sharedModules`, so hosts only import the NixOS stack.
 

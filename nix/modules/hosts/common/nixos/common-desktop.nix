@@ -12,7 +12,10 @@
       kb = config.systemConstants.keyboard;
     in
     {
-      imports = [ inputs.self.modules.nixos.commonConfig ];
+      imports = with inputs.self.modules.nixos; [
+        commonConfig
+        memory
+      ];
 
       config = {
         home-manager.backupFileExtension = "backup";

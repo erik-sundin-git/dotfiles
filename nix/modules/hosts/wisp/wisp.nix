@@ -13,6 +13,7 @@
         imports = with inputs.self.modules.nixos; [
           inputs.home-manager.nixosModules.home-manager
           commonConfig
+          memory
           gtnh
         ];
 

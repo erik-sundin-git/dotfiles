@@ -28,12 +28,6 @@
 
       boot.kernelPackages = pkgs.linuxPackages_latest;
 
-      zramSwap = {
-        enable = true;
-        memoryPercent = 50;
-        algorithm = "zstd";
-      };
-
       boot.kernel.sysctl."vm.max_map_count" = 2147483642;
 
       programs.nix-ld.enable = true;
