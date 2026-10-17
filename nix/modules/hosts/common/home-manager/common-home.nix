@@ -65,14 +65,6 @@
       programs.git.settings.user.email = config.systemConstants.adminEmail;
 
       nix.settings.warn-dirty = false;
-      nix.settings.substituters = [
-        "https://cache.nixos.org"
-        "https://nix-community.cachix.org"
-      ];
-      nix.settings.trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ];
 
       home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         echo -e "\033[33mRebuilt system using profile: ${config.systemConstants.system.type}\033[0m"

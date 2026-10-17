@@ -11,6 +11,8 @@
       imports = [
         inputs.self.modules.generic.systemConstants
         inputs.self.modules.nixos.sops
+        inputs.self.modules.nixos.nixDaemon
+        inputs.self.modules.nixos.nh
       ];
 
       options.commonConfig.bootEFI = lib.mkEnableOption "systemd-boot EFI bootloader" // {
