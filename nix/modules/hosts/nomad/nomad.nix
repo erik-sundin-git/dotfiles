@@ -24,7 +24,7 @@
 
         services.hardware.bolt.enable = true;
 
-        # Intel UHD 620 (Kaby Lake-R): VA-API, GuC/HuC firmware, thermald
+        # Intel UHD 620 (Kaby Lake-R): VA-API, GuC/HuC firmware
         hardware.graphics.extraPackages = with pkgs; [
           intel-media-driver
           libvdpau-va-gl
@@ -37,13 +37,22 @@
           "i915.enable_psr=1"
           "i915.fastboot=1"
         ];
-        services.thermald.enable = true;
+        # throttled (from nixos-hardware) owns the power limits; thermald
+        # would fight it over them
+        services.thermald.enable = false;
 
-        # Snappier on battery than TLP's default balance_power
+        # Snappier on battery than TLP's default balance_power. No
+        # PLATFORM_PROFILE_*: this firmware has no platform_profile.
         services.tlp.settings = {
+          CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
           CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
-          PLATFORM_PROFILE_ON_BAT = "balanced";
         };
+
+        # For benchmarking throttled's power limits
+        environment.systemPackages = [
+          config.boot.kernelPackages.turbostat
+          pkgs.stress-ng
+        ];
 
         networking.nat = {
           enable = true;
