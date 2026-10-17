@@ -19,15 +19,23 @@
         ]
       );
 
+      # Started by a timer, not multi-user.target: waiting for network-online
+      # held graphical.target back ~4s on every boot.
+      systemd.timers.geforce-now-install = {
+        wantedBy = [ "timers.target" ];
+        timerConfig.OnBootSec = "2min";
+      };
+
       systemd.services.geforce-now-install = {
         description = "Install and update the GeForce NOW Flatpak";
-        wantedBy = [ "multi-user.target" ];
         after = [ "network-online.target" ];
         wants = [ "network-online.target" ];
         path = [ pkgs.flatpak ];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
+          Restart = "on-failure";
+          RestartSec = 30;
         };
         script = ''
           flatpak remote-add --if-not-exists --from flathub \

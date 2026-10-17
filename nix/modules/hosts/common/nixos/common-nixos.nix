@@ -68,6 +68,9 @@
         home-manager.useUserPackages = true;
         boot.loader.systemd-boot.enable = lib.mkIf config.commonConfig.bootEFI true;
         boot.loader.efi.canTouchEfiVariables = lib.mkIf config.commonConfig.bootEFI true;
+        # Hold Space at boot to get the menu
+        boot.loader.timeout = lib.mkIf config.commonConfig.bootEFI (lib.mkDefault 1);
+        services.dbus.implementation = "broker";
 
         environment.systemPackages = with pkgs; [
           python3
