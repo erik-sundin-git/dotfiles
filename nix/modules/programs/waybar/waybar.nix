@@ -83,7 +83,7 @@
                 format-wifi = "W: {essid}";
                 format-ethernet = "E: {ipaddr}";
                 format-disconnected = "down";
-                interval = 5;
+                interval = 15;
               };
 
               battery = {
@@ -116,18 +116,18 @@
 
               memory = {
                 format = " {used:0.1f}G";
-                interval = 5;
+                interval = 15;
               };
 
               clock = {
-                format = "{:%Y-%m-%d %H:%M:%S}";
-                interval = 1;
+                format = "{:%Y-%m-%d %H:%M}";
+                interval = 60;
               };
             }
             // lib.optionalAttrs (thermalPath != null) {
               "custom/temperature" = {
                 exec = "${tempScript}";
-                interval = 5;
+                interval = 15;
                 format = "{}";
               };
             }
