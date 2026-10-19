@@ -25,6 +25,8 @@ Personal dotfiles for Erik Sundin: a single Nix flake producing NixOS configurat
 | `wisp` | Headless server | none | `commonConfig` only (not `commonDesktop`) + `gtnh` Minecraft server; lid/suspend disabled |
 | `live-iso` | ISO | none | Plain `nixosSystem`, not a den host; built with `nix build .#iso` |
 
+**The GTNH Minecraft server runs on `vps`** (Contabo, Debian 13), reached with `ssh vps` (as root). It is **not** managed by this flake, so the `gtnh` module and wisp's `services.gtnh` don't describe it. Check its status on the VPS itself, not on wisp. nomad pulls its world backups hourly into `~/backups/gtnh` (`homeManager.gtnhBackup`, `services/minecraft-gtnh/backup.nix`), using `~/.ssh/gtnh_backup`, a key the VPS restricts to read-only rsync of `/var/lib/gtnh/backups`.
+
 Each host sets `systemConstants.system = { host; type; }` (`type` ∈ laptop/desktop/server) on **both** the NixOS and Home Manager layers. Downstream modules branch on it (e.g. `isLaptop`, the per-host `rebuild` alias, TLP enabled only on laptops).
 
 ## Commands

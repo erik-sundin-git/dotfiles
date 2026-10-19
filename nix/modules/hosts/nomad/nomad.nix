@@ -69,6 +69,7 @@
             gh
             chromium
             geforcenow
+            gtnhBackup
           ];
           home.packages = [ pkgs.local.curseforge ];
           systemConstants.system = sysConst;
