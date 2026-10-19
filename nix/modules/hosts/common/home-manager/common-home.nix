@@ -25,6 +25,7 @@
         homeManager.bash
         homeManager.nh
         homeManager.ssh
+        homeManager.vnc
       ];
       _module.args.isLaptop = isLaptop;
 

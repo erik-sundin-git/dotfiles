@@ -2,7 +2,12 @@
 {
   # `vnc <host>` opens the VNC console of every inventory entry that sets `vnc` (nix/secrets/hosts.nix)
   flake.modules.homeManager.vnc =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       consoles = lib.filterAttrs (_: h: h.vnc != null) config.systemConstants.network.hosts;
       # tigervnc takes a raw port as host::port

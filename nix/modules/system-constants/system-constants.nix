@@ -71,6 +71,11 @@
                     default = "erik";
                     description = "Login user for ssh.";
                   };
+                  vnc = lib.mkOption {
+                    type = lib.types.nullOr lib.types.str;
+                    default = null;
+                    description = "Out-of-band VNC console as \"host:port\" (e.g. the Contabo panel's VNC); used by `vnc <host>`.";
+                  };
                 };
               }
             );
