@@ -20,6 +20,7 @@
               { key = "d";          action = "exec wofi --show drun"; desc = "App launcher (wofi drun)"; }
               { key = "Shift+q";    action = "kill";                  desc = "Kill focused window"; }
               { key = "Shift+a";    action = "exec nix-add-package";  desc = "Add nix package (claude flow)"; }
+              { key = "c";          action = "exec claude-prompt";    desc = "Ask claude (quick prompt)"; }
               { key = "Ctrl+l";     action = "exec loginctl lock-session"; desc = "Lock screen"; }
               { key = "F1";         action = "exec sway-help";        desc = "This help menu"; }
             ];

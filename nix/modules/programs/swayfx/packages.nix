@@ -56,6 +56,26 @@
         '';
       };
 
+      claude-prompt = pkgs.writeShellApplication {
+        name = "claude-prompt";
+        runtimeInputs = [
+          pkgs.wofi
+          pkgs.alacritty
+          pkgsUnstable.claude-code
+        ];
+        text = ''
+          # Quick prompt: type a question into wofi, then answer it in a floating
+          # claude session (you can keep chatting). Bound to mod+c.
+          prompt=$(wofi --dmenu \
+              --prompt "Ask claude: " \
+              --lines 0 < /dev/null) || exit 0
+          [[ -z "$prompt" ]] && exit 0
+
+          exec alacritty --class ai-prompt --working-directory "$HOME/dotfiles" \
+              -e claude "$prompt"
+        '';
+      };
+
       # ---- sway-help: rendered from swayBindingsData ----
       keyColWidth = 24;
       pad = s: s + lib.concatStrings (
@@ -120,6 +140,7 @@
         pkgs.swaybg
         pkgs.nerd-fonts.jetbrains-mono
         nix-add-package
+        claude-prompt
         sway-help
       ]
       ++ waylandScreenshots
