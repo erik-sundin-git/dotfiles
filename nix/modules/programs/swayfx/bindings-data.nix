@@ -129,6 +129,7 @@
             title = "Options";
             bindings = [
               { key = "v"; desc = "toggle vpn"; action = "exec vpn-toggle"; }
+              { key = "g"; desc = "toggle gammastep"; action = "exec gammastep-toggle"; }
             ];
           };
           resize = {
