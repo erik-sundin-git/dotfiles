@@ -9,8 +9,12 @@
         policies.DontCheckDefaultBrowser = true;
 
         profiles."default" = {
-          inherit (mozillaShared) search settings;
+          inherit (mozillaShared) search;
+          settings = mozillaShared.settings // {
+            "browser.startup.homepage" = "https://www.youtube.com";
+          };
           extensions.packages = mozillaShared.extensions;
+          userChrome = mozillaShared.userChrome;
         };
       };
     };

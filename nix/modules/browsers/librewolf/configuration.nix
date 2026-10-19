@@ -20,6 +20,7 @@
         policies.DontCheckDefaultBrowser = true;
 
         profiles."default".search = mozillaShared.search;
+        profiles."default".userChrome = mozillaShared.userChrome;
 
         profiles."default".settings = mozillaShared.settings // {
           # Force sites to serve H.264 instead of AV1/VP9 so VAAPI can decode on
