@@ -61,10 +61,6 @@
           window.border = 2;
           floating.border = 2;
 
-          startup = [
-            { command = "proton-mail"; }
-          ];
-
           input = {
             "*" = {
               xkb_layout = kb.layout;

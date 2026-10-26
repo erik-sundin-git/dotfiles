@@ -67,10 +67,6 @@
               notification = false;
             }
             {
-              command = "proton-mail";
-              notification = false;
-            }
-            {
               command = "${importEnv}";
               notification = false;
             }

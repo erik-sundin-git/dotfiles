@@ -103,4 +103,4 @@ The repo is public, so private data goes in `nix/secrets/`, which sits outside `
 
 ## Mail
 
-`programs/mail/mail.nix` (`homeManager.mail`): ProtonMail Bridge user service, mbsync on a systemd timer, notmuch indexing, msmtp for sending. **No host currently imports it.** Desktop hosts use the `protonmail-desktop` app (autostarted in sway) instead.
+`programs/mail/mail.nix` (`homeManager.mail`): ProtonMail Bridge user service, mbsync on a systemd timer, notmuch indexing, msmtp for sending. **No host currently imports it.** Desktop hosts use the `protonmail-desktop` app instead (installed, not autostarted).
