@@ -7,9 +7,9 @@
       programs.ssh = {
         enable = true;
         enableDefaultConfig = false;
-        matchBlocks = lib.mapAttrs (_: h: {
-          hostname = h.ip;
-          inherit (h) user;
+        settings = lib.mapAttrs (_: h: {
+          HostName = h.ip;
+          User = h.user;
         }) config.systemConstants.network.hosts;
       };
     };

@@ -5,6 +5,8 @@
     {
       programs.firefox = {
         enable = true;
+        # Legacy path; HM 26.05 defaults to XDG only for new stateVersions.
+        configPath = ".mozilla/firefox";
 
         policies.DontCheckDefaultBrowser = true;
 

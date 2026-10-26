@@ -71,11 +71,11 @@ in
       services.logind.settings.Login.HandleLidSwitch = "ignore";
       services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
 
-      systemd.sleep.extraConfig = ''
-        AllowSuspend=no
-        AllowHibernation=no
-        AllowSuspendThenHibernate=no
-      '';
+      systemd.sleep.settings.Sleep = {
+        AllowSuspend = false;
+        AllowHibernation = false;
+        AllowSuspendThenHibernate = false;
+      };
 
       programs.ssh.askPassword = "";
 

@@ -8,13 +8,13 @@
       programs.nix-ld.libraries = with pkgs; [
         libGL
         mesa
-        xorg.libX11
-        xorg.libXrandr
-        xorg.libXcursor
-        xorg.libXi
-        xorg.libXext
-        xorg.libXtst
-        xorg.libXxf86vm
+        libx11
+        libxrandr
+        libxcursor
+        libxi
+        libxext
+        libxtst
+        libxxf86vm
         libpulseaudio
         udev
         stdenv.cc.cc

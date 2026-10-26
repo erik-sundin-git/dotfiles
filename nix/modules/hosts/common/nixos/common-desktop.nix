@@ -35,11 +35,11 @@
 
         environment.systemPackages = with pkgs; [
           pkgsUnstable.claude-code
-          xorg.xinit
+          xinit
           pkgsUnstable.openssh-askpass
           quickemu
           alacritty
-          xfce.thunar
+          thunar
           nixfmt
           fastfetch
           wineWow64Packages.stable
