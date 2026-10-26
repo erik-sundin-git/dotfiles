@@ -20,6 +20,10 @@
 
     in
     {
+      # HM's on-failure treats SIGTERM as a clean exit, so an earlyoom kill
+      # would leave the bar gone for the rest of the session
+      systemd.user.services.waybar.Service.Restart = lib.mkForce "always";
+
       programs.waybar = {
         enable = true;
         systemd.enable = true;

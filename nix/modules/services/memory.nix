@@ -24,8 +24,11 @@
       services.earlyoom = {
         enable = true;
         freeMemThreshold = 5;
-        # Fire on low RAM alone instead of waiting for the disk swap to fill
-        freeSwapThreshold = 100;
+        # Fire once zram is used up, before the disk swap. zram is half of RAM
+        # and the disk partition is about RAM-sized, so zram is ~30% of all
+        # swap. 100 (ignore swap) fired with zram still empty and killed
+        # hundreds of processes a day.
+        freeSwapThreshold = 70;
         extraArgs = [
           "--avoid"
           "^(sway|Xwayland|pulseaudio|lightdm|java)$"
