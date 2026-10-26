@@ -9,7 +9,11 @@
         policies.DontCheckDefaultBrowser = true;
 
         profiles."default" = {
-          inherit (mozillaShared) search;
+          # DDG's Swedish results are poor; LibreWolf keeps it.
+          search = mozillaShared.search // {
+            default = "Startpage";
+            privateDefault = "Startpage";
+          };
           settings = mozillaShared.settings // {
             "browser.startup.homepage" = "https://www.youtube.com";
           };

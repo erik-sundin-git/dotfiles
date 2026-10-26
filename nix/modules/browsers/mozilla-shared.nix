@@ -16,6 +16,25 @@
           privateDefault = "ddg";
 
           engines = {
+            # Proxied Google results without the tracking.
+            "Startpage" = {
+              urls = [
+                {
+                  template = "https://www.startpage.com/sp/search";
+                  params = [
+                    {
+                      name = "query";
+                      value = "{searchTerms}";
+                    }
+                  ];
+                }
+              ];
+              icon = "https://www.startpage.com/favicon.ico";
+              definedAliases = [ "@sp" ];
+            };
+
+            google.metaData.alias = "@g";
+
             "Nix Packages" = {
               urls = [
                 {
