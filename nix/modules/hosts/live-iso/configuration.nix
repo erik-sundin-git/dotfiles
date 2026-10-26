@@ -64,6 +64,7 @@
           homeManager.dunst
           homeManager.starship
           homeManager.alacritty
+          homeManager.nmtui
           homeManager.bash
           homeManager.emacs
           homeManager.mozillaShared

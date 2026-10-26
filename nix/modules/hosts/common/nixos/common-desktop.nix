@@ -22,6 +22,7 @@
         home-manager.sharedModules = with inputs.self.modules.homeManager; [
           commonHome
           alacritty
+          nmtui
           desktopApps
           vpn
         ];
