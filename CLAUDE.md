@@ -23,11 +23,11 @@ Personal dotfiles for Erik Sundin: a single Nix flake producing NixOS configurat
 | `specter` | Laptop | swayfxStack | |
 | `ether` | VM | xfceStack | GRUB on `/dev/vda` (`commonConfig.bootEFI = false`) |
 | `wisp` | Headless server | none | `commonConfig` only (not `commonDesktop`) + `gtnh` Minecraft server; lid/suspend disabled |
-| `live-iso` | ISO | none | Plain `nixosSystem`, not a den host; built with `nix build .#iso` |
+| `live-iso` | ISO | sway (no DM) | Plain `nixosSystem`, not a den host; built with `nix build .#iso`. Installer session, see below |
 
 **The GTNH Minecraft server runs on `vps`** (Contabo, Debian 13), reached with `ssh vps` (as root). It is **not** managed by this flake, so the `gtnh` module and wisp's `services.gtnh` don't describe it. Check its status on the VPS itself, not on wisp. nomad pulls its world backups hourly into `~/backups/gtnh` (`homeManager.gtnhBackup`, `services/minecraft-gtnh/backup.nix`), using `~/.ssh/gtnh_backup`, a key the VPS restricts to read-only rsync of `/var/lib/gtnh/backups`.
 
-Each host sets `systemConstants.system = { host; type; }` (`type` ∈ laptop/desktop/server) on **both** the NixOS and Home Manager layers. Downstream modules branch on it (e.g. `isLaptop`, the per-host `rebuild` alias, TLP enabled only on laptops).
+Each host sets `systemConstants.system = { host; type; }` (`type` ∈ laptop/desktop/server; `host` is a free string). Hosts on a profile get `type` from it and the HM copy forwarded; forge sets both layers by hand. Downstream modules branch on it (e.g. `isLaptop`, the per-host `rebuild` alias, TLP enabled only on laptops).
 
 ## Commands
 
@@ -56,9 +56,10 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 
 **Layering for desktop hosts:**
 - `commonConfig` (`hosts/common/nixos/common-nixos.nix`): base system, nix settings, TLP, systemd-boot (1 s menu timeout), dbus-broker, `useGlobalPkgs`, and key-only OpenSSH (the authorized key for `erik` lives here; password login is disabled). It imports `nixDaemon` (`nix/daemon.nix`: batch CPU scheduling for builds, weekly store optimise, substituters) and `nixos.nh` (system-wide `nh clean`, which prunes system generations).
-- `memory` (`services/memory.nix`): zram plus zram sysctls (swappiness 180 etc.) and earlyoom. Imported by `commonDesktop` and `wisp`. The disk swap partitions stay because hibernate uses them. Use earlyoom, not systemd-oomd user slices: under LightDM, sway shares a session scope with its apps, so oomd would kill the whole desktop.
+- `memory` (`services/memory.nix`): zram plus zram sysctls (swappiness 180 etc.) and earlyoom. Imported by `commonDesktop` and `serverProfile`. The disk swap partitions stay because hibernate uses them. Use earlyoom, not systemd-oomd user slices: under LightDM, sway shares a session scope with its apps, so oomd would kill the whole desktop.
 - `commonDesktop` (`common-desktop.nix`): imports `commonConfig` and `memory`; X server/xkb (which also enables **LightDM**), users, overlays, and HM `sharedModules` = `commonHome` + alacritty + desktopApps + vpn.
 - `commonHome` (`hosts/common/home-manager/common-home.nix`): imports `generic.systemConstants` + `generic.theme`, emacs, browsers, bash, nh; sets `_module.args.isLaptop`.
+- **Profiles** (`hosts/common/nixos/profiles.nix`): `laptopProfile`, `desktopProfile` (commonDesktop + swayfxStack + pulseaudio), `vmProfile` (xfceStack + qemu guest agents), `serverProfile` (commonConfig + memory + user/HM wiring). Each imports the home-manager NixOS module, sets `systemConstants.system.type` and forwards `systemConstants.system` to HM, so a host imports one profile and sets only `systemConstants.system.host`. nomad, specter, wisp and ether use them; forge does not. Don't also import `inputs.home-manager.nixosModules.home-manager` in a host that uses a profile.
 - Stacks (`stacks/*-stack.nix`) bundle a WM's NixOS side + HM side. A stack's `nixos` module adds its HM half through `home-manager.sharedModules`, so hosts only import the NixOS stack.
 
 **Module arguments injected via `_module.args`** (don't look for them in nixpkgs):
@@ -69,9 +70,13 @@ There are no tests; evaluation (`nix flake check --no-build`) is the check.
 
 **Theme system** (`system-constants/theme.nix` + `themes/*.nix`): `selectedTheme` is an **enum**, so adding a theme means adding a `themes/<name>.nix` (setting `config.theme` under `mkIf (selectedTheme == "<name>")`) *and* extending the enum. `config.theme` is a submodule: free-form `name = "#rrggbb"` colors plus typed knobs `rounding`, `gaps`, `opacity`, `blur`, `fontFamily`. UI modules read it as `let c = config.theme; in …`. An assertion fails the build if the palette is empty. GTK CSS doesn't accept `alpha(#hex, a)`; use `hexToRgba`.
 
-**Custom packages:** `nix/packages/<name>/package.nix` (curseforge, geforcenow, irealpro, update-debs) is auto-discovered by pkgs-by-name and exposed as `pkgs.local.<name>` via `flake.overlays.default`. A host needs that overlay in `nixpkgs.overlays` (`commonDesktop` adds it; `wisp` adds it itself).
+**Custom packages:** `nix/packages/<name>/package.nix` (curseforge, geforcenow, irealpro, update-debs) is auto-discovered by pkgs-by-name and exposed as `pkgs.local.<name>` via `flake.overlays.default`. A host needs that overlay in `nixpkgs.overlays` (`commonDesktop` adds it; `serverProfile` adds it itself).
 
 Packages fetched from an unversioned "latest" URL (curseforge, irealpro) keep `version`/`url`/`hash`/`etag` in a sibling `source.json` that `package.nix` reads with `lib.importJSON`. `nix run .#update-debs` refreshes every `nix/packages/*/source.json`, and `.github/workflows/update-debs.yml` runs it daily, builds what changed and opens a PR. On a hash mismatch, run `nix run .#update-debs` or merge that PR.
+
+## Installing a host
+
+`nix build .#iso` → boot it. It autologins `nixos` into sway (nomad's catppuccin look, firefox, emacs, claude-code) and runs `install-host` (`hosts/live-iso/install-host.nix`, script in `nix/assets/install-host.sh`). The script clones the repo and unlocks git-crypt. It then offers either reinstalling a host from `topology.nix` or creating a new laptop/desktop/server/vm host, and partitions by firmware (UEFI → ESP + systemd-boot, BIOS → bios_grub + GRUB). For a new host it writes `hosts/<name>/<name>.nix` (one profile import) plus a verbatim `_hardware-configuration.nix`, registers the host in `topology.nix`, runs `nixos-install`, and sets erik's password. import-tree skips paths containing `/_`, so `_`-prefixed files can hold plain NixOS modules.
 
 ## Gotchas
 

@@ -6,7 +6,7 @@
       "${inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-base.nix"
       inputs.home-manager.nixosModules.home-manager
       inputs.self.modules.nixos.liveIsoConfig
-      inputs.self.modules.nixos.prepareDisk
+      inputs.self.modules.nixos.installHost
     ];
   };
 
