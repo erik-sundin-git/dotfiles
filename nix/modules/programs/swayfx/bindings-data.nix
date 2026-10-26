@@ -43,6 +43,7 @@
             binds = [
               { key = "b";          action = "splith"; desc = "Split horizontal"; }
               { key = "v";          action = "splitv"; desc = "Split vertical"; }
+              { key = "t";          action = "layout toggle split"; desc = "Toggle split layout (leave tabbed/stacking)"; }
             ];
           }
           {
