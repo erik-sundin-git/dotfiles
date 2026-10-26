@@ -27,11 +27,13 @@
           dest=${dest}
           mkdir -p "$dest"
 
-          # Zips are immutable once written, so existing ones are skipped
-          rsync -t --ignore-existing --partial-dir=.partial \
+          # Zips are immutable once written, so existing ones are skipped.
+          # -d + "./" copies the folder's contents; without them rsync just
+          # prints "skipping directory ." and pulls nothing
+          rsync -d -t --ignore-existing --partial-dir=.partial \
             --include='*.zip' --exclude='*' \
             -e "ssh -i $HOME/.ssh/gtnh_backup -o IdentitiesOnly=yes -o BatchMode=yes" \
-            vps: "$dest/"
+            vps:./ "$dest/"
 
           # Keep everything from the last ${toString keepAllDays} days, then the
           # newest zip per day for ${toString keepDailyDays} days
