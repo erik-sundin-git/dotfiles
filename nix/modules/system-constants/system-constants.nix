@@ -94,13 +94,7 @@
             description = "Form factor of the host; controls laptop-specific features like touchpad and brightness keys.";
           };
           host = lib.mkOption {
-            type = lib.types.enum [
-              "nomad"
-              "forge"
-              "ether"
-              "specter"
-              "wisp"
-            ];
+            type = lib.types.str;
             description = "Canonical name of this host; used to select host-specific shell aliases and config.";
           };
         };

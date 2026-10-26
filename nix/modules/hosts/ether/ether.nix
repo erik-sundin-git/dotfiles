@@ -2,26 +2,11 @@
 {
   den.aspects.ether = {
     nixos =
-      { config, pkgs, ... }:
-      let
-        sysConst = {
-          type = "desktop";
-          host = "ether";
-        };
-      in
+      { ... }:
       {
-        imports = with inputs.self.modules.nixos; [
-          inputs.home-manager.nixosModules.home-manager
-          xfceStack
-          commonDesktop
-          pulseaudio
-        ];
+        imports = with inputs.self.modules.nixos; [ vmProfile ];
 
-        systemConstants.system = sysConst;
-
-        home-manager.users.erik = {
-          systemConstants.system = sysConst;
-        };
+        systemConstants.system.host = "ether";
 
         commonConfig.bootEFI = false;
         boot.loader.grub.enable = true;

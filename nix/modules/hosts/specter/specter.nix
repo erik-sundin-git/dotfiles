@@ -3,24 +3,12 @@
   den.aspects.specter = {
     nixos =
       { ... }:
-      let
-        sysConst = {
-          type = "laptop";
-          host = "specter";
-        };
-      in
       {
-        imports = with inputs.self.modules.nixos; [
-          inputs.home-manager.nixosModules.home-manager
-          commonDesktop
-          swayfxStack
-          pulseaudio
-        ];
+        imports = with inputs.self.modules.nixos; [ laptopProfile ];
 
-        systemConstants.system = sysConst;
+        systemConstants.system.host = "specter";
 
         home-manager.users.erik = {
-          systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone8/temp";
         };
 

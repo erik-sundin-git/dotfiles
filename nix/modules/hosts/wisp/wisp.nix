@@ -2,61 +2,20 @@
 {
   den.aspects.wisp = {
     nixos =
-      { pkgsUnstable, ... }:
-      let
-        sysConst = {
-          type = "server";
-          host = "wisp";
-        };
-      in
+      { ... }:
       {
         imports = with inputs.self.modules.nixos; [
-          inputs.home-manager.nixosModules.home-manager
-          commonConfig
-          memory
+          serverProfile
           gtnh
         ];
 
-        systemConstants.system = sysConst;
+        systemConstants.system.host = "wisp";
 
         services.gtnh = {
           enable = true;
           maxRam = "6G";
           minRam = "1G";
           openFirewall = true;
-        };
-
-        services.logind.settings.Login.HandleLidSwitch = "ignore";
-        services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
-
-        systemd.sleep.extraConfig = ''
-          AllowSuspend=no
-          AllowHibernation=no
-          AllowSuspendThenHibernate=no
-        '';
-
-        programs.ssh.askPassword = "";
-
-        environment.systemPackages = [ pkgsUnstable.claude-code ];
-
-        nixpkgs.overlays = [
-          inputs.self.overlays.default
-          inputs.nur.overlays.default
-        ];
-
-        users.users.erik = {
-          isNormalUser = true;
-          description = "erik";
-          extraGroups = [
-            "networkmanager"
-            "wheel"
-          ];
-        };
-
-        home-manager.backupFileExtension = "backup";
-        home-manager.sharedModules = with inputs.self.modules.homeManager; [ commonHome ];
-        home-manager.users.erik = { ... }: {
-          systemConstants.system = sysConst;
         };
       };
   };

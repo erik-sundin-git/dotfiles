@@ -3,24 +3,15 @@
   den.aspects.nomad = {
     nixos =
       { config, pkgs, ... }:
-      let
-        sysConst = {
-          type = "laptop";
-          host = "nomad";
-        };
-      in
       {
         imports = with inputs.self.modules.nixos; [
-          inputs.home-manager.nixosModules.home-manager
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-          commonDesktop
-          swayfxStack
+          laptopProfile
           gaming
-          pulseaudio
           virtManager
         ];
 
-        systemConstants.system = sysConst;
+        systemConstants.system.host = "nomad";
 
         services.hardware.bolt.enable = true;
 
@@ -72,7 +63,6 @@
             gtnhBackup
           ];
           home.packages = [ pkgs.local.curseforge ];
-          systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
           selectedTheme = "catppuccin";
 
