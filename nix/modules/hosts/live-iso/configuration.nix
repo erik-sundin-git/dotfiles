@@ -31,6 +31,9 @@
 
       isoImage.squashfsCompression = "lz4";
 
+      # install-host only creates ext4
+      boot.supportedFilesystems.zfs = lib.mkForce false;
+
       console.keyMap = "sv-latin1";
 
       # nmtui instead of the installer's wpa_supplicant; `nixos` is already in
