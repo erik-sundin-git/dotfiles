@@ -23,12 +23,12 @@
         SUBSYSTEM=="drm", KERNEL=="card*", KERNELS=="0000:00:02.0", SYMLINK+="dri/igpu"
       '';
 
-      # The stock nvidia-offload, plus re-enabling nvidia's EGL vendor, which
-      # the sway session hides (see below)
+      # The stock nvidia-offload, plus re-enabling nvidia's EGL vendor and
+      # Vulkan ICD, which the sway session and Steam hide (see below)
       hardware.nvidia.prime.offload.enableOffloadCmd = lib.mkForce false;
       environment.systemPackages = [
         (pkgs.writeShellScriptBin "nvidia-offload" ''
-          unset __EGL_VENDOR_LIBRARY_FILENAMES
+          unset __EGL_VENDOR_LIBRARY_FILENAMES VK_DRIVER_FILES
           export __NV_PRIME_RENDER_OFFLOAD=1
           export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
           export __GLX_VENDOR_LIBRARY_NAME=nvidia
@@ -59,12 +59,26 @@
         "i915.fastboot=1"
       ];
 
-      # This firmware has platform_profile (cool/quiet/balanced/performance)
+      # Steam's Vulkan probing opens the 1650 and keeps it awake for as long
+      # as the client runs. Show it only the Intel ICDs; games that want the
+      # 1650 use the launch option `nvidia-offload %command%`.
+      programs.steam.package = pkgs.steam.override {
+        extraEnv.VK_DRIVER_FILES = lib.concatStringsSep ":" [
+          "/run/opengl-driver/share/vulkan/icd.d/intel_icd.x86_64.json"
+          "/run/opengl-driver-32/share/vulkan/icd.d/intel_icd.i686.json"
+        ];
+      };
+
+      # This firmware has platform_profile (cool/quiet/balanced/performance).
+      # balance_performance still boosts under load; "performance" pinned
+      # every core near 4 GHz and ran hot on this cooler. TLP's default
+      # RUNTIME_PM_ON_AC=on would keep the 1650 powered whenever plugged in.
       services.tlp.settings = {
-        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
         CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
-        PLATFORM_PROFILE_ON_AC = "performance";
+        PLATFORM_PROFILE_ON_AC = "balanced";
         PLATFORM_PROFILE_ON_BAT = "balanced";
+        RUNTIME_PM_ON_AC = "auto";
       };
 
       # Readable console on the 4K panel (the 7590 module sets earlySetup)
