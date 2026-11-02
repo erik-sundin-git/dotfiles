@@ -26,15 +26,35 @@
       # The stock nvidia-offload, plus re-enabling nvidia's EGL vendor and
       # Vulkan ICD, which the sway session and Steam hide (see below)
       hardware.nvidia.prime.offload.enableOffloadCmd = lib.mkForce false;
-      environment.systemPackages = [
-        (pkgs.writeShellScriptBin "nvidia-offload" ''
-          unset __EGL_VENDOR_LIBRARY_FILENAMES VK_DRIVER_FILES
-          export __NV_PRIME_RENDER_OFFLOAD=1
-          export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
-          export __GLX_VENDOR_LIBRARY_NAME=nvidia
-          export __VK_LAYER_NV_optimus=NVIDIA_only
-          exec "$@"
-        '')
+      environment.systemPackages = [ pkgs.nvidia-offload ];
+
+      nixpkgs.overlays = [
+        (final: prev: {
+          nvidia-offload = final.writeShellScriptBin "nvidia-offload" ''
+            unset __EGL_VENDOR_LIBRARY_FILENAMES VK_DRIVER_FILES
+            export __NV_PRIME_RENDER_OFFLOAD=1
+            export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+            export __GLX_VENDOR_LIBRARY_NAME=nvidia
+            export __VK_LAYER_NV_optimus=NVIDIA_only
+            exec "$@"
+          '';
+
+          # Minecraft (GTNH) on the 1650. Prism passes `--launch` to an
+          # already-running launcher, so the whole launcher is offloaded, not
+          # just the desktop entries; the 1650 stays awake while Prism is open.
+          prismlauncher = final.symlinkJoin {
+            name = "prismlauncher-nvidia-offload";
+            paths = [ prev.prismlauncher ];
+            postBuild = ''
+              rm $out/bin/prismlauncher
+              cat >$out/bin/prismlauncher <<EOF
+              #!${final.runtimeShell}
+              exec ${final.nvidia-offload}/bin/nvidia-offload ${prev.prismlauncher}/bin/prismlauncher "\$@"
+              EOF
+              chmod +x $out/bin/prismlauncher
+            '';
+          };
+        })
       ];
 
       # gaming sets linuxPackages_latest (7.3), which nvidia 595 doesn't
