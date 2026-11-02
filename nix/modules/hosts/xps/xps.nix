@@ -111,6 +111,7 @@
         imports = with inputs.self.modules.homeManager; [
           gh
           geforcenow
+          intelVideoDecode
         ];
 
         # x86_pkg_temp

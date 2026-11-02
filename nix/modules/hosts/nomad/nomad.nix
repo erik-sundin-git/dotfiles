@@ -60,47 +60,27 @@
           ];
         };
 
-        home-manager.users.erik =
-          { pkgs, ... }:
-          {
-            imports = with inputs.self.modules.homeManager; [
-              gh
-              chromium
-              geforcenow
-              gtnhBackup
-              emacsYoutube
-            ];
+        home-manager.users.erik = {
+          imports = with inputs.self.modules.homeManager; [
+            gh
+            chromium
+            geforcenow
+            gtnhBackup
+            emacsYoutube
+            intelVideoDecode
+          ];
 
-            # VA-API decode on the UHD 620, which has no AV1 or VP9-in-MSE hw
-            # decode (the RDD process would burn CPU instead)
-            programs.firefox.profiles.default.settings = {
-              "media.ffmpeg.vaapi.enabled" = true;
-              "media.hardware-video-decoding.force-enabled" = true;
-              "media.av1.enabled" = false;
-            };
-            programs.librewolf.profiles.default = {
-              settings = {
-                "media.ffmpeg.vaapi.enabled" = true;
-                "media.hardware-video-decoding.force-enabled" = true;
-                "media.av1.enabled" = false;
-                # Disabling WebM in MSE is what actually pushes YouTube off VP9;
-                # the vp9 pref alone isn't enough. Tradeoff: 1080p cap on YouTube.
-                "media.mediasource.vp9.enabled" = false;
-                "media.mediasource.webm.enabled" = false;
-              };
-              extensions.packages = [ pkgs.nur.repos.rycee.firefox-addons.h264ify ];
-            };
-            systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
-            selectedTheme = "ef-bio";
+          systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
+          selectedTheme = "ef-bio";
 
-            wayland.windowManager.sway.config.output = {
-              "Dell Inc. DELL U2722D 3JYTCH3" = {
-                mode = "2560x1440";
-                position = "0,0";
-              };
-              "eDP-1".position = "2560,0";
+          wayland.windowManager.sway.config.output = {
+            "Dell Inc. DELL U2722D 3JYTCH3" = {
+              mode = "2560x1440";
+              position = "0,0";
             };
+            "eDP-1".position = "2560,0";
           };
+        };
       };
   };
 }
