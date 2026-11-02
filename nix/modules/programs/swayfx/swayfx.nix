@@ -1,7 +1,12 @@
 { inputs, ... }:
 {
   flake.modules.nixos.swayfx =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       imports = [ inputs.self.modules.nixos.waylandBase ];
 
@@ -55,7 +60,13 @@
 
       wayland.windowManager.sway = {
         enable = true;
-        package = pkgs.swayfx;
+        # HM's default package applies these through the wrapper's override;
+        # a bare pkgs.swayfx would silently ignore them
+        package = pkgs.swayfx.override {
+          inherit (config.wayland.windowManager.sway) extraOptions extraSessionCommands;
+          withBaseWrapper = config.wayland.windowManager.sway.wrapperFeatures.base;
+          withGtkWrapper = config.wayland.windowManager.sway.wrapperFeatures.gtk;
+        };
         systemd.enable = true;
         systemd.dbusImplementation = "broker";
         checkConfig = false;
