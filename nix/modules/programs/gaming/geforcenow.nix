@@ -3,8 +3,7 @@
   flake.modules.nixos.geforcenow =
     { lib, pkgs, ... }:
     {
-      services.flatpak.enable = true;
-
+      # Relies on services.flatpak from commonDesktop.
       # flatpak-session-helper starts with a nearly-empty PATH on NixOS, which
       # breaks `flatpak-spawn --host xdg-open` from inside the GFN sandbox —
       # login hangs because the OAuth URL never reaches the host browser (and
@@ -42,8 +41,17 @@
             https://dl.flathub.org/repo/flathub.flatpakrepo
           flatpak remote-add --if-not-exists --from GeForceNOW \
             https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo
-          flatpak install --or-update --noninteractive --assumeyes \
-            GeForceNOW com.nvidia.geforcenow
+          if ! flatpak info com.nvidia.geforcenow >/dev/null 2>&1; then
+            flatpak install --noninteractive --assumeyes \
+              GeForceNOW com.nvidia.geforcenow
+          else
+            # Best effort: NVIDIA's remote sometimes rolls back to a commit
+            # older than the installed one, which flatpak refuses ("Update is
+            # older than current version"). That must not fail the unit, or
+            # Restart= loops it and every switch reports it failed.
+            flatpak update --noninteractive --assumeyes com.nvidia.geforcenow \
+              || echo "geforce-now-install: update failed, keeping installed version" >&2
+          fi
         '';
       };
     };

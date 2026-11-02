@@ -1,7 +1,10 @@
 { inputs, ... }:
 {
   flake.modules.nixos.gaming =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
+    let
+      isLaptop = config.systemConstants.system.type == "laptop";
+    in
     {
       imports = [ inputs.self.modules.nixos.geforcenow ];
 
@@ -21,11 +24,6 @@
         openssl
       ];
 
-      hardware.graphics = {
-        enable = true;
-        enable32Bit = true;
-      };
-
       boot.kernelPackages = pkgs.linuxPackages_latest;
 
       boot.kernel.sysctl."vm.max_map_count" = 2147483642;
@@ -36,18 +34,25 @@
 
       programs.steam = {
         enable = true;
-        remotePlay.openFirewall = true;
-        localNetworkGameTransfers.openFirewall = true;
+        # Not on roaming laptops: these open ports on every network joined
+        remotePlay.openFirewall = !isLaptop;
+        localNetworkGameTransfers.openFirewall = !isLaptop;
         gamescopeSession.enable = true;
         extraCompatPackages = with pkgs; [ proton-ge-bin ];
       };
 
+      # Stable path for Prism instances: a /nix/store JavaPath breaks after GC
+      environment.etc."jdk21".source = pkgs.jdk21;
+
       environment.systemPackages = with pkgs; [
         mangohud
-        protonup-qt
         bolt-launcher
-        jdk
         prismlauncher
+        wineWow64Packages.stable
+        winetricks
       ];
+
+      # Rofi entry for the GTNH Prism instance, alongside prismlauncher above
+      home-manager.sharedModules = [ inputs.self.modules.homeManager.gtnhLauncher ];
     };
 }

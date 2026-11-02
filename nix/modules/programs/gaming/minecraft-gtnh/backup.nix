@@ -22,10 +22,18 @@
           rsync
           openssh
           coreutils
+          unzip
         ];
         text = ''
           dest=${dest}
           mkdir -p "$dest"
+          cd "$dest"
+          shopt -s nullglob
+
+          # Only date-stamped zips (Server Utilities' naming) take part in
+          # retention; anything else in the folder is left alone.
+          dated=([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.zip)
+          before=" ''${dated[*]} "
 
           # Zips are immutable once written, so existing ones are skipped.
           # -d + "./" copies the folder's contents; without them rsync just
@@ -35,11 +43,20 @@
             -e "ssh -i $HOME/.ssh/gtnh_backup -o IdentitiesOnly=yes -o BatchMode=yes" \
             vps:./ "$dest/"
 
+          # A zip pulled while the server was still writing it would be kept
+          # forever by --ignore-existing; drop broken new ones so the next run
+          # fetches them again
+          dated=([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.zip)
+          for f in "''${dated[@]}"; do
+            if [[ $before != *" $f "* ]] && ! unzip -tqq "$f" >/dev/null 2>&1; then
+              echo "gtnh-backup: $f is incomplete or corrupt; removed" >&2
+              rm -- "$f"
+            fi
+          done
+
           # Keep everything from the last ${toString keepAllDays} days, then the
           # newest zip per day for ${toString keepDailyDays} days
-          cd "$dest"
-          shopt -s nullglob
-          zips=(*.zip)
+          zips=([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.zip)
           [ ''${#zips[@]} -eq 0 ] && exit 0
           mapfile -t zips < <(printf '%s\n' "''${zips[@]}" | sort -r)
           newest=''${zips[0]:0:10}
@@ -61,12 +78,24 @@
       home.packages = [ gtnh-backup ];
 
       systemd.user.services.gtnh-backup = {
-        Unit.Description = "Pull GTNH world backups from the VPS";
+        Unit = {
+          Description = "Pull GTNH world backups from the VPS";
+          # An expired key or a full disk would otherwise fail silently
+          OnFailure = [ "gtnh-backup-failed.service" ];
+        };
         Service = {
           Type = "oneshot";
           ExecStart = "${gtnh-backup}/bin/gtnh-backup";
           Nice = 10;
           IOSchedulingClass = "idle";
+        };
+      };
+
+      systemd.user.services.gtnh-backup-failed = {
+        Unit.Description = "Notify that the GTNH backup pull failed";
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.libnotify}/bin/notify-send -u critical 'GTNH backup failed' 'journalctl --user -u gtnh-backup'";
         };
       };
 
