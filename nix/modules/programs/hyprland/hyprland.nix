@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.modules.nixos.hyprland =
-    { ... }:
+    { config, lib, ... }:
     {
       imports = [ inputs.self.modules.nixos.waylandBase ];
 
@@ -10,6 +10,15 @@
       programs.hyprland.xwayland.enable = true;
 
       security.pam.services.hyprlock = { };
+
+      # Hyprland needs NVIDIA-specific setup on the proprietary driver that
+      # nothing here does, so it's kept off it like sway (see swayfx.nix).
+      assertions = [
+        {
+          assertion = !lib.elem "nvidia" config.services.xserver.videoDrivers;
+          message = "Hyprland doesn't run on the proprietary NVIDIA driver: use an X11 stack, or a nixos-hardware module without -nvidia (e.g. an -intel variant).";
+        }
+      ];
     };
 
   flake.modules.homeManager.hyprland =

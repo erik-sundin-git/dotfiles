@@ -2,8 +2,8 @@
 let
   # Every profile owns erik, the overlays and the Home Manager wiring, and
   # forwards the NixOS-side systemConstants.system to HM, so a host only sets
-  # `systemConstants.system.host`. Profile names must stay plain modules:
-  # `install-host` on the live ISO scaffolds new hosts with `${type}Profile`.
+  # `systemConstants.system.host`. Laptops and desktops add one WM stack.
+  # install-host names these modules in generated hosts (flake.installer below).
   mkProfile =
     type: imports:
     { config, pkgsUnstable, ... }:
@@ -40,8 +40,32 @@ let
     };
 in
 {
-  # A laptop without a window manager stack, for hosts that bring their own
-  # (nomad is trying exwmStack)
+  flake.installer.profiles = {
+    laptopBaseProfile = {
+      type = "laptop";
+      label = "Laptop";
+      order = 10;
+    };
+    desktopBaseProfile = {
+      type = "desktop";
+      label = "Desktop";
+      order = 20;
+    };
+    serverProfile = {
+      type = "server";
+      label = "Server (headless)";
+      order = 30;
+      stacks = false;
+    };
+    vmProfile = {
+      type = "desktop";
+      label = "VM (XFCE, qemu guest agents)";
+      order = 40;
+      stacks = false;
+    };
+  };
+
+  # Without a window manager: the host imports one stack (stacks/*-stack.nix)
   flake.modules.nixos.laptopBaseProfile = mkProfile "laptop" (
     with inputs.self.modules.nixos;
     [
@@ -50,15 +74,6 @@ in
     ]
   );
 
-  flake.modules.nixos.laptopProfile = {
-    imports = with inputs.self.modules.nixos; [
-      laptopBaseProfile
-      swayfxStack
-    ];
-  };
-
-  # A desktop without a window manager stack, for hosts that bring their own
-  # (forge uses i3Stack)
   flake.modules.nixos.desktopBaseProfile = mkProfile "desktop" (
     with inputs.self.modules.nixos;
     [
@@ -66,13 +81,6 @@ in
       pulseaudio
     ]
   );
-
-  flake.modules.nixos.desktopProfile = {
-    imports = with inputs.self.modules.nixos; [
-      desktopBaseProfile
-      swayfxStack
-    ];
-  };
 
   flake.modules.nixos.vmProfile =
     { ... }:

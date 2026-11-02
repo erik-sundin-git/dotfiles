@@ -1,5 +1,10 @@
 { ... }:
 {
+  flake.installer.homeModules.chromium = {
+    label = "Chromium (ungoogled)";
+    order = 20;
+  };
+
   flake.modules.homeManager.chromium =
     { pkgs, ... }:
     {

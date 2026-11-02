@@ -795,7 +795,9 @@
 (use-package yt
   :ensure nil
   :if (locate-library "yt")
-  :commands (yt yt-subscriptions yt-login yt-search yt-channels yt-play-url yt-doctor)
+  :commands (yt yt-subscriptions yt-login yt-search yt-channels yt-play-url yt-doctor
+             yt-subscribe yt-unsubscribe yt-history)
+  :custom (yt-player-youtube-history t)
   :bind-keymap ("C-c y" . yt-map))
 
 (use-package ledger-mode

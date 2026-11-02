@@ -1,5 +1,11 @@
 { inputs, ... }:
 {
+  flake.installer.stacks.exwmStack = {
+    label = "EXWM: Emacs as the window manager (X11)";
+    order = 30;
+    session = "x11";
+  };
+
   flake.modules.nixos.exwmStack =
     { ... }:
     {

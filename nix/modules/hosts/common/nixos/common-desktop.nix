@@ -74,6 +74,15 @@
           # Pre-1.17 behaviour (first portal found); sway overrides this via config.sway
           config.common.default = "*";
         };
+
+        # The laptop/desktop base profiles bring no window manager; without a
+        # stack LightDM has no session to start and loops back to the greeter
+        assertions = [
+          {
+            assertion = config.services.displayManager.sessionData.sessionNames != [ ];
+            message = "No desktop session: import a WM stack (stacks/*-stack.nix) next to the profile.";
+          }
+        ];
       };
     };
 }

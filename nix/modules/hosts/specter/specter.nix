@@ -4,7 +4,10 @@
     nixos =
       { ... }:
       {
-        imports = with inputs.self.modules.nixos; [ laptopProfile ];
+        imports = with inputs.self.modules.nixos; [
+          laptopBaseProfile
+          swayfxStack
+        ];
 
         systemConstants.system.host = "specter";
         system.stateVersion = "25.11";

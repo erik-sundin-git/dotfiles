@@ -16,6 +16,21 @@
       # xdg-desktop-portal-wlr crash-loops without PipeWire, which stalls
       # xdg-desktop-portal startup and makes waybar time out (~25s per try)
       xdg.portal.wlr.enable = lib.mkForce config.services.pipewire.enable;
+
+      # sway refuses to start on the proprietary NVIDIA driver without
+      # --unsupported-gpu, so LightDM would just loop. install-host greys the
+      # -nvidia hardware modules out; this catches hand-written hosts that
+      # haven't opted in (xps does, rendering on the iGPU).
+      assertions = [
+        {
+          assertion =
+            !lib.elem "nvidia" config.services.xserver.videoDrivers
+            || lib.any (u: lib.elem "--unsupported-gpu" u.wayland.windowManager.sway.extraOptions) (
+              lib.attrValues (config.home-manager.users or { })
+            );
+          message = "SwayFX doesn't run on the proprietary NVIDIA driver: use an X11 stack, a nixos-hardware module without -nvidia (e.g. an -intel variant), or pass --unsupported-gpu in HM's wayland.windowManager.sway.extraOptions.";
+        }
+      ];
     };
 
   flake.modules.homeManager.swayfx =

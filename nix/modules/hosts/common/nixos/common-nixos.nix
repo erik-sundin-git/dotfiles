@@ -66,7 +66,9 @@
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINLYub6F3p047lqIQgzoygdVEnohBMdrJe75tYx/ZuCT erik@nomad"
         ];
         services.tlp = {
-          enable = lib.mkDefault isLaptop;
+          # Not `mkDefault isLaptop`: false would conflict with nixos-hardware's
+          # laptop modules (also mkDefault) on a desktop-type host
+          enable = lib.mkIf isLaptop (lib.mkDefault true);
           settings = {
             # Keep TLP's USB autosuspend away from the bluetooth adapter
             USB_EXCLUDE_BTUSB = 1;
