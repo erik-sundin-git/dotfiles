@@ -25,7 +25,8 @@
         "flakes"
       ];
 
-      isoImage.squashfsCompression = "lz4";
+      # lz4 made a 7.8 GB squashfs, which fills an 8 GB stick
+      isoImage.squashfsCompression = "zstd -Xcompression-level 6";
 
       # install-host only creates ext4
       boot.supportedFilesystems.zfs = lib.mkForce false;
