@@ -1,0 +1,33 @@
+name: eval
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31
+
+      # No git-crypt key in CI (public repo, and the key can't be rotated):
+      # swap the still-encrypted inventory for a stub. The dirty tracked file
+      # is what the flake evaluates.
+      - name: Stub the encrypted host inventory
+        run: |
+          if cmp -s -n 10 <(printf '\0GITCRYPT\0') nix/secrets/hosts.nix; then
+            cp .github/ci/hosts-stub.nix nix/secrets/hosts.nix
+          fi
+
+      - name: Evaluate every host
+        run: nix flake check --no-build

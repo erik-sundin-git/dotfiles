@@ -5,26 +5,35 @@ on:
     - cron: "0 5 * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+concurrency:
+  group: update-debs
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
-      - uses: cachix/install-nix-action@v31
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31
 
+      # update-debs updates what it can and exits non-zero if any package
+      # failed; open the PR for the rest, then fail the job at the end.
       - name: Refresh source.json files
         id: update
         run: |
+          set +e
           changes=$(nix run .#update-debs)
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+          set -e
+          delim="EOF_$(openssl rand -hex 8)"
           {
-            echo 'changes<<EOF'
+            echo "changes<<$delim"
             echo "$changes"
-            echo 'EOF'
+            echo "$delim"
           } >> "$GITHUB_OUTPUT"
 
       - name: Build changed packages
@@ -36,7 +45,7 @@ jobs:
 
       - name: Open pull request
         if: steps.update.outputs.changes != ''
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
           branch: update-debs
           delete-branch: true
@@ -46,3 +55,9 @@ jobs:
             ${{ steps.update.outputs.changes }}
           title: "packages: update .deb sources"
           body: ${{ steps.update.outputs.changes }}
+
+      - name: Fail if a package could not be updated
+        if: steps.update.outputs.status != '0'
+        run: |
+          echo "update-debs failed for at least one package; see the 'Refresh source.json files' log."
+          exit 1
