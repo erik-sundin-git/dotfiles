@@ -22,6 +22,7 @@
     {
       config,
       pkgs,
+      mkPolkitAgent,
       ...
     }:
     let
@@ -38,6 +39,7 @@
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
 
       xsession.enable = true;
+      systemd.user.services.polkit-agent = mkPolkitAgent "graphical-session.target";
       xsession.scriptPath = ".hm-xsession";
 
       xsession.windowManager.i3 = {

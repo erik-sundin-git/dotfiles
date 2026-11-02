@@ -7,12 +7,17 @@
       pkgs,
       hexToRgba,
       isLaptop,
+      osConfig ? { },
       ...
     }:
     let
       c = config.theme;
       thermalPath = config.systemConstants.thermalZonePath;
       isHyprland = config.wayland.windowManager.hyprland.enable;
+      # claude-code is installed system-wide (profiles, live ISO)
+      hasClaude = lib.any (p: lib.getName p == "claude-code") (
+        osConfig.environment.systemPackages or [ ]
+      );
 
       tempScript = pkgs.writeShellScript "waybar-temp" ''
         ${pkgs.gawk}/bin/awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
@@ -56,6 +61,9 @@
               ++ [
                 "disk"
                 "memory"
+              ]
+              ++ lib.optionals hasClaude [ "custom/claude" ]
+              ++ [
                 "clock"
               ]
               ++ lib.optionals (thermalPath != null) [ "custom/temperature" ];
@@ -128,6 +136,13 @@
                 interval = 60;
               };
             }
+            // lib.optionalAttrs hasClaude {
+              "custom/claude" = {
+                exec = lib.getExe pkgs.local.claude-usage;
+                return-type = "json";
+                interval = 300;
+              };
+            }
             // lib.optionalAttrs (thermalPath != null) {
               "custom/temperature" = {
                 exec = "${tempScript}";
@@ -161,8 +176,8 @@
 
           #workspaces button.active,
           #workspaces button.focused {
-            background: ${c.blue};
-            color: ${c.black};
+            background: ${c.accent};
+            color: ${c.background};
           }
 
           #workspaces button.urgent {
@@ -208,6 +223,23 @@
           }
 
           #network.disconnected {
+            color: ${c.brightBlack};
+          }
+
+          #custom-claude {
+            color: ${c.foreground};
+            padding: 0 6px;
+          }
+
+          #custom-claude.warning {
+            color: ${c.yellow};
+          }
+
+          #custom-claude.critical {
+            color: ${c.red};
+          }
+
+          #custom-claude.unknown {
             color: ${c.brightBlack};
           }
 

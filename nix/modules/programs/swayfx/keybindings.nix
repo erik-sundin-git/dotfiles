@@ -24,9 +24,11 @@
       laptopBinds = swayBindingsData.laptopSection.binds;
     in
     {
-      wayland.windowManager.sway.config.keybindings = lib.mkOptionDefault (
+      # Normal priority on purpose: HM wraps each default bind in
+      # mkOptionDefault, so this replaces them all and swayBindingsData stays
+      # the complete list that sway-help shows.
+      wayland.windowManager.sway.config.keybindings =
         lib.listToAttrs (map bindToAttr allBinds)
-        // lib.optionalAttrs isLaptop (lib.listToAttrs (map bindToAttr laptopBinds))
-      );
+        // lib.optionalAttrs isLaptop (lib.listToAttrs (map bindToAttr laptopBinds));
     };
 }

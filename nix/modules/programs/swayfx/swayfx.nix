@@ -19,6 +19,7 @@
       lib,
       pkgs,
       isLaptop,
+      mkPolkitAgent,
       ...
     }:
     let
@@ -30,21 +31,33 @@
       imports = with inputs.self.modules.homeManager; [
         uiHelpers
         waylandBase
+        swayBindings
+        claudeLaunchers
       ];
+
+      # NixOS's session wrapper starts nixos-fake-graphical-session.target for
+      # sway (not on its systemd-aware list) and never stops it, so
+      # graphical-session.target is up before sway has exported WAYLAND_DISPLAY
+      # and stays up after it exits. Bind waybar, swayosd and swayidle to
+      # sway-session.target instead: HM's default extraCommands start it after
+      # the env import and stop it when sway exits.
+      wayland.systemd.target = "sway-session.target";
+
+      systemd.user.services.polkit-agent = mkPolkitAgent config.wayland.systemd.target;
+
+      # Nothing else starts the applet on sway (i3 execs it); without it the
+      # tray icon and blueman's auto-connect only appear once blueman-manager
+      # D-Bus-activates it.
+      services.blueman-applet = {
+        enable = true;
+        systemdTargets = [ config.wayland.systemd.target ];
+      };
 
       wayland.windowManager.sway = {
         enable = true;
         package = pkgs.swayfx;
         systemd.enable = true;
-        # pam_systemd activates graphical-session.target at login (before sway
-        # runs), so waybar.service gets triggered and skipped via
-        # ConditionEnvironment=WAYLAND_DISPLAY before env is imported. Start
-        # it manually after dbus-update-activation-environment. Same for
-        # swayosd (services.swayosd in packages.nix).
-        systemd.extraCommands = lib.mkBefore [
-          "systemctl --user start waybar.service"
-          "systemctl --user start swayosd.service"
-        ];
+        systemd.dbusImplementation = "broker";
         checkConfig = false;
 
         config = {
@@ -82,7 +95,7 @@
         extraConfig = ''
           ${lib.optionalString t.blur "blur enable\nblur_passes 2\nblur_radius 6\nlayer_effects \"waybar\" blur enable\nlayer_effects \"wofi\" blur enable"}
           corner_radius ${toString t.rounding}
-          default_dim_inactive ${if t.opacity < 1.0 then "0.1" else "0.0"}
+          default_dim_inactive ${toString t.dimInactive}
           shadows disable
 
           for_window [app_id="ai-add-pkg"] floating enable, resize set 1000 720, move position center
