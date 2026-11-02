@@ -127,14 +127,21 @@ stdenv.mkDerivation {
     substituteInPlace $out/share/applications/irealpro.desktop \
       --replace-fail /opt/iRealPro/irealpro $out/bin/irealpro
 
+    runHook postInstall
+  '';
+
+  # gappsWrapperArgs is filled by a preFixupPhases hook, so it is still
+  # empty during installPhase
+  preFixup = ''
+    # No setuid helper in the store; Electron falls back to the
+    # user-namespace sandbox when chrome-sandbox is absent
+    rm -f $out/opt/irealpro/chrome-sandbox
+
     makeWrapper $out/opt/irealpro/irealpro $out/bin/irealpro \
       "''${gappsWrapperArgs[@]}" \
       --prefix PATH : ${lib.makeBinPath [ xdg-utils ]} \
       --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libglvnd ]} \
-      --add-flags "--no-sandbox" \
       --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto}}"
-
-    runHook postInstall
   '';
 
   meta = {
