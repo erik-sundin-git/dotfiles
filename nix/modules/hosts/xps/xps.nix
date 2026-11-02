@@ -112,6 +112,8 @@
           gh
           geforcenow
           intelVideoDecode
+          chromium
+          emacsYoutube
         ];
 
         # x86_pkg_temp
