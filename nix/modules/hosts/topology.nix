@@ -7,5 +7,6 @@
   den.hosts.x86_64-linux.ether = { };
   den.hosts.x86_64-linux.specter = { };
   den.hosts.x86_64-linux.wisp = { };
+  den.hosts.x86_64-linux.xps = { };
   # install-host inserts new hosts above this line
 }

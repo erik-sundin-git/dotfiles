@@ -21,6 +21,7 @@ Personal dotfiles for Erik Sundin: a single Nix flake producing NixOS configurat
 | `nomad` | ThinkPad T480s laptop | swayfxStack (`laptopProfile`) | + gaming, virtManager, geforcenow; NAT forward to a libvirt VM; theme `ef-bio` |
 | `forge` | Desktop | i3Stack | `desktopBaseProfile` + i3Stack; + gaming, virtManager; autorandr dual-monitor profile |
 | `specter` | Laptop | swayfxStack | |
+| `xps` | Dell XPS 15 7590 | swayfxStack | + gaming; GTX 1650 via PRIME offload (`nvidia-offload <cmd>`), sway runs with `--unsupported-gpu`; kernel pinned to default `linuxPackages` (nvidia 595 doesn't build on `_latest`) |
 | `ether` | VM | xfceStack | GRUB on `/dev/vda` (`commonConfig.bootEFI = false`) |
 | `wisp` | Headless server | none | `serverProfile` (`commonConfig`, not `commonDesktop`); lid/suspend disabled |
 | `live-iso` | ISO | sway (no DM) | Plain `nixosSystem`, not a den host; built with `nix build .#iso`. Installer session, see below |
