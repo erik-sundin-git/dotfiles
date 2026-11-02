@@ -40,6 +40,13 @@
         }
         // lib.optionalAttrs (clickLeft != null) { click-left = clickLeft; };
 
+      # HM's unit PATH is only polybar + wrappers, so module scripts calling
+      # vpn-status, awk, rm or touch by name would fail. Add the user and
+      # system profiles.
+      systemd.user.services.polybar.Service.Environment = lib.mkForce [
+        "PATH=${config.services.polybar.package}/bin:/run/wrappers/bin:/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin"
+      ];
+
       services.polybar = {
         enable = true;
 
@@ -71,8 +78,8 @@
           "module/i3" = {
             type = "internal/i3";
             label-focused = "%index%";
-            label-focused-background = c.blue;
-            label-focused-foreground = c.black;
+            label-focused-background = c.accent;
+            label-focused-foreground = c.background;
             label-focused-padding = 1;
             label-unfocused = "%index%";
             label-unfocused-foreground = c.brightBlack;
@@ -83,7 +90,7 @@
             label-visible = "%index%";
             label-visible-padding = 1;
             label-mode = " %mode% ";
-            label-mode-foreground = c.black;
+            label-mode-foreground = c.background;
             label-mode-background = c.yellow;
           };
 

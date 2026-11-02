@@ -11,7 +11,7 @@
         settings = {
           format = "$username$hostname$directory$git_branch$git_state$git_status$cmd_duration$line_break$python$character";
 
-          directory.style = "fg:${c.blue}";
+          directory.style = "fg:${c.accent}";
 
           character = {
             success_symbol = "[❯](fg:${c.magenta})";

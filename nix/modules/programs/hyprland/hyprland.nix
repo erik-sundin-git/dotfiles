@@ -43,7 +43,7 @@
             gaps_in = c.gaps;
             gaps_out = c.gaps;
             border_size = 2;
-            "col.active_border" = hexToHyprRgb c.blue;
+            "col.active_border" = hexToHyprRgb c.accent;
             "col.inactive_border" = hexToHyprRgb c.black;
           };
 

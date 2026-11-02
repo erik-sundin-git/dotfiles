@@ -4,7 +4,7 @@
     { config, pkgs, ... }:
     let
       c = config.theme;
-      frameColor = c.blue;
+      frameColor = c.accent;
       # Dunst invokes the script with 6 positional args (appname, summary, body,
       # icon, urgency, raw_icon); we ignore them and just play a sound.
       playSound =
@@ -31,7 +31,7 @@
           };
           urgency_low = {
             background = c.black;
-            foreground = c.brightBlack;
+            foreground = c.white;
             frame_color = frameColor;
             timeout = 5;
           };

@@ -14,8 +14,16 @@
           "${opacityPct}:class_g = 'Alacritty'"
           "${opacityPct}:class_g = 'Emacs'"
         ];
+        # Blur needs the glx backend
+        backend = lib.mkIf t.blur "glx";
         settings = {
           corner-radius = t.rounding;
+        }
+        // lib.optionalAttrs t.blur {
+          blur = {
+            method = "dual_kawase";
+            strength = 5;
+          };
         };
       };
     };

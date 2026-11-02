@@ -28,7 +28,7 @@
 
         window {
           background-color: ${hexToRgba c.superDark (if c.blur then "0.85" else "1.0")};
-          border: 1px solid ${c.blue};
+          border: 1px solid ${c.accent};
           border-radius: ${radius}px;
           color: ${c.foreground};
         }
@@ -62,11 +62,11 @@
         }
 
         #entry:selected {
-          background-color: ${c.blue};
+          background-color: ${c.accent};
         }
 
         #entry:selected #text {
-          color: ${c.black};
+          color: ${c.background};
         }
       '';
     };

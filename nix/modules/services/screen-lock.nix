@@ -19,14 +19,13 @@
           font-size = 24;
           indicator-radius = 100;
           indicator-thickness = 8;
-          ring-color = hex c.blue;
+          ring-color = hex c.accent;
           key-hl-color = hex c.green;
           bs-hl-color = hex c.red;
           inside-color = hex c.background;
           text-color = hex c.foreground;
           separator-color = "00000000";
           fade-in = "0.2";
-          effect-blur = "8x3";
           ignore-empty-password = true;
           show-failed-attempts = true;
         };
@@ -80,7 +79,7 @@
               outline_thickness = 3;
               dots_size = 0.25;
               dots_spacing = 0.35;
-              outer_color = hexToHyprRgb c.blue;
+              outer_color = hexToHyprRgb c.accent;
               inner_color = hexToHyprRgb c.background;
               font_color = hexToHyprRgb c.foreground;
               fail_color = hexToHyprRgb c.red;
@@ -122,7 +121,7 @@
     let
       c = config.theme;
       hex = lib.removePrefix "#";
-      lockCmd = "${pkgs.i3lock-color}/bin/i3lock-color --color=${hex c.background} --clock --inside-color=${hex c.background}ff --ring-color=${hex c.blue}ff --keyhl-color=${hex c.green}ff --bshl-color=${hex c.red}ff --time-color=${hex c.foreground}ff --date-color=${hex c.foreground}ff --nofork";
+      lockCmd = "${pkgs.i3lock-color}/bin/i3lock-color --color=${hex c.background} --clock --inside-color=${hex c.background}ff --ring-color=${hex c.accent}ff --keyhl-color=${hex c.green}ff --bshl-color=${hex c.red}ff --time-color=${hex c.foreground}ff --date-color=${hex c.foreground}ff --nofork";
     in
     {
       home.packages = [ pkgs.i3lock-color ];
