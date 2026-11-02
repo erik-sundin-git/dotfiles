@@ -1,11 +1,4 @@
-{
-  den,
-  inputs,
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ ... }:
 {
   den.aspects.ether = {
     nixos =

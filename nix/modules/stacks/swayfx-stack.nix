@@ -17,6 +17,7 @@
     {
       imports = with inputs.self.modules.homeManager; [
         swayfx
+        alacritty
         swayLock
         waybar
         wofi

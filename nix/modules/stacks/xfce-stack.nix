@@ -3,10 +3,7 @@
   flake.modules.nixos.xfceStack =
     { ... }:
     {
-      imports = [
-        inputs.self.modules.nixos.xfce
-        inputs.self.modules.generic.theme
-      ];
+      imports = [ inputs.self.modules.nixos.xfce ];
       home-manager.sharedModules = [
         inputs.self.modules.homeManager.xfceStack
       ];
@@ -15,8 +12,9 @@
   flake.modules.homeManager.xfceStack =
     { config, ... }:
     {
-      imports = [
-        inputs.self.modules.homeManager.gtk
+      imports = with inputs.self.modules.homeManager; [
+        alacritty
+        gtk
       ];
 
       # xfsettingsd pushes XSETTINGS that override gtk's settings.ini.

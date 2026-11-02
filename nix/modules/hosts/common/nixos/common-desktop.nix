@@ -3,25 +3,24 @@
   flake.modules.nixos.commonDesktop =
     {
       config,
-      lib,
       pkgs,
       pkgsUnstable,
       ...
     }:
     let
       kb = config.systemConstants.keyboard;
+      isLaptop = config.systemConstants.system.type == "laptop";
     in
     {
       imports = with inputs.self.modules.nixos; [
         commonConfig
         memory
+        devTools
       ];
 
       config = {
-        home-manager.backupFileExtension = "backup";
+        # alacritty comes with the WM stacks (EXWM uses vterm instead)
         home-manager.sharedModules = with inputs.self.modules.homeManager; [
-          commonHome
-          alacritty
           nmtui
           desktopApps
           vpn
@@ -35,45 +34,40 @@
         };
 
         environment.systemPackages = with pkgs; [
-          pkgsUnstable.claude-code
           xinit
-          pkgsUnstable.openssh-askpass
-          quickemu
-          alacritty
-          thunar
-          nixfmt
           fastfetch
-          wineWow64Packages.stable
-          winetricks
           spotify
         ];
 
         hardware.graphics.enable32Bit = true;
 
-        users.users.erik = {
-          isNormalUser = true;
-          description = "erik";
-          extraGroups = [
-            "networkmanager"
-            "wheel"
-            "video"
-          ];
-        };
+        users.users.erik.extraGroups = [ "video" ];
 
-        nixpkgs.overlays = [
-          inputs.self.overlays.default
-          inputs.nur.overlays.default
-          inputs.emacs-overlay.overlays.default
-        ];
         programs.ssh.askPassword = "${pkgsUnstable.openssh-askpass}/libexec/gtk-ssh-askpass";
         services.udev.packages = [ pkgs.brightnessctl ];
-        programs.kdeconnect.enable = true;
+        # Opens 1714-1764 on every interface; keep it off roaming laptops
+        programs.kdeconnect.enable = !isLaptop;
         programs.dconf.enable = true;
         services.gnome.gnome-keyring.enable = true;
-        services.printing.enable = true;
         security.rtkit.enable = true;
         services.pipewire.enable = false;
         services.flatpak.enable = true;
+        services.fwupd.enable = true;
+        services.speechd.enable = false;
+
+        services.printing.enable = true;
+        # Network printer discovery for CUPS
+        services.avahi = {
+          enable = true;
+          nssmdns4 = true;
+        };
+
+        # Thunar mounts and trash need gvfs + udisks2; tumbler for thumbnails
+        programs.thunar.enable = true;
+        services.gvfs.enable = true;
+        services.udisks2.enable = true;
+        services.tumbler.enable = true;
+
         xdg.portal = {
           enable = true;
           extraPortals = [ pkgs.xdg-desktop-portal-gtk ];

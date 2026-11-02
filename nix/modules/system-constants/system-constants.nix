@@ -1,12 +1,20 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
+let
+  # One nixpkgs-unstable per system for the whole flake. Built inside the
+  # module it would be re-imported for every host and again in each host's HM.
+  pkgsUnstableFor = lib.genAttrs lib.systems.flakeExposed (
+    system:
+    import inputs.nixpkgs-unstable {
+      inherit system;
+      config.allowUnfree = true;
+    }
+  );
+in
 {
   flake.modules.generic.systemConstants =
     { lib, pkgs, ... }:
     {
-      config._module.args.pkgsUnstable = import inputs.nixpkgs-unstable {
-        inherit (pkgs.stdenv.hostPlatform) system;
-        config.allowUnfree = true;
-      };
+      config._module.args.pkgsUnstable = pkgsUnstableFor.${pkgs.stdenv.hostPlatform.system};
 
       options.systemConstants = {
         adminEmail = lib.mkOption {
@@ -41,7 +49,7 @@
         wallpaper = lib.mkOption {
           type = lib.types.path;
           default = "${inputs.self}/nix/assets/wallpapers/mountain_landscape_1.jpg";
-          description = "Path to the desktop wallpaper used by sway/hyprland.";
+          description = "Path to the desktop wallpaper used by sway, Hyprland and the LightDM greeter.";
         };
 
         keyboard = {

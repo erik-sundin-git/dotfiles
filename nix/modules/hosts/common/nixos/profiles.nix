@@ -1,39 +1,78 @@
 { inputs, ... }:
 let
-  # Every profile pulls in Home Manager for erik and forwards the NixOS-side
-  # systemConstants.system to HM, so a host only sets `systemConstants.system.host`.
-  # `install-host` on the live ISO scaffolds new hosts on top of these.
+  # Every profile owns erik, the overlays and the Home Manager wiring, and
+  # forwards the NixOS-side systemConstants.system to HM, so a host only sets
+  # `systemConstants.system.host`. Profile names must stay plain modules:
+  # `install-host` on the live ISO scaffolds new hosts with `${type}Profile`.
   mkProfile =
     type: imports:
-    { config, ... }:
+    { config, pkgsUnstable, ... }:
     {
-      imports = [ inputs.home-manager.nixosModules.home-manager ] ++ imports;
+      imports =
+        with inputs.self.modules.nixos;
+        [
+          inputs.home-manager.nixosModules.home-manager
+          nixpkgsOverlays
+        ]
+        ++ imports;
       systemConstants.system.type = type;
+
+      users.users.erik = {
+        isNormalUser = true;
+        description = "erik";
+        extraGroups = [
+          "networkmanager"
+          "wheel"
+        ];
+      };
+
+      environment.systemPackages = [ pkgsUnstable.claude-code ];
+
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.backupFileExtension = "backup";
       # HM only activates users listed here; sharedModules alone creates none
       home-manager.users.erik = { };
       home-manager.sharedModules = [
+        inputs.self.modules.homeManager.commonHome
         { systemConstants.system = config.systemConstants.system; }
       ];
     };
 in
 {
-  flake.modules.nixos.laptopProfile = mkProfile "laptop" (
+  # A laptop without a window manager stack, for hosts that bring their own
+  # (nomad is trying exwmStack)
+  flake.modules.nixos.laptopBaseProfile = mkProfile "laptop" (
     with inputs.self.modules.nixos;
     [
       commonDesktop
-      swayfxStack
       pulseaudio
     ]
   );
 
-  flake.modules.nixos.desktopProfile = mkProfile "desktop" (
+  flake.modules.nixos.laptopProfile = {
+    imports = with inputs.self.modules.nixos; [
+      laptopBaseProfile
+      swayfxStack
+    ];
+  };
+
+  # A desktop without a window manager stack, for hosts that bring their own
+  # (forge uses i3Stack)
+  flake.modules.nixos.desktopBaseProfile = mkProfile "desktop" (
     with inputs.self.modules.nixos;
     [
       commonDesktop
-      swayfxStack
       pulseaudio
     ]
   );
+
+  flake.modules.nixos.desktopProfile = {
+    imports = with inputs.self.modules.nixos; [
+      desktopBaseProfile
+      swayfxStack
+    ];
+  };
 
   flake.modules.nixos.vmProfile =
     { ... }:
@@ -53,10 +92,8 @@ in
       services.spice-vdagentd.enable = true;
     };
 
-  # Headless: no commonDesktop, so the user, overlays and HM wiring that it
-  # normally provides are set here.
   flake.modules.nixos.serverProfile =
-    { pkgsUnstable, ... }:
+    { ... }:
     {
       imports = [
         (mkProfile "server" (
@@ -79,23 +116,6 @@ in
 
       programs.ssh.askPassword = "";
 
-      environment.systemPackages = [ pkgsUnstable.claude-code ];
-
-      nixpkgs.overlays = [
-        inputs.self.overlays.default
-        inputs.nur.overlays.default
-      ];
-
-      users.users.erik = {
-        isNormalUser = true;
-        description = "erik";
-        extraGroups = [
-          "networkmanager"
-          "wheel"
-        ];
-      };
-
-      home-manager.backupFileExtension = "backup";
-      home-manager.sharedModules = with inputs.self.modules.homeManager; [ commonHome ];
+      documentation.nixos.enable = false;
     };
 }

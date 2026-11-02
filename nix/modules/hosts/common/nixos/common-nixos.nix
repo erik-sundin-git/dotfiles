@@ -7,6 +7,11 @@
       pkgs,
       ...
     }:
+    let
+      inherit (config.systemConstants.system) type;
+      isLaptop = type == "laptop";
+      isServer = type == "server";
+    in
     {
       imports = [
         inputs.self.modules.generic.systemConstants
@@ -42,42 +47,44 @@
           "flakes"
         ];
         nix.settings.warn-dirty = false;
-        nix.settings.trusted-users = [
-          "root"
-          "erik"
-        ];
+        # A trusted user can add substituters and import unsigned paths, i.e.
+        # is root-equivalent without sudo. Fine on personal machines, not on
+        # a server that accepts ssh.
+        nix.settings.trusted-users = [ "root" ] ++ lib.optional (!isServer) "erik";
         services.openssh = {
           enable = true;
+          # Laptops roam onto untrusted networks and nothing ssh's into them
+          openFirewall = !isLaptop;
           settings = {
             PasswordAuthentication = false;
             KbdInteractiveAuthentication = false;
             PermitRootLogin = "no";
+            AllowUsers = [ "erik" ];
           };
         };
         users.users.erik.openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINLYub6F3p047lqIQgzoygdVEnohBMdrJe75tYx/ZuCT erik@nomad"
         ];
         services.tlp = {
-          enable = lib.mkDefault (config.systemConstants.system.type == "laptop");
+          enable = lib.mkDefault isLaptop;
           settings = {
             # Keep TLP's USB autosuspend away from the bluetooth adapter
             USB_EXCLUDE_BTUSB = 1;
           };
         };
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
         boot.loader.systemd-boot.enable = lib.mkIf config.commonConfig.bootEFI true;
         boot.loader.efi.canTouchEfiVariables = lib.mkIf config.commonConfig.bootEFI true;
         # Hold Space at boot to get the menu
         boot.loader.timeout = lib.mkIf config.commonConfig.bootEFI (lib.mkDefault 1);
+        # Not on BIOS/GRUB hosts: only the scripted initrd finds the resume
+        # device from swapDevices there; with systemd it comes from an EFI var
+        boot.initrd.systemd.enable = lib.mkIf config.commonConfig.bootEFI (lib.mkDefault true);
+        services.journald.extraConfig = "SystemMaxUse=500M";
         services.dbus.implementation = "broker";
 
         environment.systemPackages = with pkgs; [
-          python3
-          gnumake
           unzip
           wget
-          clang-tools
           git-crypt
           sops
           ssh-to-age

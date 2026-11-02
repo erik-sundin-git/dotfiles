@@ -15,7 +15,6 @@
         gc = "git commit -m";
         gp = "git push";
 
-        ssh-desktop = "ssh forge";
         rebuild = "nh os switch ~/dotfiles#${host}";
       };
     };

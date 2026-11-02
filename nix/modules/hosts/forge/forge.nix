@@ -1,29 +1,21 @@
-{ den, inputs, ... }:
+{ inputs, ... }:
 {
   den.aspects.forge = {
     nixos =
       { ... }:
-      let
-        sysConst = {
-          type = "desktop";
-          host = "forge";
-        };
-      in
       {
         imports = with inputs.self.modules.nixos; [
-          inputs.home-manager.nixosModules.home-manager
-          commonDesktop
+          desktopBaseProfile
           i3Stack
-          pulseaudio
           virtManager
           gaming
         ];
 
-        systemConstants.system = sysConst;
+        systemConstants.system.host = "forge";
+        system.stateVersion = "25.11";
 
         home-manager.users.erik = {
           imports = [ inputs.self.modules.homeManager.gh ];
-          systemConstants.system = sysConst;
           systemConstants.thermalZonePath = "/sys/class/hwmon/hwmon2/temp1_input";
 
           programs.autorandr = {

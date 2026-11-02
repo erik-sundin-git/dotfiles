@@ -8,17 +8,16 @@
       # daemonIOSchedClass: NVMe uses the "none" scheduler, which ignores ionice.
       nix.daemonCPUSchedPolicy = "batch";
 
-      # Weekly hardlink dedup instead of auto-optimise-store, which slows every store write
+      # Weekly hardlink dedup instead of auto-optimise-store, which slows every
+      # store write (nix.optimise.dates defaults to daily)
       nix.optimise.automatic = true;
+      nix.optimise.dates = [ "weekly" ];
 
       nix.settings = {
         download-buffer-size = 268435456; # 256 MiB; the 64 MiB default stalls big substitutions
-        substituters = [
-          "https://cache.nixos.org"
-          "https://nix-community.cachix.org"
-        ];
-        trusted-public-keys = [
-          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        # cache.nixos.org is already the default substituter
+        extra-substituters = [ "https://nix-community.cachix.org" ];
+        extra-trusted-public-keys = [
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         ];
       };

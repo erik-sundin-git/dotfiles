@@ -17,7 +17,7 @@
     {
       imports = with inputs.self.modules; [
         generic.systemConstants
-        generic.theme # consumed by i3, polybar, alacritty — they don't import it themselves
+        generic.theme # UI modules read config.theme but don't import it themselves
         homeManager.emacs
         homeManager.mozillaShared # provides the mozillaShared arg to librewolf + firefox
         homeManager.librewolf
@@ -30,7 +30,7 @@
       _module.args.isLaptop = isLaptop;
 
       home.homeDirectory = "/home/${config.home.username}";
-      home.stateVersion = "25.11";
+      home.stateVersion = lib.mkDefault "25.11";
       home.username = "erik";
 
       home.sessionVariables = {
@@ -64,8 +64,6 @@
       programs.git.signing.format = null;
       programs.git.settings.user.name = config.systemConstants.adminName;
       programs.git.settings.user.email = config.systemConstants.adminEmail;
-
-      nix.settings.warn-dirty = false;
 
       home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         echo -e "\033[33mRebuilt system using profile: ${config.systemConstants.system.type}\033[0m"

@@ -1,22 +1,13 @@
-{ den, inputs, ... }:
+{ inputs, ... }:
 {
   den.aspects.wisp = {
     nixos =
       { ... }:
       {
-        imports = with inputs.self.modules.nixos; [
-          serverProfile
-          gtnh
-        ];
+        imports = with inputs.self.modules.nixos; [ serverProfile ];
 
         systemConstants.system.host = "wisp";
-
-        services.gtnh = {
-          enable = true;
-          maxRam = "6G";
-          minRam = "1G";
-          openFirewall = true;
-        };
+        system.stateVersion = "25.11";
       };
   };
 }

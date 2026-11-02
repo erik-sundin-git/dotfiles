@@ -17,6 +17,7 @@
     {
       imports = with inputs.self.modules.homeManager; [
         i3
+        alacritty
         i3Lock
         polybar
         picom
