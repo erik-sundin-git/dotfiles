@@ -1,5 +1,12 @@
 { inputs, ... }:
 {
+  flake.installer.stacks.swayfxStack = {
+    label = "SwayFX (Wayland)";
+    order = 10;
+    default = true;
+    session = "wayland";
+  };
+
   flake.modules.nixos.swayfxStack =
     { ... }:
     {

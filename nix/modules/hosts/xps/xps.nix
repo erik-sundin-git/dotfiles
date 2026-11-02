@@ -7,7 +7,8 @@
         # Base 7590 module (deep sleep, thermald, intel cpu/gpu, ssd) plus the
         # GTX 1650 as a PRIME offload GPU with fine-grained runtime PM
         inputs.nixos-hardware.nixosModules.dell-xps-15-7590-nvidia
-        laptopProfile
+        laptopBaseProfile
+        swayfxStack
         gaming
         ./_hardware-configuration.nix
       ];

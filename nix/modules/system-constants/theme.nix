@@ -1,6 +1,12 @@
-{ ... }:
+{ lib, ... }:
 
 let
+  # One theme per file in ./themes, so adding a file is all it takes
+  themeNames = map (lib.removeSuffix ".nix") (
+    builtins.filter (lib.hasSuffix ".nix") (builtins.attrNames (builtins.readDir ./themes))
+  );
+  defaultTheme = "onedark";
+
   # Every theme defines these. Consumers index them directly, so a missing key
   # would otherwise surface as an obscure "attribute missing" deep in some module.
   paletteKeys = [
@@ -28,6 +34,11 @@ let
   ];
 in
 {
+  flake.installer = {
+    themes = themeNames;
+    inherit defaultTheme;
+  };
+
   flake.modules.generic.theme =
     { config, lib, ... }:
     let
@@ -36,13 +47,8 @@ in
     {
       options = {
         selectedTheme = lib.mkOption {
-          # One theme per file in ./themes, so adding a file is all it takes
-          type = lib.types.enum (
-            map (lib.removeSuffix ".nix") (
-              builtins.filter (lib.hasSuffix ".nix") (builtins.attrNames (builtins.readDir ./themes))
-            )
-          );
-          default = "onedark";
+          type = lib.types.enum themeNames;
+          default = defaultTheme;
           description = "Name of the active theme: a file name in system-constants/themes/ without .nix.";
         };
 

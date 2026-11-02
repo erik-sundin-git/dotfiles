@@ -1,5 +1,11 @@
 { inputs, ... }:
 {
+  flake.installer.stacks.i3Stack = {
+    label = "i3 (X11)";
+    order = 20;
+    session = "x11";
+  };
+
   flake.modules.nixos.i3Stack =
     { ... }:
     {

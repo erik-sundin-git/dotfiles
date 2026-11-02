@@ -1,5 +1,10 @@
 { ... }:
 {
+  flake.installer.features.virtManager = {
+    label = "libvirt + virt-manager";
+    order = 20;
+  };
+
   flake.modules.nixos.virtManager =
     { config, pkgs, ... }:
     let

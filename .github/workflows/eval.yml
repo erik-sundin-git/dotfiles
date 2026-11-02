@@ -31,3 +31,7 @@ jobs:
 
       - name: Evaluate every host
         run: nix flake check --no-build
+
+      # Builds the live ISO's installer, which runs its unit tests
+      - name: Build install-host
+        run: nix build .#install-host

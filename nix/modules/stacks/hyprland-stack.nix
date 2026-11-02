@@ -1,5 +1,12 @@
 { inputs, ... }:
 {
+  flake.installer.stacks.hyprlandStack = {
+    label = "Hyprland (Wayland)";
+    order = 90;
+    session = "wayland";
+    experimental = true;
+  };
+
   flake.modules.nixos.hyprlandStack =
     { ... }:
     {

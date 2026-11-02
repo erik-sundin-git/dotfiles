@@ -1,5 +1,10 @@
 { inputs, ... }:
 {
+  flake.installer.features.gaming = {
+    label = "Gaming: Steam, latest kernel, GeForce NOW, Prism";
+    order = 10;
+  };
+
   flake.modules.nixos.gaming =
     { config, pkgs, ... }:
     let
@@ -52,7 +57,11 @@
         winetricks
       ];
 
-      # Rofi entry for the GTNH Prism instance, alongside prismlauncher above
-      home-manager.sharedModules = [ inputs.self.modules.homeManager.gtnhLauncher ];
+      # The GTNH Prism instance's launcher entry, alongside prismlauncher above,
+      # and the GeForce NOW launcher for the Flatpak installed above
+      home-manager.sharedModules = with inputs.self.modules.homeManager; [
+        gtnhLauncher
+        geforcenow
+      ];
     };
 }

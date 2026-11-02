@@ -6,7 +6,8 @@
       {
         imports = with inputs.self.modules.nixos; [
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-          laptopProfile
+          laptopBaseProfile
+          swayfxStack
           gaming
           virtManager
         ];
@@ -64,7 +65,6 @@
           imports = with inputs.self.modules.homeManager; [
             gh
             chromium
-            geforcenow
             gtnhBackup
             emacsYoutube
             intelVideoDecode

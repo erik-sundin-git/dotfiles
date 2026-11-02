@@ -1,5 +1,11 @@
 { inputs, ... }:
 {
+  flake.installer.stacks.xfceStack = {
+    label = "XFCE (X11)";
+    order = 40;
+    session = "x11";
+  };
+
   flake.modules.nixos.xfceStack =
     { ... }:
     {

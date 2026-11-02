@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "install-host"
+version = "2.0"
+description = "Install a host from the dotfiles flake (live ISO TUI)"
+requires-python = ">=3.11"
+dependencies = ["urwid"]
+
+[project.scripts]
+install-host = "install_host.main:main"
+
+[tool.setuptools]
+packages = ["install_host"]
