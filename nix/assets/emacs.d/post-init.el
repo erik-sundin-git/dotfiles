@@ -790,6 +790,13 @@
   :config
   (define-key nix-mode-map (kbd "C-c C-f") 'nix-format-buffer))
 
+;; YouTube subscriptions, played in mpv or VLC (github:erik-sundin-git/emacs-yt).
+;; Installed via Home Manager (homeManager.emacsYoutube) only on some hosts, hence :if.
+(use-package yt
+  :ensure nil
+  :if (locate-library "yt")
+  :commands (yt yt-subscriptions yt-login yt-search yt-channels yt-play-url yt-doctor)
+  :bind-keymap ("C-c y" . yt-map))
 
 (use-package ledger-mode
   :ensure nil
