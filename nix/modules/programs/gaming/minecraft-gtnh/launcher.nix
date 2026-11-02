@@ -34,9 +34,10 @@
           unzip -q "$tmp/pack.zip" -d "$tmp"
           src="$tmp/GT New Horizons ${version}"
 
-          # The pack ships Prism defaults; pin Java to the GC-stable JDK and
-          # give GTNH the memory and GC it needs
-          sed -i -E '/^(name|AutomaticJava|JavaPath|OverrideJavaLocation|OverrideJavaArgs|JvmArgs|OverrideMemory|MinMemAlloc|MaxMemAlloc)=/d' \
+          # The pack ships Prism defaults; pin Java to the GC-stable JDK, give
+          # GTNH the memory and GC it needs, and run it under gamemode
+          # (programs.gamemode in the gaming module)
+          sed -i -E '/^(name|AutomaticJava|JavaPath|OverrideJavaLocation|OverrideJavaArgs|JvmArgs|OverrideMemory|MinMemAlloc|MaxMemAlloc|OverridePerformance|EnableFeralGamemode)=/d' \
             "$src/instance.cfg"
           cat >>"$src/instance.cfg" <<'CFG'
           name=GT New Horizons ${version}
@@ -48,6 +49,8 @@
           OverrideMemory=true
           MinMemAlloc=1024
           MaxMemAlloc=8192
+          OverridePerformance=true
+          EnableFeralGamemode=true
           CFG
 
           cp -n "$src/gtnh_icon.png" "${prism}/icons/"
