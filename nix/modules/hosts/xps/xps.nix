@@ -17,6 +17,9 @@
 
       services.hardware.bolt.enable = true;
 
+      # Reachable over ssh, unlike the other laptops (commonConfig closes 22)
+      services.openssh.openFirewall = lib.mkForce true;
+
       # Stable name for the iGPU: cardN changes between boots, and the by-path
       # names contain ':', the WLR_DRM_DEVICES separator
       services.udev.extraRules = ''
