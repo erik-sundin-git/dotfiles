@@ -2,7 +2,6 @@
 {
   flake.modules.homeManager.librewolf =
     {
-      pkgs,
       pkgsUnstable,
       mozillaShared,
       ...
@@ -23,17 +22,6 @@
         profiles."default".userChrome = mozillaShared.userChrome;
 
         profiles."default".settings = mozillaShared.settings // {
-          # Force sites to serve H.264 instead of AV1/VP9 so VAAPI can decode on
-          # GPUs that lack AV1/VP9 hw decode (otherwise the RDD process burns CPU).
-          # Disabling WebM in MSE is what actually pushes YouTube off VP9 — the
-          # vp9-specific pref alone isn't enough since YT detects support via
-          # other paths. Tradeoff: 1080p cap on YouTube.
-          "media.mediasource.vp9.enabled" = false;
-          "media.mediasource.webm.enabled" = false;
-
-          # Fewer content processes — less RAM and IPC overhead
-          #          "dom.ipc.processCount" = 4;
-
           # RAM-only cache — faster, avoids disk thrash
           "browser.cache.disk.enable" = false;
           "browser.cache.memory.enable" = true;
@@ -55,16 +43,13 @@
 
           # GPU compositing via WebRender — offloads compositing from CPU to iGPU
           "gfx.webrender.compositor" = true;
-          "layers.acceleration.force-enabled" = true;
 
           # Reduce scroll latency — remove APZ frame delay and shorten transaction timeout
           "apz.frame_delay.enabled" = false;
           "mousewheel.transaction.timeout" = 200;
         };
 
-        profiles."default".extensions.packages = mozillaShared.extensions ++ [
-          pkgs.nur.repos.rycee.firefox-addons.h264ify
-        ];
+        profiles."default".extensions.packages = mozillaShared.extensions;
       };
 
     };

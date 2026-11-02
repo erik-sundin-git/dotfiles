@@ -8,7 +8,12 @@
         # Legacy path; HM 26.05 defaults to XDG only for new stateVersions.
         configPath = ".mozilla/firefox";
 
-        policies.DontCheckDefaultBrowser = true;
+        policies = {
+          DontCheckDefaultBrowser = true;
+          DisableTelemetry = true;
+          DisableFirefoxStudies = true;
+          DisablePocket = true;
+        };
 
         profiles."default" = {
           # DDG's Swedish results are poor; LibreWolf keeps it.

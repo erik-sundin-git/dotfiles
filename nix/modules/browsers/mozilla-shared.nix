@@ -117,12 +117,7 @@
           };
           "browser.tabs.inTitlebar" = 0;
           "browser.toolbars.bookmarks.visibility" = "never";
-
-          # VA-API hardware video decode; AV1 off since Intel UHD 620 can't decode it in hardware
-          "media.ffmpeg.vaapi.enabled" = true;
-          "media.hardware-video-decoding.force-enabled" = true;
-          "media.av1.enabled" = false;
-          "gfx.webrender.all" = true;
+          # Hardware video decode prefs are per GPU; see nomad.nix
         };
 
         # Recolors compact-dark from config.theme and strips the nav bar down to
@@ -136,12 +131,12 @@
             --toolbar-field-color: ${c.foreground} !important;
             --toolbar-field-focus-color: ${c.foreground} !important;
             --toolbar-field-border-color: transparent !important;
-            --toolbar-field-focus-border-color: ${c.blue} !important;
+            --toolbar-field-focus-border-color: ${c.accent} !important;
             --sidebar-background-color: ${c.superDark} !important;
             --sidebar-text-color: ${c.foreground} !important;
             --tab-selected-bgcolor: ${c.black} !important;
             --tab-selected-textcolor: ${c.foreground} !important;
-            --focus-outline-color: ${c.blue} !important;
+            --focus-outline-color: ${c.accent} !important;
             --arrowpanel-background: ${c.background} !important;
             --arrowpanel-color: ${c.foreground} !important;
             --arrowpanel-border-color: ${c.black} !important;
