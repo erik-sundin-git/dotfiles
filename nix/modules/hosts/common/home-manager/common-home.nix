@@ -53,7 +53,7 @@
         xrdb -merge ~/.Xresources
       '';
 
-      home.file.".Xresources".text = lib.optionalString isLaptop "Xft.dpi: 120\n";
+      home.file.".Xresources".text = lib.mkDefault (lib.optionalString isLaptop "Xft.dpi: 144\n");
 
       home.packages = with pkgs; [
         ledger
