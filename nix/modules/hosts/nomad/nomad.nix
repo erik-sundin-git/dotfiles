@@ -1,4 +1,4 @@
-{ den, inputs, ... }:
+{ inputs, ... }:
 {
   den.aspects.nomad = {
     nixos =
@@ -6,22 +6,27 @@
       {
         imports = with inputs.self.modules.nixos; [
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-          laptopProfile
+          # Trying EXWM; laptopProfile (laptopBaseProfile + swayfxStack) is sway
+          laptopBaseProfile
+          exwmStack
           gaming
           virtManager
         ];
 
         systemConstants.system.host = "nomad";
+        system.stateVersion = "25.11";
 
         services.hardware.bolt.enable = true;
 
-        # Intel UHD 620 (Kaby Lake-R): VA-API, GuC/HuC firmware
-        hardware.graphics.extraPackages = with pkgs; [
-          intel-media-driver
-          libvdpau-va-gl
-        ];
+        # Intel UHD 620 (Kaby Lake-R): VA-API, GuC/HuC firmware. nixos-hardware's
+        # common/gpu/intel already loads i915 in the initrd; pick the drivers
+        # for this generation instead of its defaults (i965, Gen12+ compute).
+        hardware.intelgpu = {
+          vaapiDriver = "intel-media-driver";
+          computeRuntime = "legacy";
+        };
+        hardware.graphics.extraPackages = with pkgs; [ libvdpau-va-gl ];
         environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
-        boot.initrd.kernelModules = [ "i915" ];
         boot.kernelParams = [
           "i915.enable_guc=2"
           "i915.enable_fbc=1"
@@ -49,31 +54,55 @@
           enable = true;
           externalInterface = "wlp61s0";
           forwardPorts = [
-            { destination = "${config.systemConstants.network.hosts.hass-vm.ip}:8123"; proto = "tcp"; sourcePort = 8123; }
+            {
+              destination = "${config.systemConstants.network.hosts.hass-vm.ip}:8123";
+              proto = "tcp";
+              sourcePort = 8123;
+            }
           ];
         };
 
         home-manager.users.erik =
           { pkgs, ... }:
           {
-          imports = with inputs.self.modules.homeManager; [
-            gh
-            chromium
-            geforcenow
-            gtnhBackup
-          ];
-          home.packages = [ pkgs.local.curseforge ];
-          systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
-          selectedTheme = "catppuccin";
+            imports = with inputs.self.modules.homeManager; [
+              gh
+              chromium
+              geforcenow
+              gtnhBackup
+              emacsYoutube
+            ];
 
-          wayland.windowManager.sway.config.output = {
-            "Dell Inc. DELL U2722D 3JYTCH3" = {
-              mode = "2560x1440";
-              position = "0,0";
+            # VA-API decode on the UHD 620, which has no AV1 or VP9-in-MSE hw
+            # decode (the RDD process would burn CPU instead)
+            programs.firefox.profiles.default.settings = {
+              "media.ffmpeg.vaapi.enabled" = true;
+              "media.hardware-video-decoding.force-enabled" = true;
+              "media.av1.enabled" = false;
             };
-            "eDP-1".position = "2560,0";
+            programs.librewolf.profiles.default = {
+              settings = {
+                "media.ffmpeg.vaapi.enabled" = true;
+                "media.hardware-video-decoding.force-enabled" = true;
+                "media.av1.enabled" = false;
+                # Disabling WebM in MSE is what actually pushes YouTube off VP9;
+                # the vp9 pref alone isn't enough. Tradeoff: 1080p cap on YouTube.
+                "media.mediasource.vp9.enabled" = false;
+                "media.mediasource.webm.enabled" = false;
+              };
+              extensions.packages = [ pkgs.nur.repos.rycee.firefox-addons.h264ify ];
+            };
+            systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
+            selectedTheme = "tokyonight";
+
+            wayland.windowManager.sway.config.output = {
+              "Dell Inc. DELL U2722D 3JYTCH3" = {
+                mode = "2560x1440";
+                position = "0,0";
+              };
+              "eDP-1".position = "2560,0";
+            };
           };
-        };
       };
   };
 }
