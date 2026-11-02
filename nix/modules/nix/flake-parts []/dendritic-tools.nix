@@ -13,8 +13,9 @@
 
   imports = [
     inputs.flake-parts.flakeModules.modules
-    (inputs.flake-file.flakeModules.dendritic or { })
-    (inputs.den.flakeModules.dendritic or { })
+    # Not den's flakeModules.dendritic: that one also sets flake-file options,
+    # and flake-file isn't used here (flake.nix is maintained by hand)
+    inputs.den.flakeModule
   ];
 
   systems = [
