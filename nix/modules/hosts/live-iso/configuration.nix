@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  # Installer session: nomad's sway look (catppuccin, waybar, wofi, alacritty)
+  # Installer session: the sway desktop (catppuccin, waybar, wofi, alacritty)
   # without the day-to-day apps. The installer's getty autologin of `nixos` on
   # tty1 starts sway from bash, so there is no display manager.
   flake.modules.nixos.liveIsoConfig =
@@ -15,14 +15,10 @@
         generic.systemConstants # pkgsUnstable
         nixos.swayfx
         nixos.nixDaemon
+        nixos.nixpkgsOverlays
       ];
 
       nixpkgs.config.allowUnfree = true;
-      nixpkgs.overlays = [
-        inputs.self.overlays.default
-        inputs.nur.overlays.default
-        inputs.emacs-overlay.overlays.default
-      ];
 
       nix.settings.experimental-features = [
         "nix-command"
@@ -33,6 +29,12 @@
 
       # install-host only creates ext4
       boot.supportedFilesystems.zfs = lib.mkForce false;
+      # Loaded at boot so mount without -t can find them on fresh filesystems,
+      # before udev has probed them (install-host also passes -t)
+      boot.kernelModules = [
+        "ext4"
+        "vfat"
+      ];
 
       console.keyMap = "sv-latin1";
 

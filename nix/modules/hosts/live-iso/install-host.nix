@@ -19,6 +19,7 @@
             gnugrep
             gnused
             coreutils
+            lvm2
           ];
           text = builtins.readFile "${inputs.self}/nix/assets/install-host.sh";
         })
