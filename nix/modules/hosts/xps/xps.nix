@@ -69,7 +69,10 @@
       };
 
       home-manager.users.erik = {
-        imports = with inputs.self.modules.homeManager; [ geforcenow ];
+        imports = with inputs.self.modules.homeManager; [
+          gh
+          geforcenow
+        ];
 
         # x86_pkg_temp
         systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone12/temp";
