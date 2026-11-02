@@ -6,9 +6,7 @@
       {
         imports = with inputs.self.modules.nixos; [
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-          # Trying EXWM; laptopProfile (laptopBaseProfile + swayfxStack) is sway
-          laptopBaseProfile
-          exwmStack
+          laptopProfile
           gaming
           virtManager
         ];
@@ -93,7 +91,7 @@
               extensions.packages = [ pkgs.nur.repos.rycee.firefox-addons.h264ify ];
             };
             systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
-            selectedTheme = "tokyonight";
+            selectedTheme = "ef-bio";
 
             wayland.windowManager.sway.config.output = {
               "Dell Inc. DELL U2722D 3JYTCH3" = {
