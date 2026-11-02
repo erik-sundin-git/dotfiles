@@ -41,6 +41,11 @@
       # build against yet; stay on the default kernel until it does
       boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
+      # nixpkgs defaults to nvidia's new kernel suspend notifiers with 595 +
+      # open modules; the first suspend with them never came back. Use the
+      # nvidia-suspend/resume systemd services instead.
+      hardware.nvidia.powerManagement.kernelSuspendNotifier = false;
+
       # Intel UHD 630 (Coffee Lake-H): VA-API and HuC firmware. Same Gen9.5
       # driver choices as nomad; nixos-hardware's defaults target newer GPUs.
       hardware.intelgpu = {
