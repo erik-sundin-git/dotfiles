@@ -106,7 +106,7 @@
       ruleProps =
         command:
         let
-          ws = builtins.match "move to workspace (.+)" command;
+          ws = builtins.match "move (--no-auto-back-and-forth )?to workspace (.+)" command;
         in
         if command == "floating enable" then
           [
@@ -116,7 +116,7 @@
         else if ws != null then
           [
             (sym "workspace")
-            (workspaceIndex (builtins.head ws))
+            (workspaceIndex (lib.last ws))
           ]
         else if lib.hasPrefix "border " command then
           [ ]

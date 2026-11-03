@@ -77,7 +77,9 @@
       # rule carries one per WM; a rule without one is skipped for that WM.
       # EXWM criteria are Emacs regexps, matched case-insensitively against
       # exwm-class-name / exwm-title (programs/exwm/exwm.nix translates the
-      # command).
+      # command). Moves need --no-auto-back-and-forth: with
+      # workspaceAutoBackAndForth, a move to the focused workspace would send
+      # the window to the previous one instead.
       _module.args.wmWindowRules =
         let
           border = "border pixel 2";
@@ -102,12 +104,12 @@
             sway = { app_id = "electron"; title = "^Proton Mail.*"; };
             i3.class = "Proton Mail";
             exwm.class = "^Proton Mail$";
-            command = "move to workspace mail";
+            command = "move --no-auto-back-and-forth to workspace mail";
           }
           {
             sway.app_id = "^[Ee]macs$";
             i3.class = "^[Ee]macs$";
-            command = "move to workspace emacs";
+            command = "move --no-auto-back-and-forth to workspace emacs";
           }
         ];
 
