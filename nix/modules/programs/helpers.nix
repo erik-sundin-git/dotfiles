@@ -116,6 +116,8 @@
       # Modal bindings (launch, power, ...) for i3 and sway from a data attrset
       # like swayBindingsData.modes: each mode shows its keys in a notification
       # while active. Returns { keybindings; modes; } for the WM's config.
+      # A binding may have flags, such as "--no-repeat" (sway only), put
+      # before its key; the notification shows the key alone.
       _module.args.mkWmModes =
         {
           modifier,
@@ -147,7 +149,7 @@
               innerBinds = lib.listToAttrs (
                 map (
                   b:
-                  lib.nameValuePair b.key (
+                  lib.nameValuePair (lib.optionalString (b ? flags) "${b.flags} " + b.key) (
                     if mode.stayInMode or false then b.action else "${exec} ${notif.exit}; ${b.action}; mode default"
                   )
                 ) mode.bindings

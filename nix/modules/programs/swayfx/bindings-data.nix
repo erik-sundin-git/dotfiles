@@ -16,8 +16,13 @@
   #   mod = true  → key is prefixed with the sway modifier (Mod4)
   #   mod = false → raw key (media keys, Print without mod, XF86*)
   flake.modules.homeManager.swayBindings =
-    { ... }:
+    { pkgs, ... }:
     {
+      # The media keys below run playerctl. playerctld makes it act on the
+      # player used last, not on whichever (often a browser tab) comes first.
+      home.packages = [ pkgs.playerctl ];
+      services.playerctld.enable = true;
+
       _module.args.swayBindingsData = {
         sections = [
           {
@@ -115,6 +120,9 @@
               { key = "XF86AudioRaiseVolume"; mod = false; action = "exec swayosd-client --output-volume raise";        desc = "Volume up"; }
               { key = "XF86AudioLowerVolume"; mod = false; action = "exec swayosd-client --output-volume lower";        desc = "Volume down"; }
               { key = "XF86AudioMute";        mod = false; action = "exec swayosd-client --output-volume mute-toggle";  desc = "Mute toggle"; }
+              { key = "XF86AudioPlay";        mod = false; action = "exec playerctl play-pause"; desc = "Play/pause"; }
+              { key = "XF86AudioNext";        mod = false; action = "exec playerctl next";       desc = "Next track"; }
+              { key = "XF86AudioPrev";        mod = false; action = "exec playerctl previous";   desc = "Previous track"; }
             ];
           }
         ];

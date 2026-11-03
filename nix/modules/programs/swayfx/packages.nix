@@ -48,7 +48,7 @@
         ++ lib.optional isLaptop (renderSection swayBindingsData.laptopSection)
         ++ [
           ("Modes\n" + lib.concatStringsSep "\n\n"
-            (lib.mapAttrsToList renderMode swayBindingsData.modes))
+            (lib.mapAttrsToList renderMode (swayBindingsData.modes // config.swayExtraModes)))
         ]
       );
 

@@ -55,6 +55,7 @@
                 )
                 ++ [ "tray" ];
               modules-right = [
+                "mpris"
                 "network"
               ]
               ++ lib.optionals isLaptop [ "battery" ]
@@ -67,6 +68,21 @@
                 "clock"
               ]
               ++ lib.optionals (thermalPath != null) [ "custom/temperature" ];
+
+              # What mpv (yt) plays; hidden when nothing does.
+              mpris = {
+                format = "{status_icon} {title}";
+                format-paused = "{status_icon} {title}";
+                status-icons = {
+                  playing = "▶";
+                  paused = "⏸";
+                };
+                max-length = 40;
+                ignored-players = [
+                  "firefox"
+                  "chromium"
+                ];
+              };
 
               tray = {
                 icon-size = 14;
