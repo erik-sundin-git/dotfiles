@@ -18,7 +18,7 @@ Personal dotfiles for Erik Sundin: a single Nix flake producing NixOS configurat
 
 | Host | Kind | Desktop | Notes |
 |------|------|---------|-------|
-| `nomad` | ThinkPad T480s laptop | swayfxStack (`laptopBaseProfile`) | + gaming, virtManager; NAT forward to a libvirt VM; theme `ef-bio` |
+| `nomad` | ThinkPad T480s laptop | swayfxStack (`laptopBaseProfile`) | + gaming, virtManager, mail; NAT forward to a libvirt VM; theme `ef-bio` |
 | `forge` | Desktop | i3Stack | `desktopBaseProfile` + i3Stack; + gaming, virtManager; autorandr dual-monitor profile |
 | `specter` | Laptop | swayfxStack | |
 | `xps` | Dell XPS 15 7590 | swayfxStack | + gaming; GTX 1650 via PRIME offload (`nvidia-offload <cmd>`), sway runs with `--unsupported-gpu`; kernel pinned to default `linuxPackages` (nvidia 595 doesn't build on `_latest`) |
@@ -78,7 +78,7 @@ Evaluation (`nix flake check --no-build`) is the check. The only unit tests are 
 
 Packages fetched from an unversioned "latest" URL (irealpro) keep `version`/`url`/`hash`/`etag` in a sibling `source.json` that `package.nix` reads with `lib.importJSON`. `nix run .#update-debs` refreshes every `nix/packages/*/source.json` (a failing package doesn't stop the others; the exit code is non-zero), and `.github/workflows/update-debs.yml` runs it daily, builds what changed and opens a PR. On a hash mismatch, run `nix run .#update-debs` or merge that PR.
 
-**CI:** `.github/workflows/eval.yml` runs `nix flake check --no-build` on every push and PR. CI has no git-crypt key, so it swaps the encrypted `hosts.nix` for `.github/ci/hosts-stub.nix`. A module that references a new host by name (like nomad's `hass-vm`) needs that key in the stub too. Actions are pinned to commit SHAs; dependabot proposes updates. `hosts/live-iso/installer-check.nix` adds eval-only systems generated from `flake.installer`: `installer-<stack>` (laptopBaseProfile + each stack), `installer-all-extras` (every feature and homeModule) and `installer-names` (every registered module exists, every `*Stack` is registered, one default stack). So combinations no host uses (EXWM, Hyprland, laptop + i3) still evaluate; build them only with `--no-build`. CI also runs `nix build .#install-host`.
+**CI:** `.github/workflows/eval.yml` runs `nix flake check --no-build` on every push and PR. CI has no git-crypt key, so it swaps each encrypted `nix/secrets/<name>.nix` for `.github/ci/<name>-stub.nix` (hosts, mail; a new secrets file a module imports needs a stub and an entry in that loop in `eval.yml`). A module that references a new host by name (like nomad's `hass-vm`) needs that key in the hosts stub too. Actions are pinned to commit SHAs; dependabot proposes updates. `hosts/live-iso/installer-check.nix` adds eval-only systems generated from `flake.installer`: `installer-<stack>` (laptopBaseProfile + each stack), `installer-all-extras` (every feature and homeModule) and `installer-names` (every registered module exists, every `*Stack` is registered, one default stack). So combinations no host uses (EXWM, Hyprland, laptop + i3) still evaluate; build them only with `--no-build`. CI also runs `nix build .#install-host`.
 
 ## Installing a host
 
@@ -104,8 +104,9 @@ Packages fetched from an unversioned "latest" URL (irealpro) keep `version`/`url
 
 ## Assets (`nix/assets/`)
 
-- `emacs.d/`: based on minimal-emacs.d, using straight.el + use-package. Customisation lives in `post-init.el`; `pre-init.el` bootstraps straight. Linked into `~/.emacs.d/` by `programs/emacs/emacs.nix` via `home.file`. Wayland hosts get `emacs-pgtk` via `homeManager.waylandBase`.
+- `emacs.d/`: based on minimal-emacs.d, using straight.el + use-package. Customisation lives in `post-init.el`; `pre-init.el` bootstraps straight. Linked into `~/.emacs.d/` by `programs/emacs/emacs.nix` via `home.file`. Wayland hosts get `emacs-pgtk` via `homeManager.waylandBase`. Generated elisp (`nix-theme.el`, `nix-mail.el`) carries `no-byte-compile` and is loaded with an explicit `.el`: compile-angel would otherwise leave a `.elc` that always wins (store mtimes are 1970).
 - `wallpapers/`: default `systemConstants.wallpaper`.
+- `mail/`: `mail-move.sh`, the tag-to-folder mover for `homeManager.mail`.
 
 forge (i3) is not in active use. Its i3 session starts from LightDM via a `home-manager` session that runs the HM-generated `~/.hm-xsession` (`nixos.i3` + `xsession.enable` in `homeManager.i3`).
 
@@ -113,9 +114,17 @@ forge (i3) is not in active use. Its i3 session starts from LightDM via a `home-
 
 The repo is public, so private data goes in `nix/secrets/`, which sits outside `nix/modules/`.
 - `hosts.nix`: the LAN inventory (`{ <name> = { ip; user ? "erik"; vnc ? null; }; }`; `vnc` is an out-of-band console used by the `vnc <host>` command in `shell/vnc.nix`). It's **git-crypt encrypted**, so the repo must be unlocked (`git-crypt unlock ~/.config/git-crypt/dotfiles.key`) or eval fails. It's exposed as `systemConstants.network.hosts`, and `homeManager.ssh` (`shell/ssh.nix`) turns every entry into an ssh `matchBlock`, so use `ssh <host>` (e.g. `ssh wisp`) to reach hosts. Read the file for IPs. Never hardcode a LAN IP in a module.
+- `mail.nix`: private data for `homeManager.mail` (the Proton aliases), git-crypt encrypted like `hosts.nix`.
 - Encryption is driven by `nix/secrets/.gitattributes`, which encrypts **every** file in the directory except the ones it lists explicitly (`.gitattributes`, `.sops.yaml`, `secrets.yaml`). After adding a file, confirm with `git-crypt status nix/secrets`. git-crypt is for data that may end up in the world-readable nix store (it does: modules import `hosts.nix`); real secrets go in sops.
 - Runtime secrets (passwords, tokens) go in `secrets.yaml` via **sops-nix** (`nix/modules/nix/sops.nix`, imported by `commonConfig`). It stays inactive until `secrets.yaml` exists. Recipients are in `nix/secrets/.sops.yaml` (the admin key plus host age keys from `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub`; only nomad has one so far, so add a host's key before giving it secrets), and `sops` must run from `nix/secrets/`. Declare `sops.secrets.<name>` and read `config.sops.secrets.<name>.path`. The values never enter the nix store.
 
 ## Mail
 
-Desktop hosts use the `protonmail-desktop` app (installed, not autostarted). There is no mbsync/notmuch setup.
+Desktop hosts have the `protonmail-desktop` app (installed, not autostarted). nomad also reads Proton mail in Emacs through `homeManager.mail` (`programs/mail/*.nix`, imported per host, registered as an installer homeModule):
+
+- **Pipeline:** Proton Mail Bridge (HM `services.protonmail-bridge`, from `pkgsUnstable`, headless on `graphical-session.target`; that is deliberate, it needs only D-Bus and the keyring) serves IMAP 127.0.0.1:1143 / SMTP 127.0.0.1:1025 with STARTTLS. The `mail-sync` user service (timer every 5 min) runs `flock … notmuch new`, and notmuch's hooks do the rest: preNew runs `mail-move` (from stage 3) and `mbsync proton` into `~/Mail/proton`; postNew tags by folder, sends a dunst notification for new inbox mail and dumps the tags to `~/Mail/.tags-<date>.gz`. There is no `services.mbsync`; nothing may run mbsync outside this pipeline. Hook PATH holds only notmuch, so hooks and units use store paths. A failed run notifies at most hourly; while Bridge is stopped or offline, the run is skipped (`ExecCondition`), not failed.
+- **Write-back:** notmuch tags are the intent, Proton folders the state. `mail-move` (`nix/assets/mail/mail-move.sh`) renames one paired (`,U=`) file per message into Trash/Archive/Spam without its UID, and mbsync uploads the move. It never touches Drafts, `Labels/` or the local `~/Mail/drafts`, caps a run at 25 moves (`MAIL_MOVE_FORCE=1`), has `--dry-run`, and `touch ~/Mail/.no-move` stops it. `All Mail`, `Starred` and `Labels/*` aren't synced (per-label copies).
+- **Rollout:** `mailSync.stage` (default 1) is raised by hand, after checking the previous stage against the web app: 1 pull only, 2 + push read/flag state, 3 + mail-move (deleted, archive) without expunging on Proton, 4 + expunge on Proton, 5 + spam. Restoring mail out of Trash/Spam by tag isn't supported: Bridge treats an expunge in Trash as a permanent delete.
+- **Credentials:** the per-host bridge password lives in gnome-keyring (`secret-tool … service protonmail-bridge user <address>`), not sops. The cert must be exported once with `cert export` in the Bridge CLI to `~/.config/protonmail/bridge-v3/cert.pem`. Use `127.0.0.1`, never `localhost` (the cert has no DNS name).
+- **Emacs:** notmuch.el comes from nixpkgs (`mail-emacs.nix`), and `~/.emacs.d/nix-mail.el` sets the binaries and address. The Email section of `post-init.el` uses `:ensure nil :if (locate-library "notmuch")` and warns when an ELPA copy shadows it. `G` starts `mail-sync.service` asynchronously; `d` toggles deleted; `k` has archive/delete/spam/flag/unread. Sending goes through msmtp. There's no Fcc, because Bridge files sent mail in Sent itself.
+- **One-time per host:** remove `~/.emacs.d/var/elpa/notmuch-*`; `systemctl --user stop mail-sync.timer protonmail-bridge`; `protonmail-bridge --cli` → `login`, `info` (bridge password, ports), `cert export`, `exit`; `secret-tool store`; start Bridge, wait for its sync, start `mail-sync`. After a Bridge logout or reset, redo the login and `secret-tool store`.

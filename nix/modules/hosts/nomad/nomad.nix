@@ -66,6 +66,7 @@
             gh
             chromium
             gtnhBackup
+            mail
             emacsYoutube
             intelVideoDecode
           ];

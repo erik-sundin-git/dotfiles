@@ -615,11 +615,79 @@
 ;;;;;;;;;;;
 ;; Email ;;
 ;;;;;;;;;;;
-(use-package notmuch
-  :ensure t)
+;; Proton Mail through Bridge + mbsync + notmuch, only on hosts that import
+;; homeManager.mail (programs/mail/). nix-mail.el sets notmuch-command,
+;; sendmail-program (msmtp) and the address. Explicit .el: never a stale .elc.
+(load "~/.emacs.d/nix-mail.el" t)
 
-(setq send-mail-function 'sendmail-send-it
-      sendmail-program "/usr/bin/msmtp")
+(defun my-notmuch-sync ()
+  "Run the mail-sync user service in the background, then refresh notmuch buffers."
+  (interactive)
+  (message "mail-sync started")
+  (make-process
+   :name "mail-sync" :noquery t :buffer " *mail-sync*"
+   :command '("systemctl" "--user" "start" "mail-sync.service")
+   :sentinel (lambda (proc _event)
+               (unless (process-live-p proc)
+                 (notmuch-refresh-all-buffers)
+                 (message "mail-sync %s"
+                          (if (zerop (process-exit-status proc))
+                              "done"
+                            "failed, see journalctl --user -u mail-sync"))))))
+
+(defun my-notmuch-toggle-deleted ()
+  "Toggle the deleted tag on the thread or message at point, then move on."
+  (interactive)
+  (let* ((tree (derived-mode-p 'notmuch-tree-mode))
+         (tags (if tree (notmuch-tree-get-tags) (notmuch-search-get-tags)))
+         (change (if (member "deleted" tags)
+                     '("-deleted")
+                   '("+deleted" "-inbox" "-unread"))))
+    (if tree
+        (progn (notmuch-tree-tag change) (notmuch-tree-next-matching-message))
+      (notmuch-search-tag change)
+      (notmuch-search-next-thread))))
+
+;; Installed via Home Manager (notmuch.el from nixpkgs), hence :ensure nil + :if.
+(use-package notmuch
+  :ensure nil
+  :if (locate-library "notmuch")
+  :commands (notmuch notmuch-search notmuch-mua-new-mail)
+  :init
+  (unless (string-prefix-p "/nix/store/" (locate-library "notmuch"))
+    (display-warning 'mail "An ELPA notmuch shadows the Nix one: M-x package-delete notmuch"))
+  (setq mail-user-agent 'notmuch-user-agent
+        send-mail-function #'sendmail-send-it
+        message-sendmail-envelope-from 'header)
+  :custom
+  (notmuch-show-logo nil)
+  (notmuch-search-oldest-first nil)
+  (notmuch-archive-tags '("-inbox" "-unread"))
+  ;; Bridge files sent mail in Sent itself; mbsync pulls it back.
+  (notmuch-fcc-dirs nil)
+  ;; ~/Mail/drafts: local only, mail-move never uploads it.
+  (notmuch-draft-folder "drafts")
+  (message-kill-buffer-on-exit t)
+  (notmuch-saved-searches
+   '((:name "inbox"   :query "tag:inbox" :key "i")
+     (:name "unread"  :query "tag:inbox and tag:unread" :key "u")
+     (:name "flagged" :query "tag:flagged" :key "f")
+     (:name "sent"    :query "tag:sent" :key "s")
+     (:name "drafts"  :query "tag:draft" :key "d")
+     (:name "spam"    :query "tag:spam" :key "S")
+     (:name "trash"   :query "tag:deleted" :key "D")))
+  ;; `k' then a key, in every notmuch view.
+  (notmuch-tagging-keys
+   '(("a" notmuch-archive-tags "Archive")
+     ("d" ("+deleted" "-inbox" "-unread") "Delete")
+     ("s" ("+spam" "-inbox" "-unread") "Spam")
+     ("f" ("+flagged") "Flag")
+     ("u" ("+unread") "Mark unread")))
+  :config
+  (keymap-set notmuch-common-keymap
+              "<remap> <notmuch-poll-and-refresh-this-buffer>" #'my-notmuch-sync)
+  (keymap-set notmuch-search-mode-map "d" #'my-notmuch-toggle-deleted)
+  (keymap-set notmuch-tree-mode-map "d" #'my-notmuch-toggle-deleted))
 
 ;;;;;;;;;;;;;;
 ;; TERMINAL ;;
@@ -841,7 +909,6 @@
   "w" '(:ignore t :which-key "windows")
   "w s" 'window-swap-states
   "o a" '("Org Agenda" . org-agenda)
-  "m" 'notmuch
 
   "r f" 'org-roam-node-find
   "r i" 'org-roam-node-insert
@@ -850,3 +917,7 @@
 
   "e" '(:ignore t :which-key "eval")
   "e r" 'eval-region)
+
+;; Only where notmuch is installed (homeManager.mail).
+(when (fboundp 'notmuch)
+  (my-leader-def "m" '("Mail" . notmuch)))
