@@ -63,11 +63,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793725216,
-        "narHash": "sha256-lu7HETLvK4KUIgw2O3zzvSCAXDniROizkfhucdIYv50=",
+        "lastModified": 1793739013,
+        "narHash": "sha256-lBDYasy2WATdYv5MYCVjo7tCYEyHMVL0Cqem60bmaoQ=",
         "owner": "erik-sundin-git",
         "repo": "emacs-yt",
-        "rev": "2eb9a3e8196b283a51a495eba0078059bcf0a4d3",
+        "rev": "c2223a64208f65211efcb068b19579be9dd15e29",
         "type": "github"
       },
       "original": {
