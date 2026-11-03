@@ -9,6 +9,8 @@
     programs.yt = {
       enable = true;
       installElisp = true;
+      # mpv's window floats on top of the other windows, at 960x540.
+      swayWindowRule = true;
     };
   };
 }

@@ -798,7 +798,12 @@
   :if (locate-library "yt")
   :commands (yt yt-subscriptions yt-login yt-search yt-channels yt-play-url yt-doctor
              yt-subscribe yt-unsubscribe yt-history)
-  :custom (yt-player-youtube-history t)
+  :custom
+  (yt-player-youtube-history t)
+  ;; t s in the feed shows them when wanted.
+  (yt-feed-hide-shorts t)
+  ;; YouTube links in mail, org and help buffers play in yt; C-u opens the browser.
+  :init (yt-url-handler-mode 1)
   :bind-keymap ("C-c y" . yt-map))
 
 (use-package ledger-mode
