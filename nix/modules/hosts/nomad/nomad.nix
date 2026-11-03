@@ -71,6 +71,9 @@
             intelVideoDecode
           ];
 
+          # Proton sync rollout, see programs/mail/mail.nix (5 = full two-way sync incl. spam)
+          mailSync.stage = 5;
+
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
           selectedTheme = "ef-bio";
 

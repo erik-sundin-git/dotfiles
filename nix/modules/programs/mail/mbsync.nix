@@ -37,7 +37,14 @@
         }
         # From stage 3 on: mbsync's default, everything both ways.
         // lib.optionalAttrs (stage == 1) { Sync = "Pull"; }
-        // lib.optionalAttrs (stage == 2) { Sync = "Pull PushFlags"; };
+        # A list, not "Pull PushFlags": HM quotes strings with spaces, and
+        # mbsync rejects the quoted value.
+        // lib.optionalAttrs (stage == 2) {
+          Sync = [
+            "Pull"
+            "PushFlags"
+          ];
+        };
       };
     };
 }
