@@ -871,7 +871,10 @@
   ;; t s in the feed shows them when wanted.
   (yt-feed-hide-shorts t)
   ;; YouTube links in mail, org and help buffers play in yt; C-u opens the browser.
-  :init (yt-url-handler-mode 1)
+  :init
+  (yt-url-handler-mode 1)
+  ;; org-store-link in a yt buffer links to the video at point.
+  (with-eval-after-load 'ol (require 'yt-org))
   :bind-keymap ("C-c y" . yt-map))
 
 (use-package ledger-mode
