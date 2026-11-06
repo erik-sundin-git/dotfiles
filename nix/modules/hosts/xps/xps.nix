@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   den.aspects."xps".nixos =
-    { lib, pkgs, ... }:
+    { lib, pkgs, pkgsUnstable, ... }:
     {
       imports = with inputs.self.modules.nixos; [
         # Base 7590 module (deep sleep, thermald, intel cpu/gpu, ssd) plus the
@@ -42,6 +42,23 @@
             export __VK_LAYER_NV_optimus=NVIDIA_only
             exec "$@"
           '';
+
+          # battlenet-umu invokes umu-run directly. Wrap it so Battle.net and
+          # games launched through its shared prefix use the GTX 1650 too.
+          umu-launcher = final.symlinkJoin {
+            name = "umu-launcher-nvidia-offload";
+            # nixpkgs stable has umu-launcher 1.4.0, whose SteamRT4 bootstrap
+            # can fail digest validation. 1.4.3 fixed the runtime metadata URL.
+            paths = [ pkgsUnstable.umu-launcher ];
+            postBuild = ''
+              rm $out/bin/umu-run
+              cat >$out/bin/umu-run <<EOF
+              #!${final.runtimeShell}
+              exec ${final.nvidia-offload}/bin/nvidia-offload ${pkgsUnstable.umu-launcher}/bin/umu-run "\$@"
+              EOF
+              chmod +x $out/bin/umu-run
+            '';
+          };
 
           # Minecraft (GTNH) on the 1650. Prism passes `--launch` to an
           # already-running launcher, so the whole launcher is offloaded, not

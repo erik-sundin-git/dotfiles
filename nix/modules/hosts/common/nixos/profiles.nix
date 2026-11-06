@@ -26,7 +26,11 @@ let
         ];
       };
 
-      environment.systemPackages = [ pkgsUnstable.claude-code ];
+      environment.systemPackages = [
+        pkgsUnstable.claude-code
+        pkgsUnstable.chatgpt
+        pkgsUnstable.codex
+      ];
 
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;

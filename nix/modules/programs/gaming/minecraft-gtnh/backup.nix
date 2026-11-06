@@ -8,7 +8,7 @@
   # VPS to read-only rsync of that one folder:
   #   restrict,command="/usr/bin/rrsync -ro /var/lib/gtnh/backups/" ssh-ed25519 …
   flake.modules.homeManager.gtnhBackup =
-    { config, pkgs, ... }:
+    { config, lib, pkgs, ... }:
     let
       dest = "${config.home.homeDirectory}/backups/gtnh";
       # Counted back from the newest backup, not from today, so a server
@@ -25,7 +25,7 @@
           unzip
         ];
         text = ''
-          dest=${dest}
+          dest=${lib.escapeShellArg dest}
           mkdir -p "$dest"
           cd "$dest"
           shopt -s nullglob

@@ -14,6 +14,7 @@
       url = "github:erik-sundin-git/emacs-yt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    battlenet-umu.url = "github:jacobjdowning/battlenet-umu";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";

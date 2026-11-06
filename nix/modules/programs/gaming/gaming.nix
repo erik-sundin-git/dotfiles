@@ -59,9 +59,17 @@
 
       # The GTNH Prism instance's launcher entry, alongside prismlauncher above,
       # and the GeForce NOW launcher for the Flatpak installed above
-      home-manager.sharedModules = with inputs.self.modules.homeManager; [
-        gtnhLauncher
-        geforcenow
-      ];
+      home-manager.sharedModules =
+        with inputs.self.modules.homeManager;
+        [
+          gtnhLauncher
+          geforcenow
+        ]
+        ++ [
+          inputs.battlenet-umu.homeModules.default
+          ({ ... }: {
+            programs.battlenet-umu.enable = true;
+          })
+        ];
     };
 }
