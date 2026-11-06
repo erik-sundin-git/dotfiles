@@ -1,10 +1,11 @@
-{ ... }:
+{ inputs, ... }:
 {
   flake.modules.homeManager.waybar =
     {
       config,
       lib,
       pkgs,
+      pkgsUnstable,
       hexToRgba,
       isLaptop,
       osConfig ? { },
@@ -18,6 +19,8 @@
       hasClaude = lib.any (p: lib.getName p == "claude-code") (
         osConfig.environment.systemPackages or [ ]
       );
+      # Codex is installed system-wide by the host profiles.
+      hasCodex = lib.any (p: lib.getName p == "codex") (osConfig.environment.systemPackages or [ ]);
 
       tempScript = pkgs.writeShellScript "waybar-temp" ''
         ${pkgs.gawk}/bin/awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
@@ -64,6 +67,7 @@
                 "memory"
               ]
               ++ lib.optionals hasClaude [ "custom/claude" ]
+              ++ lib.optionals hasCodex [ "custom/codex" ]
               ++ [
                 "clock"
               ]
@@ -155,6 +159,13 @@
             // lib.optionalAttrs hasClaude {
               "custom/claude" = {
                 exec = lib.getExe pkgs.local.claude-usage;
+                return-type = "json";
+                interval = 300;
+              };
+            }
+            // lib.optionalAttrs hasCodex {
+              "custom/codex" = {
+                exec = "CODEX_BIN=${lib.getExe pkgsUnstable.codex} ${lib.getExe pkgs.local.codex-usage}";
                 return-type = "json";
                 interval = 300;
               };
@@ -256,6 +267,27 @@
           }
 
           #custom-claude.unknown {
+            color: ${c.brightBlack};
+          }
+
+          #custom-codex {
+            color: ${c.foreground};
+            padding: 0 6px 0 24px;
+            background-image: url("${inputs.self}/nix/assets/openai.svg");
+            background-repeat: no-repeat;
+            background-position: 4px center;
+            background-size: 16px 16px;
+          }
+
+          #custom-codex.warning {
+            color: ${c.yellow};
+          }
+
+          #custom-codex.critical {
+            color: ${c.red};
+          }
+
+          #custom-codex.unknown {
             color: ${c.brightBlack};
           }
 
