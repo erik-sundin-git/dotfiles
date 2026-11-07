@@ -1,11 +1,15 @@
 { inputs, ... }:
 {
   den.aspects."xps".nixos =
-    { lib, pkgs, pkgsUnstable, ... }:
+    {
+      lib,
+      config,
+      pkgs,
+      pkgsUnstable,
+      ...
+    }:
     {
       imports = with inputs.self.modules.nixos; [
-        # Base 7590 module (deep sleep, thermald, intel cpu/gpu, ssd) plus the
-        # GTX 1650 as a PRIME offload GPU with fine-grained runtime PM
         inputs.nixos-hardware.nixosModules.dell-xps-15-7590-nvidia
         laptopBaseProfile
         swayfxStack
@@ -27,8 +31,6 @@
         SUBSYSTEM=="drm", KERNEL=="card*", KERNELS=="0000:00:02.0", SYMLINK+="dri/igpu"
       '';
 
-      # The stock nvidia-offload, plus re-enabling nvidia's EGL vendor and
-      # Vulkan ICD, which the sway session and Steam hide (see below)
       hardware.nvidia.prime.offload.enableOffloadCmd = lib.mkForce false;
       environment.systemPackages = [ pkgs.nvidia-offload ];
 
@@ -43,12 +45,9 @@
             exec "$@"
           '';
 
-          # battlenet-umu invokes umu-run directly. Wrap it so Battle.net and
-          # games launched through its shared prefix use the GTX 1650 too.
+          # nvidia offload bor battle-net
           umu-launcher = final.symlinkJoin {
             name = "umu-launcher-nvidia-offload";
-            # nixpkgs stable has umu-launcher 1.4.0, whose SteamRT4 bootstrap
-            # can fail digest validation. 1.4.3 fixed the runtime metadata URL.
             paths = [ pkgsUnstable.umu-launcher ];
             postBuild = ''
               rm $out/bin/umu-run
@@ -60,9 +59,7 @@
             '';
           };
 
-          # Minecraft (GTNH) on the 1650. Prism passes `--launch` to an
-          # already-running launcher, so the whole launcher is offloaded, not
-          # just the desktop entries; the 1650 stays awake while Prism is open.
+          # Minecraft (GTNH) on the 1650.
           prismlauncher = final.symlinkJoin {
             name = "prismlauncher-nvidia-offload";
             paths = [ prev.prismlauncher ];
@@ -137,8 +134,10 @@
           emacsYoutube
         ];
 
+        selectedTheme = "ef-bio";
         # x86_pkg_temp
         systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone12/temp";
+        services.poweralertd.enable = false;
 
         # HM's sway wrapper is the one on PATH, so these go here, not in
         # programs.sway. Sway refuses to start while the nvidia module is
@@ -151,6 +150,13 @@
             export WLR_DRM_DEVICES=/dev/dri/igpu
             export __EGL_VENDOR_LIBRARY_FILENAMES=/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json
           '';
+          config.output = {
+            "Dell Inc. DELL U2722D 3JYTCH3" = {
+              mode = "2560x1440";
+              position = "0,0";
+            };
+            "eDP-1".position = "2560,0";
+          };
         };
       };
     };

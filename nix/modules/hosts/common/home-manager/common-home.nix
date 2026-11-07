@@ -38,7 +38,7 @@
         LC_ALL = "en_US.UTF-8";
       };
 
-      services.poweralertd.enable = isLaptop;
+      services.poweralertd.enable = lib.mkDefault isLaptop;
 
       home.file.".xprofile".text = ''
         setxkbmap ${kb.layout} -option ${kb.options}
