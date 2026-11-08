@@ -18,13 +18,6 @@
         nixos.nixpkgsOverlays
       ];
 
-      nixpkgs.config.allowUnfree = true;
-
-      nix.settings.experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-
       # lz4 made a 7.8 GB squashfs, which fills an 8 GB stick
       isoImage.squashfsCompression = "zstd -Xcompression-level 6";
 
@@ -81,6 +74,7 @@
           host = "live-iso";
         };
         selectedTheme = "catppuccin";
+        emacs.texlive = false;
 
         wayland.windowManager.sway.config.startup = lib.mkForce [ { command = "alacritty"; } ];
 

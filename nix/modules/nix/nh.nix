@@ -10,6 +10,8 @@
         clean.enable = true;
         clean.extraArgs = "--keep-since 7d --keep 5";
       };
+      # Not on battery (holds on desktops, which have none)
+      systemd.services.nh-clean.unitConfig.ConditionACPower = true;
     };
 
   flake.modules.homeManager.nh =

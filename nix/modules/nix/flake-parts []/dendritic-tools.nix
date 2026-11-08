@@ -18,8 +18,6 @@
     inputs.den.flakeModule
   ];
 
-  systems = [
-    "aarch64-linux"
-    "x86_64-linux"
-  ];
+  # No aarch64 host; listing it evaluated every perSystem output twice
+  systems = [ "x86_64-linux" ];
 }
