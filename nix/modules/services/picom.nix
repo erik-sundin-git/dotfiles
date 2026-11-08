@@ -4,16 +4,14 @@
     { config, lib, ... }:
     let
       t = config.theme;
-      opacityPct = toString (builtins.floor (t.opacity * 100));
     in
     {
+      # No opacityRules: alacritty (window.opacity) and Emacs (alpha-background,
+      # nix-theme.el) make their own backgrounds translucent, so a picom rule
+      # on top multiplied the two (0.9 became ~0.81) and faded the text too.
       services.picom = {
         enable = true;
         inactiveOpacity = 1;
-        opacityRules = lib.optionals (t.opacity < 1.0) [
-          "${opacityPct}:class_g = 'Alacritty'"
-          "${opacityPct}:class_g = 'Emacs'"
-        ];
         # Blur needs the glx backend
         backend = lib.mkIf t.blur "glx";
         settings = {

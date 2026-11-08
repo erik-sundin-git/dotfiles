@@ -11,11 +11,7 @@
     {
       home.packages = [
         pkgs.dmenu
-        pkgs.nitrogen
-        pkgs.maim
         pkgs.xclip
-        pkgs.xdg-desktop-portal
-        pkgs.xdg-desktop-portal-gtk
         (mkScreenshot {
           name = "screenshot-area";
           args = "-s";

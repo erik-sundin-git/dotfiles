@@ -38,6 +38,10 @@
     {
       imports = [ inputs.self.modules.homeManager.uiHelpers ];
 
+      # A user service (restarts, stops with the session) instead of a
+      # startup exec, as on sway and EXWM
+      services.blueman-applet.enable = true;
+
       xsession.enable = true;
       systemd.user.services.polkit-agent = mkPolkitAgent "graphical-session.target";
       xsession.scriptPath = ".hm-xsession";
@@ -60,13 +64,11 @@
           floating.border = 2;
 
           startup = [
+            # The same wallpaper as sway and the greeter
             {
-              command = "nitrogen --restore";
+              command = "${pkgs.feh}/bin/feh --no-fehbg --bg-fill '${config.systemConstants.wallpaper}'";
               notification = false;
-            }
-            {
-              command = "blueman-applet";
-              notification = false;
+              always = true;
             }
             {
               command = "${importEnv}";
