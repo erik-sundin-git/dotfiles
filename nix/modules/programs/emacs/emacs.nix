@@ -11,13 +11,18 @@
       ...
     }:
     let
+      inherit (config.systemConstants.system) type;
       dotPath = "${inputs.self}/nix/assets/emacs.d";
       # Falls back for hosts that pull in emacs without the theme module (live-iso).
       opacity = config.theme.opacity or 1.0;
       alphaBg = builtins.floor (opacity * 100);
     in
     {
-      home.file =
+      options.emacs.texlive = lib.mkEnableOption "texliveFull for Emacs (LaTeX export)" // {
+        default = type != "server";
+      };
+
+      config.home.file =
         builtins.listToAttrs (
           map
             (f: {
@@ -25,7 +30,6 @@
               value.source = "${dotPath}/${f}";
             })
             [
-              "post-early-init.el"
               "post-init.el"
               "pre-early-init.el"
               "pre-init.el"
@@ -40,25 +44,24 @@
             (add-to-list 'default-frame-alist '(alpha-background . ${toString alphaBg}))
           '';
         };
-      services.emacs.enable = true;
+      config.services.emacs.enable = true;
 
-      # Build tools needed by emacs packages compiled at runtime (e.g. vterm-module)
-      home.packages = with pkgs; [
-        cmake
-        gcc
-        gnumake
-        libtool
-        texliveFull
-      ];
+      # Several GB; for org/LaTeX export on the machines used for writing
+      config.home.packages = lib.optionals config.emacs.texlive [ pkgs.texliveFull ];
 
-      programs.emacs = {
+      config.programs.emacs = {
         enable = true;
         package = lib.mkDefault pkgs.emacs;
+        # vterm and pdf-tools have native parts (vterm-module, epdfinfo):
+        # prebuilt here instead of compiled at runtime by MELPA's copies,
+        # which needed cmake/gcc/libtool (and poppler) on PATH
         extraPackages =
           epkgs: with epkgs; [
             nixfmt
             nix-mode
             ledger-mode
+            vterm
+            pdf-tools
           ];
       };
     };

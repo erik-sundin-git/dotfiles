@@ -700,7 +700,7 @@
 ;;;;;;;;;;;;;;
 
 (use-package vterm
-  :ensure t
+  :ensure nil ;; from nix (programs/emacs/emacs.nix): prebuilt vterm-module
   :commands (vterm vterm-other-window)
   :bind
   ("C-c t" . vterm))
@@ -710,7 +710,7 @@
 ;;;;;;;;;;;
 
 (use-package pdf-tools
-  :ensure t
+  :ensure nil ;; from nix (programs/emacs/emacs.nix): prebuilt epdfinfo
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :magic ("%PDF" . pdf-view-mode)
   :config
