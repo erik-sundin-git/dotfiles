@@ -6,11 +6,6 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nixpkgs-stable.follows = "nixpkgs";
-    };
     emacs-yt = {
       url = "github:erik-sundin-git/emacs-yt";
       inputs.nixpkgs.follows = "nixpkgs";
