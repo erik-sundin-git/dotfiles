@@ -22,38 +22,14 @@ jobs:
 
       - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31
 
-      # No git-crypt key in CI (public repo, and the key can't be rotated).
-      # Every tracked nix/secrets file but the .gitattributes exceptions must
-      # be git-crypt ciphertext here (catches a commit made from a clone
-      # without git-crypt set up), and secrets.yaml must be sops-encrypted.
-      # Each encrypted file is swapped for its stub; the dirty tracked files
-      # are what the flake evaluates.
       - name: Check and stub the encrypted secrets
-        run: |
-          status=0
-          for f in $(git ls-files nix/secrets); do
-            name=$(basename "$f")
-            case $name in
-              .gitattributes | .sops.yaml) continue ;;
-              secrets.yaml)
-                grep -q '^sops:' "$f" || { echo "::error file=$f::not sops-encrypted"; status=1; }
-                continue
-                ;;
-            esac
-            if ! cmp -s -n 10 <(printf '\0GITCRYPT\0') "$f"; then
-              echo "::error file=$f::committed in plaintext (not git-crypt encrypted)"
-              status=1
-            elif [ -f ".github/ci/${name%.nix}-stub.nix" ]; then
-              cp ".github/ci/${name%.nix}-stub.nix" "$f"
-            else
-              echo "::error file=$f::encrypted, but .github/ci/${name%.nix}-stub.nix is missing"
-              status=1
-            fi
-          done
-          exit "$status"
+        run: .github/ci/stub-secrets.sh
 
       - name: Evaluate every host
         run: nix flake check --no-build
+
+      - name: Lint (deadnix)
+        run: nix build --no-link .#checks.x86_64-linux.deadnix
 
       # Builds the live ISO's installer, which runs its unit tests
       - name: Build install-host
