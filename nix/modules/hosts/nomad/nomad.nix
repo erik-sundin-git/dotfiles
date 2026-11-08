@@ -23,6 +23,9 @@
 
         services.hardware.bolt.enable = true;
 
+        # Sleep, then hibernate to the disk swap after 2 h (lid and idle)
+        commonConfig.suspendThenHibernate = true;
+
         # Intel UHD 620 (Kaby Lake-R): drivers from intelGen9Graphics, plus
         # framebuffer compression and panel self refresh for battery life
         boot.kernelParams = [

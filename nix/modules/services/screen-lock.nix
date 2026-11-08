@@ -9,9 +9,13 @@
       pkgs,
       lib,
       isLaptop,
+      osConfig ? { },
       ...
     }:
     let
+      # commonConfig.suspendThenHibernate (NixOS side) decides the idle sleep
+      sleep =
+        if osConfig.commonConfig.suspendThenHibernate or false then "suspend-then-hibernate" else "suspend";
       c = config.theme;
       hex = lib.removePrefix "#";
       swaylock = lib.getExe config.programs.swaylock.package;
@@ -60,7 +64,7 @@
         ]
         ++ lib.optional isLaptop {
           timeout = 1800;
-          command = "${pkgs.systemd}/bin/systemctl suspend";
+          command = "${pkgs.systemd}/bin/systemctl ${sleep}";
         };
       };
     };
@@ -73,9 +77,12 @@
       pkgs,
       lib,
       isLaptop,
+      osConfig ? { },
       ...
     }:
     let
+      sleep =
+        if osConfig.commonConfig.suspendThenHibernate or false then "suspend-then-hibernate" else "suspend";
       c = config.theme;
       hex = lib.removePrefix "#";
       lockCmd = "${pkgs.i3lock-color}/bin/i3lock-color --color=${hex c.background} --clock --inside-color=${hex c.background}ff --ring-color=${hex c.accent}ff --keyhl-color=${hex c.green}ff --bshl-color=${hex c.red}ff --time-color=${hex c.foreground}ff --date-color=${hex c.foreground}ff --nofork";
@@ -88,6 +95,12 @@
         lockCmd = lockCmd;
         inactiveInterval = 20;
         xautolock.enable = isLaptop;
+        # Sleep after 30 min idle on laptops, like swayidle: locked at 20 min,
+        # xautolock's killer runs 10 min later (i3 and EXWM)
+        xautolock.extraOptions = lib.mkIf isLaptop [
+          "-killtime 10"
+          "-killer '${pkgs.systemd}/bin/systemctl ${sleep}'"
+        ];
       };
     };
 }

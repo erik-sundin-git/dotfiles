@@ -24,6 +24,11 @@
         default = true;
       };
 
+      # Opt-in per host, once `systemctl hibernate` has been seen to work there
+      # (nvidia hosts are the risky ones). Lid close and the idle timeout then
+      # suspend, and hibernate to the disk swap after HibernateDelaySec.
+      options.commonConfig.suspendThenHibernate = lib.mkEnableOption "suspend-then-hibernate on lid close and idle";
+
       config = {
         networking.networkmanager.enable = true;
         networking.hostName = "${config.systemConstants.system.host}";
@@ -81,6 +86,17 @@
         # Not on BIOS/GRUB hosts: only the scripted initrd finds the resume
         # device from swapDevices there; with systemd it comes from an EFI var
         boot.initrd.systemd.enable = lib.mkIf config.commonConfig.bootEFI (lib.mkDefault true);
+
+        services.logind.settings.Login.HandleLidSwitch =
+          lib.mkIf config.commonConfig.suspendThenHibernate "suspend-then-hibernate";
+        systemd.sleep.settings.Sleep.HibernateDelaySec =
+          lib.mkIf config.commonConfig.suspendThenHibernate "2h";
+        assertions = [
+          {
+            assertion = config.commonConfig.suspendThenHibernate -> config.swapDevices != [ ];
+            message = "commonConfig.suspendThenHibernate needs a disk swap partition to hibernate to.";
+          }
+        ];
         services.journald.extraConfig = "SystemMaxUse=500M";
 
         # Light hardening that costs nothing on a desktop (no ptrace or

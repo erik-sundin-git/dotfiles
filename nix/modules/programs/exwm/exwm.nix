@@ -234,13 +234,6 @@
       # Tray icon in exwm-systemtray
       services.blueman-applet.enable = true;
 
-      # Suspend after 30 min idle on laptops, like swayidle: i3Lock locks at
-      # 20 min, xautolock's killer runs 10 min later
-      services.screen-locker.xautolock.extraOptions = lib.mkIf isLaptop [
-        "-killtime 10"
-        "-killer '${pkgs.systemd}/bin/systemctl suspend'"
-      ];
-
       home.packages = [
         exwm-session
         pkgs.xclip
