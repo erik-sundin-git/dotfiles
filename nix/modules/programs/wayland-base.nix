@@ -14,11 +14,12 @@
       };
     };
 
-  # Shared by the sway and Hyprland HM modules. Needs uiHelpers (for
-  # waylandScreenshots), which both already import; importing it here too
+  # Wayland pieces for the sway HM module. Needs uiHelpers (for
+  # waylandScreenshots), which swayfx already imports; importing it here too
   # would define its function-valued module args twice.
   flake.modules.homeManager.waylandBase =
     {
+      config,
       lib,
       pkgs,
       waylandScreenshots,
@@ -29,7 +30,15 @@
       programs.emacs.package = pkgs.emacs-pgtk;
       # Start the daemon after the compositor so it inherits WAYLAND_DISPLAY;
       # child processes it spawns (e.g. mpv from ~/dev/emacs-yt) need it.
+      # "graphical" alone binds it to graphical-session.target, which comes
+      # up before sway exports its environment (see CLAUDE.md), so bind it to
+      # the compositor's own target.
       services.emacs.startWithUserSession = "graphical";
+      systemd.user.services.emacs = {
+        Unit.After = lib.mkForce [ config.wayland.systemd.target ];
+        Unit.PartOf = lib.mkForce [ config.wayland.systemd.target ];
+        Install.WantedBy = lib.mkForce [ config.wayland.systemd.target ];
+      };
 
       home.packages = [
         pkgs.jq

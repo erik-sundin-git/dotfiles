@@ -563,9 +563,7 @@
   (consult-org-roam-mode 1))
 
 (use-package autosync-magit
-  :straight (:host github
-                   :repo "sbougerel/autosync-magit"
-                   :files ("*.el")))
+  :vc (:url "https://github.com/sbougerel/autosync-magit" :rev :newest))
 
 (add-to-list 'safe-local-variable-values
              '(eval add-hook 'autosync-magit-after-merge-hook #'logseq-org-roam nil t))
@@ -600,17 +598,25 @@
   ;; (auto-package-update-prompt-before-update t)
 
   :config
-  ;; Run package updates automatically at startup, but only if the configured
-  ;; interval has elapsed.
-  (auto-package-update-maybe)
+  ;; Leave packages Nix installs (read-only store paths, e.g. yt, notmuch)
+  ;; alone: "updating" one ends in deleting its store directory, which fails
+  ;; and aborts the rest of post-init.el.
+  (dolist (p package-alist)
+    (unless (file-in-directory-p (package-desc-dir (cadr p)) package-user-dir)
+      (add-to-list 'auto-package-update-excluded-packages (car p))))
 
-  ;; Schedule a background update attempt daily at 10:00 AM.
-  ;; This uses Emacs' internal timer system. If Emacs is running at that time,
-  ;; the update will be triggered. Otherwise, the update is skipped for that
-  ;; day. Note that this scheduled update is independent of
-  ;; `auto-package-update-maybe` and can be used as a complementary or
-  ;; alternative mechanism.
-  (auto-package-update-at-time "10:00"))
+  ;; Not in the EXWM Emacs (exwm-session exports EXWM_SESSION; its --eval
+  ;; runs only after init): updating there blocks the window manager and
+  ;; swaps packages mid-session, and a broken update takes the session down.
+  (unless (getenv "EXWM_SESSION")
+    ;; Run package updates automatically at startup, but only if the
+    ;; configured interval has elapsed.
+    (auto-package-update-maybe)
+
+    ;; Schedule a background update attempt daily at 10:00 AM. If Emacs is
+    ;; running at that time, the update is triggered; otherwise it is
+    ;; skipped for that day.
+    (auto-package-update-at-time "10:00")))
 
 ;;;;;;;;;;;
 ;; Email ;;
@@ -711,9 +717,7 @@
   (pdf-tools-install :no-query))
 
 (use-package buffer-to-pdf
-  :straight (:host github
-                   :repo "protesilaos/buffer-to-pdf"
-                   :files ("*.el"))
+  :vc (:url "https://github.com/protesilaos/buffer-to-pdf" :rev :newest)
   :config
   (setq buffer-to-pdf-directory (expand-file-name "~/notes/pdf/")))
 
@@ -854,7 +858,7 @@
 
 ;; An Emacs major mode for editing Nix expressions.
 (use-package nix-mode
-  :ensure f ;; installed via nixos
+  :ensure nil ;; installed via nixos
   :mode "\\.nix\\'"
   :config
   (define-key nix-mode-map (kbd "C-c C-f") 'nix-format-buffer))
@@ -876,6 +880,35 @@
   ;; org-store-link in a yt buffer links to the video at point.
   (with-eval-after-load 'ol (require 'yt-org))
   :bind-keymap ("C-c y" . yt-map))
+
+;; RSS: elfeed, with the feeds and their tags listed in ~/notes/elfeed.org
+;; (elfeed-org: a heading tagged :elfeed:, feed URLs as subheadings, org
+;; tags become elfeed tags). The database lives in var/ like other state.
+(use-package elfeed
+  :ensure t
+  :commands elfeed
+  :custom
+  (elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory))
+  (elfeed-search-filter "@2-weeks-ago +unread")
+  :config
+  ;; The Race has a single feed for every series; keep only Formula 1. Other
+  ;; posts arrive read and tagged `skip', so the +unread view never shows them
+  ;; (+skip lists them).
+  (add-hook 'elfeed-new-entry-hook
+            (elfeed-make-tagger :feed-url "the-race\\.com"
+                                :categories '(not "^Formula 1$")
+                                :add 'skip
+                                :remove 'unread))
+  ;; Fetch on opening: the search buffer is otherwise as old as the last run.
+  (add-hook 'elfeed-search-mode-hook #'elfeed-update))
+
+(use-package elfeed-org
+  :ensure t
+  :after elfeed
+  :custom
+  (rmh-elfeed-org-files (list (expand-file-name "elfeed.org" org-directory)))
+  :config
+  (elfeed-org))
 
 (use-package ledger-mode
   :ensure nil
@@ -919,7 +952,9 @@
   "r d f" 'org-roam-dailies-capture-today
 
   "e" '(:ignore t :which-key "eval")
-  "e r" 'eval-region)
+  "e r" 'eval-region
+
+  "f" '("Feeds" . elfeed))
 
 ;; Only where notmuch is installed (homeManager.mail).
 (when (fboundp 'notmuch)

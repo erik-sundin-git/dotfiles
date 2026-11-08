@@ -135,7 +135,10 @@
           # socket and the session files.
           systemctl --user stop emacs.service || true
           # The directory is passed in: init.el's load-file-name would be the
-          # store path behind the symlink, not where my-exwm-nix.el is
+          # store path behind the symlink, not where my-exwm-nix.el is.
+          # EXWM_SESSION lets post-init.el skip what mustn't run in the WM
+          # Emacs (package auto-updates).
+          export EXWM_SESSION=1
           exec ${config.programs.emacs.finalPackage}/bin/emacs \
             --eval "(setq my-exwm-directory \"$HOME/.emacs.d/exwm/\")" \
             -l "$HOME/.emacs.d/exwm/init.el"
