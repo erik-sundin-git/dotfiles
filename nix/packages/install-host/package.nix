@@ -38,6 +38,7 @@ python3Packages.buildPythonApplication {
   nativeCheckInputs = [
     python3Packages.pytestCheckHook
     nixfmt
+    git # tests/test_repo.py runs Changes against a scratch repo
   ];
   pythonImportsCheck = [ "install_host" ];
 

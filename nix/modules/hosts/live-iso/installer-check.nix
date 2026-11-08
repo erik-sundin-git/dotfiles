@@ -37,6 +37,15 @@ let
       ++ lib.attrNames installer.features
     )
     ++ lib.filter (n: !(hmModules ? ${n})) (lib.attrNames installer.homeModules);
+  # The installer refuses a flake whose schemaVersion it doesn't know; keep
+  # spec.py's constant in step with installer-options.nix
+  specSchema = lib.toInt (
+    lib.head (
+      builtins.match ".*\nSCHEMA_VERSION = ([0-9]+)\n.*" (
+        builtins.readFile ../../../packages/install-host/install_host/spec.py
+      )
+    )
+  );
   unregisteredStacks = lib.filter (n: lib.hasSuffix "Stack" n && !(installer.stacks ? ${n})) (
     lib.attrNames nixosModules
   );
@@ -79,6 +88,8 @@ in
               throw "Stacks without a flake.installer.stacks entry: ${toString unregisteredStacks}"
             else if lib.length (lib.attrNames (lib.filterAttrs (_: s: s.default) installer.stacks)) != 1 then
               throw "Exactly one flake.installer.stacks entry must set default = true"
+            else if specSchema != installer.schemaVersion then
+              throw "install-host's SCHEMA_VERSION (${toString specSchema}, spec.py) != flake.installer.schemaVersion (${toString installer.schemaVersion})"
             else
               pkgs.emptyFile;
         }
