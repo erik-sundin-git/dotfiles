@@ -56,9 +56,6 @@
           name = "Papirus-Dark";
           package = pkgs.papirus-icon-theme;
         };
-        cursorTheme = {
-          name = "Adwaita";
-        };
         font = {
           name = "Sans";
           size = 10;
@@ -67,6 +64,29 @@
         gtk4.theme = null;
         gtk3.extraCss = paletteCss;
         gtk4.extraCss = paletteCss;
+      };
+
+      # One cursor everywhere: GTK, X (Xresources, root window), sway's seat
+      # and XCURSOR_* for Xwayland apps. Without it they fall back to
+      # different defaults and sizes (worst on the xps 4K panel). GTK's
+      # cursorTheme (and the greeter's, lightdm.nix) follows from gtk.enable.
+      home.pointerCursor = {
+        package = pkgs.adwaita-icon-theme;
+        name = "Adwaita";
+        size = 24;
+        gtk.enable = true;
+        x11.enable = true;
+        sway.enable = true;
+      };
+
+      # Generic families (monospace in Firefox, GTK, anything without its own
+      # font setting) resolve to the theme font instead of DejaVu
+      fonts.fontconfig = {
+        enable = true;
+        defaultFonts = {
+          monospace = [ c.fontFamily ];
+          emoji = [ "Noto Color Emoji" ];
+        };
       };
 
       # libadwaita and the portal read the dark preference from here.

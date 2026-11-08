@@ -22,6 +22,7 @@
         homeManager.mozillaShared # provides the mozillaShared arg to firefox
         homeManager.firefox
         homeManager.bash
+        homeManager.starship
         homeManager.nh
         homeManager.ssh
         homeManager.vnc
@@ -47,7 +48,9 @@
         xrdb -merge ~/.Xresources
       '';
 
-      home.file.".Xresources".text = lib.mkDefault (lib.optionalString isLaptop "Xft.dpi: 144\n");
+      # xresources, not home.file: home.pointerCursor (gtk.nix) adds its own
+      # Xcursor properties to the same file
+      xresources.properties = lib.mkIf isLaptop { "Xft.dpi" = 144; };
 
       home.packages = with pkgs; [
         ledger
@@ -58,6 +61,14 @@
       programs.git.signing.format = null;
       programs.git.settings.user.name = config.systemConstants.adminName;
       programs.git.settings.user.email = config.systemConstants.adminEmail;
+      programs.git.settings = {
+        init.defaultBranch = "main";
+        push.autoSetupRemote = true;
+        fetch.prune = true;
+        rerere.enabled = true;
+        merge.conflictStyle = "zdiff3";
+        diff.algorithm = "histogram";
+      };
 
       home.activation.printSystemType = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         echo -e "\033[33mRebuilt system using profile: ${config.systemConstants.system.type}\033[0m"

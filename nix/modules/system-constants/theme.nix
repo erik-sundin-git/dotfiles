@@ -43,6 +43,10 @@ in
     { config, lib, ... }:
     let
       missing = builtins.filter (k: (config.theme.${k} or "") == "") paletteKeys;
+      # "" is allowed so a missing key reaches the assertion below (which names
+      # it) instead of failing as a type error deep in some UI module
+      color = lib.types.strMatching "(#[0-9a-fA-F]{6})?";
+      fraction = lib.types.numbers.between 0.0 1.0;
     in
     {
       options = {
@@ -58,16 +62,16 @@ in
         theme = lib.mkOption {
           type = lib.types.submodule (
             { config, ... }: {
-              freeformType = lib.types.attrsOf lib.types.str;
+              freeformType = lib.types.attrsOf color;
               options = {
                 accent = lib.mkOption {
-                  type = lib.types.str;
+                  type = color;
                   default = config.blue or "";
                   defaultText = lib.literalExpression "config.theme.blue";
                   description = "Highlight color for focused borders, active workspaces, selections and rings.";
                 };
                 urgentForeground = lib.mkOption {
-                  type = lib.types.str;
+                  type = color;
                   default = config.background or "";
                   defaultText = lib.literalExpression "config.theme.background";
                   description = "Text on urgent (red) title bars. The background color reads best on most reds; themes with a dark red override it.";
@@ -83,7 +87,7 @@ in
                   description = "Gap between tiled windows in pixels.";
                 };
                 opacity = lib.mkOption {
-                  type = lib.types.float;
+                  type = fraction;
                   default = 1.0;
                   description = "Window opacity, 0.0–1.0. 1.0 = fully opaque.";
                 };
@@ -93,7 +97,7 @@ in
                   description = "Enable compositor blur behind transparent windows.";
                 };
                 dimInactive = lib.mkOption {
-                  type = lib.types.float;
+                  type = fraction;
                   default = if config.opacity < 1.0 then 0.1 else 0.0;
                   defaultText = lib.literalExpression "if opacity < 1.0 then 0.1 else 0.0";
                   description = "How much swayfx dims unfocused windows, 0.0–1.0.";
