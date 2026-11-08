@@ -4,7 +4,12 @@
   # merged into the "default" profile (also kept apart so a second Mozilla
   # browser could reuse them).
   flake.modules.homeManager.mozillaShared =
-    { config, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       c = config.theme;
       r = toString c.rounding;
@@ -61,9 +66,11 @@
                 {
                   template = "https://search.nixos.org/options";
                   params = [
+                    # Options of the release the hosts run (packages stay on
+                    # unstable: pkgsUnstable is used a lot)
                     {
                       name = "channel";
-                      value = "unstable";
+                      value = lib.trivial.release;
                     }
                     {
                       name = "query";
@@ -118,7 +125,11 @@
           };
           "browser.tabs.inTitlebar" = 0;
           "browser.toolbars.bookmarks.visibility" = "never";
-          # Hardware video decode prefs are per GPU; see nomad.nix
+          # Hardware video decode prefs are per GPU; see intel-video-decode.nix
+          # Extensions come from NUR, pinned by flake.lock: don't let Firefox
+          # update them behind nix's back
+          "extensions.update.enabled" = false;
+          "extensions.update.autoUpdateDefault" = false;
         };
 
         # Recolors compact-dark from config.theme and strips the nav bar down to
