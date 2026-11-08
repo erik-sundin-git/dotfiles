@@ -252,31 +252,7 @@
       _module.args.hexToRgba =
         hex: alpha:
         let
-          fromHex =
-            s:
-            let
-              d = {
-                "0" = 0;
-                "1" = 1;
-                "2" = 2;
-                "3" = 3;
-                "4" = 4;
-                "5" = 5;
-                "6" = 6;
-                "7" = 7;
-                "8" = 8;
-                "9" = 9;
-                "a" = 10;
-                "b" = 11;
-                "c" = 12;
-                "d" = 13;
-                "e" = 14;
-                "f" = 15;
-              };
-              hi = d.${lib.toLower (lib.substring 0 1 s)};
-              lo = d.${lib.toLower (lib.substring 1 1 s)};
-            in
-            hi * 16 + lo;
+          fromHex = lib.fromHexString;
           h = lib.removePrefix "#" hex;
         in
         "rgba(${toString (fromHex (lib.substring 0 2 h))}, ${toString (fromHex (lib.substring 2 2 h))}, ${

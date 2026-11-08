@@ -17,8 +17,51 @@
   #   mod = true  → key is prefixed with the sway modifier (Mod4)
   #   mod = false → raw key (media keys, Print without mod, XF86*)
   flake.modules.homeManager.swayBindings =
-    { pkgs, ... }:
     {
+      lib,
+      pkgs,
+      swayBindingsData,
+      ...
+    }:
+    let
+      d = swayBindingsData;
+      # Two binds on one key would otherwise just lose one in listToAttrs
+      dups = keys: lib.unique (lib.filter (k: lib.count (x: x == k) keys > 1) keys);
+      bindKey = b: if b.mod or true then "mod+${b.key}" else b.key;
+      entryKey =
+        m: "mod+" + lib.optionalString ((m.entryMod or "") != "") "${m.entryMod}+" + m.entryKey;
+      globalDups = dups (
+        map bindKey (lib.concatMap (s: s.binds) d.sections ++ d.laptopSection.binds)
+        ++ lib.mapAttrsToList (_: entryKey) d.modes
+      );
+      # Escape and space leave every mode (mkWmModes)
+      modeDups = lib.concatLists (
+        lib.mapAttrsToList (
+          name: m:
+          map (k: "${name}: ${k}") (
+            dups (
+              map (b: b.key) m.bindings
+              ++ [
+                "Escape"
+                "space"
+              ]
+            )
+          )
+        ) d.modes
+      );
+    in
+    {
+      assertions = [
+        {
+          assertion = globalDups == [ ];
+          message = "swayBindingsData binds a key twice: ${toString globalDups}";
+        }
+        {
+          assertion = modeDups == [ ];
+          message = "swayBindingsData mode binds a key twice (Escape/space are reserved): ${toString modeDups}";
+        }
+      ];
+
       # The media keys below run playerctl. playerctld makes it act on the
       # player used last, not on whichever (often a browser tab) comes first.
       home.packages = [ pkgs.playerctl ];
