@@ -7,6 +7,11 @@
 #   mail-move [--dry-run] [--spam]
 #   MAIL_MOVE_FORCE=1   allow more than $max moves in one run
 #   ~/Mail/.no-move     emergency stop: move nothing
+#
+# Run by hand, it takes the mail-sync lock so it never renames files while
+# mbsync runs. When moves are held back (.no-move or over $max) it writes the
+# reason to $XDG_RUNTIME_DIR/mail-move-held, and postNew then keeps the tags
+# (no revert) so the intent survives until the moves are done.
 
 base=$HOME/Mail
 acct=proton
@@ -24,9 +29,25 @@ for arg in "$@"; do
   esac
 done
 
-if [[ -e $base/.no-move ]]; then
-  echo "mail-move: $base/.no-move exists, moving nothing" >&2
-  exit 0
+run=${XDG_RUNTIME_DIR:-/tmp}
+held=$run/mail-move-held
+
+if ((!dry)); then
+  if [[ -z ${MAIL_SYNC_LOCKED:-} ]]; then
+    exec 9>"$run/mail-sync.lock"
+    if ! flock -n 9; then
+      echo "mail-move: a mail sync is running, try again in a minute" >&2
+      exit 1
+    fi
+  fi
+  rm -f "$held"
+  if [[ -e $base/.no-move ]]; then
+    echo "mail-move: $base/.no-move exists, moving nothing" >&2
+    echo no-move >"$held"
+    exit 0
+  fi
+elif [[ -e $base/.no-move ]]; then
+  echo "mail-move: note: $base/.no-move exists, a real run would move nothing" >&2
 fi
 
 declare -A planned=()
@@ -83,11 +104,13 @@ if ((dry)); then
 fi
 
 if ((n > max)) && [[ ${MAIL_MOVE_FORCE:-} != 1 ]]; then
-  echo "mail-move: $n moves planned (max $max). Check them with 'mail-move --dry-run'," >&2
-  echo "then run 'MAIL_MOVE_FORCE=1 mail-move' once, or untag." >&2
-  exit 1
+  echo "mail-move: $n moves planned (max $max), holding them. Check them with" >&2
+  echo "'mail-move --dry-run', then run 'MAIL_MOVE_FORCE=1 mail-move' once, or untag." >&2
+  echo "$n moves planned (max $max)" >"$held"
+  exit 0
 fi
 
+failed=0
 for i in "${!srcs[@]}"; do
   src=${srcs[i]}
   dst=${dsts[i]}
@@ -95,7 +118,11 @@ for i in "${!srcs[@]}"; do
   mv -n "$src" "$dst" || true
   if [[ -e $src ]]; then
     echo "mail-move: could not move $src to $dst" >&2
-    exit 1
+    failed=$((failed + 1))
   fi
 done
-echo "mail-move: moved $n message(s)"
+echo "mail-move: moved $((n - failed)) message(s)"
+if ((failed)); then
+  echo "$failed move(s) failed" >"$held"
+  exit 1
+fi

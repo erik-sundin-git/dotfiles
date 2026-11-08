@@ -17,6 +17,7 @@
           notmuch
           pkgs.coreutils
           pkgs.gnused
+          pkgs.util-linux
         ];
         text = builtins.readFile "${inputs.self}/nix/assets/mail/mail-move.sh";
       };
@@ -56,7 +57,22 @@
         stamp=$XDG_RUNTIME_DIR/mail-sync-failed
         if [ -z "$(${pkgs.findutils}/bin/find "$stamp" -mmin -60 2>/dev/null)" ]; then
           ${pkgs.coreutils}/bin/touch "$stamp"
-          ${notifySend} -u critical -a mail 'Mail sync failed' 'journalctl --user -u mail-sync'
+          log=$(${pkgs.systemd}/bin/journalctl --user -u mail-sync -n 3 -o cat 2>/dev/null || true)
+          ${notifySend} -u critical -a mail 'Mail sync failed' "''${log:-journalctl --user -u mail-sync}"
+        fi
+      '';
+
+      # mail-move wrote why it held moves back (cap, failed moves; not .no-move,
+      # which is deliberate). Notify at most hourly, like a failed sync.
+      notifyHeld = ''
+        held=$XDG_RUNTIME_DIR/mail-move-held
+        if [ -e "$held" ] && [ "$(${pkgs.coreutils}/bin/cat "$held")" != no-move ]; then
+          stamp=$XDG_RUNTIME_DIR/mail-move-held-notified
+          if [ -z "$(${pkgs.findutils}/bin/find "$stamp" -mmin -60 2>/dev/null)" ]; then
+            ${pkgs.coreutils}/bin/touch "$stamp"
+            ${notifySend} -u critical -a mail 'Mail moves held' \
+              "$(${pkgs.coreutils}/bin/cat "$held"). Check with mail-move --dry-run." || true
+          fi
         fi
       '';
     in
@@ -85,12 +101,23 @@
         maildir.synchronizeFlags = true;
         hooks.preNew = ''
           set -e
-          # Database revision before this sync: postNew treats every message
-          # changed since then as just arrived, which also catches a new copy
-          # of a known message (self-sent mail: Sent first, then INBOX).
-          notmuch count --lastmod '*' | ${pkgs.coreutils}/bin/cut -f3 > "$HOME/Mail/.notmuch/last-rev"
-          ${lib.optionalString (stage >= 3) moveCmd}
+          # mail-move and mbsync must never overlap. mail-sync.service already
+          # holds the lock; a `notmuch new` started elsewhere takes it here.
+          if [ -z "''${MAIL_SYNC_LOCKED:-}" ]; then
+            exec 9>"$XDG_RUNTIME_DIR/mail-sync.lock"
+            ${pkgs.util-linux}/bin/flock -n 9 || { echo "mail sync already running" >&2; exit 1; }
+            export MAIL_SYNC_LOCKED=1
+          fi
+          status=0
+          ${lib.optionalString (stage >= 3) "${moveCmd} || status=$?"}
           ${config.programs.mbsync.package}/bin/mbsync proton
+          # Database revision after mail-move and mbsync, before indexing:
+          # postNew treats every message changed since then as just arrived,
+          # which also catches a new copy of a known message (self-sent mail:
+          # Sent first, then INBOX). Taken after mbsync so that tags changed
+          # in Emacs while mbsync ran are not mistaken for arrivals.
+          notmuch count --lastmod '*' | ${pkgs.coreutils}/bin/cut -f3 > "$HOME/Mail/.notmuch/last-rev"
+          exit "$status"
         '';
         # Folders on Proton decide the tags. Local deletes and spam are only
         # reverted once mail-move would carry them out (stage 3 / 5); before
@@ -108,13 +135,20 @@
           +spam -inbox -- folder:"proton/Spam" and not tag:spam
           +deleted -inbox -- folder:"proton/Trash" and not tag:deleted
           -inbox -- tag:inbox and not tag:new and path:proton/** and not folder:"proton/INBOX"
-          ${lib.optionalString (
-            stage >= 3
-          ) ''-deleted -- tag:deleted and path:proton/** and not folder:"proton/Trash"''}
-          ${lib.optionalString (
-            stage >= 5
-          ) ''-spam -- tag:spam and path:proton/** and not folder:"proton/Spam"''}
           EOF
+          ${lib.optionalString (stage >= 3) ''
+            # While mail-move holds moves back, keep the tags: they are the
+            # pending intent, and reverting them would drop it.
+            if [ ! -e "$XDG_RUNTIME_DIR/mail-move-held" ]; then
+              notmuch tag --batch <<EOF
+            -deleted -- tag:deleted and path:proton/** and not folder:"proton/Trash"
+            ${lib.optionalString (
+              stage >= 5
+            ) ''-spam -- tag:spam and path:proton/** and not folder:"proton/Spam"''}
+            EOF
+            fi
+          ''}
+          ${notifyHeld}
 
           ${notifyNew}
           notmuch tag -new -arrived -- tag:new or tag:arrived
@@ -135,6 +169,11 @@
         };
         Service = {
           Type = "oneshot";
+          # A hung Bridge or a keyring prompt would otherwise keep the unit
+          # activating forever: later timer runs do nothing, and no OnFailure.
+          TimeoutStartSec = "10min";
+          # preNew sees this and skips taking the lock again.
+          Environment = [ "MAIL_SYNC_LOCKED=1" ];
           ExecCondition = "${syncCondition}";
           # One run at a time, also against `notmuch new` started elsewhere.
           ExecStart = "${pkgs.util-linux}/bin/flock -n -E 0 %t/mail-sync.lock ${notmuch}/bin/notmuch new";
