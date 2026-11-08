@@ -1,7 +1,12 @@
 { ... }:
 {
   flake.modules.homeManager.polybar =
-    { config, pkgs, mkScript, ... }:
+    {
+      config,
+      pkgs,
+      mkScript,
+      ...
+    }:
     let
       c = config.theme;
       script = pkgs.writeShellScript "polybar-vpn" ''

@@ -40,9 +40,24 @@
 
       colorScheme = pkgs.writeText "qtct-${config.selectedTheme}.conf" ''
         [ColorScheme]
-        active_colors=${roles { text = c.foreground; accent = c.accent; }}
-        inactive_colors=${roles { text = c.foreground; accent = c.accent; }}
-        disabled_colors=${roles { text = c.brightBlack; accent = c.black; }}
+        active_colors=${
+          roles {
+            text = c.foreground;
+            accent = c.accent;
+          }
+        }
+        inactive_colors=${
+          roles {
+            text = c.foreground;
+            accent = c.accent;
+          }
+        }
+        disabled_colors=${
+          roles {
+            text = c.brightBlack;
+            accent = c.black;
+          }
+        }
       '';
 
       qtctSettings.Appearance = {

@@ -56,54 +56,56 @@ in
         # freeformType lets each theme file drop in its palette as arbitrary
         # `themeName = "#rrggbb"` pairs without declaring every key here.
         theme = lib.mkOption {
-          type = lib.types.submodule ({ config, ... }: {
-            freeformType = lib.types.attrsOf lib.types.str;
-            options = {
-              accent = lib.mkOption {
-                type = lib.types.str;
-                default = config.blue or "";
-                defaultText = lib.literalExpression "config.theme.blue";
-                description = "Highlight color for focused borders, active workspaces, selections and rings.";
+          type = lib.types.submodule (
+            { config, ... }: {
+              freeformType = lib.types.attrsOf lib.types.str;
+              options = {
+                accent = lib.mkOption {
+                  type = lib.types.str;
+                  default = config.blue or "";
+                  defaultText = lib.literalExpression "config.theme.blue";
+                  description = "Highlight color for focused borders, active workspaces, selections and rings.";
+                };
+                urgentForeground = lib.mkOption {
+                  type = lib.types.str;
+                  default = config.background or "";
+                  defaultText = lib.literalExpression "config.theme.background";
+                  description = "Text on urgent (red) title bars. The background color reads best on most reds; themes with a dark red override it.";
+                };
+                rounding = lib.mkOption {
+                  type = lib.types.ints.unsigned;
+                  default = 0;
+                  description = "Window corner radius in pixels (0 = square).";
+                };
+                gaps = lib.mkOption {
+                  type = lib.types.ints.unsigned;
+                  default = 0;
+                  description = "Gap between tiled windows in pixels.";
+                };
+                opacity = lib.mkOption {
+                  type = lib.types.float;
+                  default = 1.0;
+                  description = "Window opacity, 0.0–1.0. 1.0 = fully opaque.";
+                };
+                blur = lib.mkOption {
+                  type = lib.types.bool;
+                  default = false;
+                  description = "Enable compositor blur behind transparent windows.";
+                };
+                dimInactive = lib.mkOption {
+                  type = lib.types.float;
+                  default = if config.opacity < 1.0 then 0.1 else 0.0;
+                  defaultText = lib.literalExpression "if opacity < 1.0 then 0.1 else 0.0";
+                  description = "How much swayfx dims unfocused windows, 0.0–1.0.";
+                };
+                fontFamily = lib.mkOption {
+                  type = lib.types.str;
+                  default = "JetBrainsMono Nerd Font";
+                  description = "Monospace font used across terminal, bar, launcher, and notifications.";
+                };
               };
-              urgentForeground = lib.mkOption {
-                type = lib.types.str;
-                default = config.background or "";
-                defaultText = lib.literalExpression "config.theme.background";
-                description = "Text on urgent (red) title bars. The background color reads best on most reds; themes with a dark red override it.";
-              };
-              rounding = lib.mkOption {
-                type = lib.types.ints.unsigned;
-                default = 0;
-                description = "Window corner radius in pixels (0 = square).";
-              };
-              gaps = lib.mkOption {
-                type = lib.types.ints.unsigned;
-                default = 0;
-                description = "Gap between tiled windows in pixels.";
-              };
-              opacity = lib.mkOption {
-                type = lib.types.float;
-                default = 1.0;
-                description = "Window opacity, 0.0–1.0. 1.0 = fully opaque.";
-              };
-              blur = lib.mkOption {
-                type = lib.types.bool;
-                default = false;
-                description = "Enable compositor blur behind transparent windows.";
-              };
-              dimInactive = lib.mkOption {
-                type = lib.types.float;
-                default = if config.opacity < 1.0 then 0.1 else 0.0;
-                defaultText = lib.literalExpression "if opacity < 1.0 then 0.1 else 0.0";
-                description = "How much swayfx dims unfocused windows, 0.0–1.0.";
-              };
-              fontFamily = lib.mkOption {
-                type = lib.types.str;
-                default = "JetBrainsMono Nerd Font";
-                description = "Monospace font used across terminal, bar, launcher, and notifications.";
-              };
-            };
-          });
+            }
+          );
           default = { };
           description = "Resolved theme: color palette + shape/opacity knobs.";
         };

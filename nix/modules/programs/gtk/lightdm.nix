@@ -4,7 +4,12 @@
   # GTK config. Take erik's theme instead: adw-gtk3-dark with the palette CSS
   # from homeManager.gtk baked into a copy of the theme.
   flake.modules.nixos.commonDesktop =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       hm = config.home-manager.users.erik;
 
