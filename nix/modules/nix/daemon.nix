@@ -17,6 +17,14 @@
         after = [ "nh-clean.service" ];
         # Holds when there is no battery at all (desktops)
         unitConfig.ConditionACPower = true;
+        # The timer is Persistent, so a missed run catches up while the laptop
+        # is in use, hashing the whole store (~50 GB read). Idle CPU priority,
+        # and a cap on its page cache so it doesn't push apps out to zram. No
+        # IOSchedulingClass: NVMe's "none" scheduler ignores it.
+        serviceConfig = {
+          CPUSchedulingPolicy = "idle";
+          MemoryHigh = "2G";
+        };
       };
 
       nix.settings.experimental-features = [
