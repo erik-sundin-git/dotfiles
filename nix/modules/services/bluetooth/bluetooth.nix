@@ -3,7 +3,6 @@
   flake.modules.nixos.bluetooth =
     { pkgs, ... }:
     {
-      hardware.enableAllFirmware = true;
       # A2DP only: PulseAudio 17's native HFP backend segfaults when a headset
       # reports its battery level (parse_percentage in libbluez5-util). With
       # headset=ofono and no ofono running, no headset profiles get registered,
@@ -27,7 +26,8 @@
         after = [ "post-resume.target" ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${pkgs.systemd}/bin/systemctl restart bluetooth.service";
+          # --no-block: don't wait on a restart from inside the resume transaction
+          ExecStart = "${pkgs.systemd}/bin/systemctl --no-block try-restart bluetooth.service";
         };
       };
     };

@@ -54,8 +54,15 @@
         services.flatpak.enable = true;
         services.fwupd.enable = true;
         services.speechd.enable = false;
+        # Firmware policy for desktops (was hidden in the bluetooth module, so
+        # it depended on the stack); servers keep redistributable only
+        hardware.enableAllFirmware = true;
 
         services.printing.enable = true;
+        # cups-browsed (on by default with avahi) has a history of remote
+        # holes; CUPS's driverless IPP queues find printers through avahi
+        # without it
+        services.printing.browsed.enable = false;
         # Network printer discovery for CUPS
         services.avahi = {
           enable = true;

@@ -19,10 +19,16 @@
       );
 
       # Started by a timer, not multi-user.target: waiting for network-online
-      # held graphical.target back ~4s on every boot.
+      # held graphical.target back ~4s on every boot. Daily and persistent, so
+      # a laptop that only ever suspends still updates.
       systemd.timers.geforce-now-install = {
         wantedBy = [ "timers.target" ];
-        timerConfig.OnBootSec = "2min";
+        timerConfig = {
+          OnBootSec = "2min";
+          OnCalendar = "daily";
+          Persistent = true;
+          RandomizedDelaySec = "1h";
+        };
       };
 
       systemd.services.geforce-now-install = {
@@ -32,9 +38,10 @@
         path = [ pkgs.flatpak ];
         serviceConfig = {
           Type = "oneshot";
-          RemainAfterExit = true;
           Restart = "on-failure";
           RestartSec = 30;
+          Nice = 19;
+          IOSchedulingClass = "idle";
         };
         script = ''
           flatpak remote-add --if-not-exists --from flathub \

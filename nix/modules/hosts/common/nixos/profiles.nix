@@ -6,7 +6,12 @@ let
   # install-host names these modules in generated hosts (flake.installer below).
   mkProfile =
     type: imports:
-    { config, pkgsUnstable, ... }:
+    {
+      config,
+      lib,
+      pkgsUnstable,
+      ...
+    }:
     {
       imports =
         with inputs.self.modules.nixos;
@@ -28,9 +33,10 @@ let
 
       environment.systemPackages = [
         pkgsUnstable.claude-code
-        pkgsUnstable.chatgpt
         pkgsUnstable.codex
-      ];
+      ]
+      # A GUI app
+      ++ lib.optional (type != "server") pkgsUnstable.chatgpt;
 
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;

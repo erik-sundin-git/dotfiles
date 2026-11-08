@@ -25,7 +25,6 @@
       };
 
       config = {
-        nixpkgs.config.allowUnfree = true;
         networking.networkmanager.enable = true;
         networking.hostName = "${config.systemConstants.system.host}";
         time.timeZone = "Europe/Stockholm";
@@ -42,10 +41,6 @@
           LC_TIME = "sv_SE.UTF-8";
         };
         console.keyMap = "sv-latin1";
-        nix.settings.experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
         nix.settings.warn-dirty = false;
         # A trusted user can add substituters and import unsigned paths, i.e.
         # is root-equivalent without sudo. Fine on personal machines, not on
@@ -87,10 +82,25 @@
         # device from swapDevices there; with systemd it comes from an EFI var
         boot.initrd.systemd.enable = lib.mkIf config.commonConfig.bootEFI (lib.mkDefault true);
         services.journald.extraConfig = "SystemMaxUse=500M";
+
+        # Light hardening that costs nothing on a desktop (no ptrace or
+        # lockdown limits: those get in the way of gdb, Wine and anti-cheat)
+        security.sudo.execWheelOnly = true;
+        boot.kernel.sysctl = {
+          "kernel.dmesg_restrict" = 1;
+          "net.ipv4.conf.all.accept_redirects" = 0;
+          "net.ipv4.conf.default.accept_redirects" = 0;
+          "net.ipv4.conf.all.send_redirects" = 0;
+          "net.ipv4.conf.default.send_redirects" = 0;
+          "net.ipv6.conf.all.accept_redirects" = 0;
+          "net.ipv6.conf.default.accept_redirects" = 0;
+        };
         services.dbus.implementation = "broker";
 
         environment.systemPackages = with pkgs; [
           unzip
+          zip
+          htop
           wget
           git-crypt
           sops

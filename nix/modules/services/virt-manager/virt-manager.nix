@@ -33,6 +33,11 @@
           runAsRoot = false;
           swtpm.enable = true;
         };
+        # Shut guests down cleanly instead of saving their RAM to disk on
+        # every host shutdown (slow, and GBs in /var/lib/libvirt/qemu/save);
+        # autostart guests (hass-vm) come back on boot either way
+        onShutdown = "shutdown";
+        shutdownTimeout = 60;
       };
 
       virtualisation.spiceUSBRedirection.enable = true;
