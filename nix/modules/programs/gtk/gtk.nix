@@ -81,6 +81,9 @@
 
       # Generic families (monospace in Firefox, GTK, anything without its own
       # font setting) resolve to the theme font instead of DejaVu
+      # The default theme.fontFamily. uiHelpers installs it too, but xfce
+      # (ether) doesn't import uiHelpers, and alacritty and Emacs use the font
+      home.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
       fonts.fontconfig = {
         enable = true;
         defaultFonts = {

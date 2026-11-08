@@ -9,6 +9,7 @@
         gnumake
         clang-tools
         nixfmt
+        nixd # Nix language server (eglot in Emacs)
       ];
     };
 }

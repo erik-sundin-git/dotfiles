@@ -128,6 +128,7 @@
       ] ++ ruleProps r.command) (lib.filter (r: r ? exwm) wmWindowRules);
       exwm-session = pkgs.writeShellApplication {
         name = "exwm-session";
+        runtimeInputs = [ pkgs.coreutils ];
         text = ''
           # Started by LightDM (nixos.exwm). -l loads after the user's init.
           # The daemon doesn't autostart here, but one left over from another
@@ -139,9 +140,31 @@
           # EXWM_SESSION lets post-init.el skip what mustn't run in the WM
           # Emacs (package auto-updates).
           export EXWM_SESSION=1
-          exec ${config.programs.emacs.finalPackage}/bin/emacs \
-            --eval "(setq my-exwm-directory \"$HOME/.emacs.d/exwm/\")" \
-            -l "$HOME/.emacs.d/exwm/init.el"
+          # Emacs is the window manager, so a crash would end the session.
+          # The X server lives as long as this script, so X windows survive
+          # and the next EXWM picks them up: restart on a crash (non-zero
+          # exit; logging out with kill-emacs exits 0), but give up after 3
+          # crashes within a minute rather than loop.
+          crashes=()
+          while true; do
+            status=0
+            ${config.programs.emacs.finalPackage}/bin/emacs \
+              --eval "(setq my-exwm-directory \"$HOME/.emacs.d/exwm/\")" \
+              -l "$HOME/.emacs.d/exwm/init.el" || status=$?
+            if [ "$status" -eq 0 ]; then
+              exit 0
+            fi
+            now=$(date +%s)
+            recent=()
+            for t in "''${crashes[@]}"; do
+              if [ $((now - t)) -lt 60 ]; then recent+=("$t"); fi
+            done
+            crashes=("''${recent[@]}" "$now")
+            echo "exwm-session: Emacs exited with $status (crash ''${#crashes[@]} in the last minute)" >&2
+            if [ "''${#crashes[@]}" -ge 3 ]; then
+              exit "$status"
+            fi
+          done
         '';
       };
     in

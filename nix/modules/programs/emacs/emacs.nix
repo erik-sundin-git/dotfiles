@@ -15,6 +15,7 @@
       dotPath = "${inputs.self}/nix/assets/emacs.d";
       # Falls back for hosts that pull in emacs without the theme module (live-iso).
       opacity = config.theme.opacity or 1.0;
+      fontFamily = config.theme.fontFamily or "DejaVu Sans Mono";
       alphaBg = builtins.floor (opacity * 100);
     in
     {
@@ -42,6 +43,9 @@
             ;; -*- no-byte-compile: t; lexical-binding: t -*-
             ;; Generated from config.theme in nix. See programs/emacs/emacs.nix.
             (add-to-list 'default-frame-alist '(alpha-background . ${toString alphaBg}))
+            ;; The theme's font (config.theme.fontFamily), like the terminal and
+            ;; bar; post-init.el sets the size and weight before loading this.
+            (set-face-attribute 'default nil :family ${builtins.toJSON fontFamily})
           '';
         };
       config.services.emacs.enable = true;
@@ -62,6 +66,15 @@
             ledger-mode
             vterm
             pdf-tools
+            # Grammars for the *-ts-modes post-init.el remaps to
+            (treesit-grammars.with-grammars (
+              g: with g; [
+                tree-sitter-bash
+                tree-sitter-python
+                tree-sitter-json
+                tree-sitter-nix
+              ]
+            ))
           ];
       };
     };
