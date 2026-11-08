@@ -124,6 +124,12 @@
           default_dim_inactive ${toString t.dimInactive}
           shadows disable
 
+          ${lib.optionalString isLaptop ''
+            # Docked with the lid shut: turn the panel off so workspaces move
+            # to the external monitor (undocked, logind suspends anyway)
+            bindswitch --reload --locked lid:on output eDP-1 disable
+            bindswitch --reload --locked lid:off output eDP-1 enable
+          ''}
           for_window [app_id="ai-add-pkg"] floating enable, resize set 1000 720, move position center
           for_window [app_id="ai-prompt"] floating enable, resize set 1000 720, move position center
         '';

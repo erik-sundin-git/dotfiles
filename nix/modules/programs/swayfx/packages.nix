@@ -34,7 +34,7 @@
         in
         "${s.title}\n" + lib.concatStringsSep "\n" rows;
 
-      renderMode = name: m:
+      renderMode = _name: m:
         let
           entryMod = m.entryMod or "";
           modPrefix = if entryMod == "" then "" else "${entryMod}+";

@@ -59,6 +59,8 @@
               { key = "Shift+Down"; action = "move down";   desc = "Move window down (arrow)"; }
               { key = "Shift+Up";   action = "move up";     desc = "Move window up (arrow)"; }
               { key = "Shift+Right"; action = "move right"; desc = "Move window right (arrow)"; }
+              { key = "Ctrl+Shift+Left";  action = "move workspace to output left";  desc = "Move workspace to left monitor"; }
+              { key = "Ctrl+Shift+Right"; action = "move workspace to output right"; desc = "Move workspace to right monitor"; }
               { key = "a";          action = "focus parent"; desc = "Focus parent container"; }
               { key = "space";      action = "focus mode_toggle"; desc = "Toggle focus tiling/floating"; }
             ];
@@ -118,6 +120,7 @@
               { key = "XF86AudioRaiseVolume"; mod = false; action = "exec swayosd-client --output-volume raise";        desc = "Volume up"; }
               { key = "XF86AudioLowerVolume"; mod = false; action = "exec swayosd-client --output-volume lower";        desc = "Volume down"; }
               { key = "XF86AudioMute";        mod = false; action = "exec swayosd-client --output-volume mute-toggle";  desc = "Mute toggle"; }
+              { key = "XF86AudioMicMute";     mod = false; action = "exec swayosd-client --input-volume mute-toggle";   desc = "Mic mute toggle"; }
               { key = "XF86AudioPlay";        mod = false; action = "exec playerctl play-pause"; desc = "Play/pause"; }
               { key = "XF86AudioNext";        mod = false; action = "exec playerctl next";       desc = "Next track"; }
               { key = "XF86AudioPrev";        mod = false; action = "exec playerctl previous";   desc = "Previous track"; }

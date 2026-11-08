@@ -21,10 +21,6 @@
       # Codex is installed system-wide by the host profiles.
       hasCodex = lib.any (p: lib.getName p == "codex") (osConfig.environment.systemPackages or [ ]);
 
-      tempScript = pkgs.writeShellScript "waybar-temp" ''
-        ${pkgs.gawk}/bin/awk '{printf "%.0f °C", $1/1000}' ${thermalPath}
-      '';
-
     in
     {
       # HM's on-failure treats SIGTERM as a clean exit, so an earlyoom kill
@@ -48,6 +44,7 @@
                 "tray"
               ];
               modules-right = [
+                "idle_inhibitor"
                 "mpris"
                 "network"
               ]
@@ -61,7 +58,16 @@
               ++ [
                 "clock"
               ]
-              ++ lib.optionals (thermalPath != null) [ "custom/temperature" ];
+              ++ lib.optionals (thermalPath != null) [ "temperature" ];
+
+              # Keeps swayidle from locking/blanking (e.g. while watching mpv)
+              idle_inhibitor = {
+                format = "{icon}";
+                format-icons = {
+                  activated = "";
+                  deactivated = "";
+                };
+              };
 
               # What mpv (yt) plays; hidden when nothing does.
               mpris = {
@@ -117,7 +123,10 @@
                   "󰁹"
                 ];
                 full-at = 98;
-                states.low = 30;
+                states = {
+                  low = 30;
+                  critical = 10;
+                };
                 interval = 30;
               };
 
@@ -151,10 +160,11 @@
               };
             }
             // lib.optionalAttrs (thermalPath != null) {
-              "custom/temperature" = {
-                exec = "${tempScript}";
+              # Built-in module: reads the millidegree file itself, no awk fork
+              temperature = {
+                hwmon-path = thermalPath;
+                format = "{temperatureC} °C";
                 interval = 15;
-                format = "{}";
               };
             }
           )
@@ -214,6 +224,15 @@
             color: ${c.red};
           }
 
+          #battery.critical:not(.charging) {
+            color: ${c.background};
+            background-color: ${c.red};
+          }
+
+          #idle_inhibitor.activated {
+            color: ${c.yellow};
+          }
+
           #disk {
             color: ${c.blue};
             padding: 0 6px;
@@ -271,7 +290,7 @@
             color: ${c.brightBlack};
           }
 
-          #custom-temperature {
+          #temperature {
             color: ${c.yellow};
             padding: 0 6px;
           }

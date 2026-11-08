@@ -25,6 +25,8 @@
         "exec swayosd-client --output-volume lower" = "${exec} pactl set-sink-volume @DEFAULT_SINK@ -5%";
         "exec swayosd-client --output-volume mute-toggle" =
           "${exec} pactl set-sink-mute @DEFAULT_SINK@ toggle";
+        "exec swayosd-client --input-volume mute-toggle" =
+          "${exec} pactl set-source-mute @DEFAULT_SOURCE@ toggle";
         "exec swayosd-client --brightness raise" = "${exec} brightnessctl set +5%";
         "exec swayosd-client --brightness lower" = "${exec} brightnessctl set 5%-";
         "exec sway-help" = null;

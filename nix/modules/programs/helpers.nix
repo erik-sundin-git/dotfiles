@@ -192,9 +192,12 @@
             { name, area }:
             pkgs.writeShellApplication {
               inherit name;
+              # swaymsg comes from PATH: the session's (HM-wrapped) sway
               runtimeInputs = [
                 pkgs.grim
                 pkgs.wl-clipboard
+                pkgs.jq
+                pkgs.libnotify
               ]
               ++ lib.optional area pkgs.slurp;
               text = ''
@@ -208,9 +211,14 @@
                       grim -g "$geom" "$f"
                     ''
                   else
-                    ''grim "$f"''
+                    ''
+                      # Only the focused monitor, not every output side by side
+                      out=$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[] | select(.focused).name' || true)
+                      grim ''${out:+-o "$out"} "$f"
+                    ''
                 }
                 wl-copy --type image/png < "$f"
+                notify-send -u low -a screenshot "Screenshot saved" "$f" || true
               '';
             };
         in

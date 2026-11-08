@@ -109,6 +109,10 @@
         "exec swayosd-client --output-volume raise" = [ (sym "volume") (sym "up") ];
         "exec swayosd-client --output-volume lower" = [ (sym "volume") (sym "down") ];
         "exec swayosd-client --output-volume mute-toggle" = [ (sym "volume") (sym "mute") ];
+        "exec swayosd-client --input-volume mute-toggle" = [
+          (sym "exec")
+          "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+        ];
         "exec swayosd-client --brightness raise" = [ (sym "brightness") (sym "up") ];
         "exec swayosd-client --brightness lower" = [ (sym "brightness") (sym "down") ];
         # Emacs is already running: launching it means going to its workspace
@@ -143,6 +147,8 @@
         "layout stacking"
         "layout toggle split"
         "focus parent"
+        "move workspace to output left"
+        "move workspace to output right"
       ];
 
       # Tools that only exist on Wayland/sway; a generic exec of one would

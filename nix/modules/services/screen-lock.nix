@@ -14,7 +14,8 @@
     let
       c = config.theme;
       hex = lib.removePrefix "#";
-      swaylock = "${pkgs.swaylock-effects}/bin/swaylock";
+      swaylock = lib.getExe config.programs.swaylock.package;
+      swaymsg = "${config.wayland.windowManager.sway.package}/bin/swaymsg";
     in
     {
       programs.swaylock = {
@@ -42,11 +43,19 @@
         events = {
           before-sleep = "${swaylock} -f";
           lock = "${swaylock} -f";
+          # Outputs powered off by the timeout below must come back on resume
+          after-resume = "${swaymsg} 'output * power on'";
         };
         timeouts = [
           {
             timeout = 1200;
             command = "${swaylock} -f";
+          }
+          # Blank the screens a minute after locking (desktops never suspend)
+          {
+            timeout = 1260;
+            command = "${swaymsg} 'output * power off'";
+            resumeCommand = "${swaymsg} 'output * power on'";
           }
         ]
         ++ lib.optional isLaptop {
