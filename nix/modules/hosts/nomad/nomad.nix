@@ -15,6 +15,7 @@
           swayfxStack
           gaming
           virtManager
+          intelGen9Graphics
         ];
 
         systemConstants.system.host = "nomad";
@@ -22,20 +23,11 @@
 
         services.hardware.bolt.enable = true;
 
-        # Intel UHD 620 (Kaby Lake-R): VA-API, GuC/HuC firmware. nixos-hardware's
-        # common/gpu/intel already loads i915 in the initrd; pick the drivers
-        # for this generation instead of its defaults (i965, Gen12+ compute).
-        hardware.intelgpu = {
-          vaapiDriver = "intel-media-driver";
-          computeRuntime = "legacy";
-        };
-        hardware.graphics.extraPackages = with pkgs; [ libvdpau-va-gl ];
-        environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
+        # Intel UHD 620 (Kaby Lake-R): drivers from intelGen9Graphics, plus
+        # framebuffer compression and panel self refresh for battery life
         boot.kernelParams = [
-          "i915.enable_guc=2"
           "i915.enable_fbc=1"
           "i915.enable_psr=1"
-          "i915.fastboot=1"
         ];
         # throttled (from nixos-hardware) owns the power limits; thermald
         # would fight it over them
@@ -85,7 +77,7 @@
             gtnhBackup
             mail
             emacsYoutube
-            intelVideoDecode
+            dellU2722d
           ];
 
           # Proton sync rollout, see programs/mail/mail.nix (5 = full two-way sync incl. spam)
@@ -93,14 +85,6 @@
 
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
           selectedTheme = "ef-bio";
-
-          wayland.windowManager.sway.config.output = {
-            "Dell Inc. DELL U2722D 3JYTCH3" = {
-              mode = "2560x1440";
-              position = "0,0";
-            };
-            "eDP-1".position = "2560,0";
-          };
         };
       };
   };

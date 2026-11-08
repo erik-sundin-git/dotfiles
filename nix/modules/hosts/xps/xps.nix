@@ -8,6 +8,7 @@
         laptopBaseProfile
         swayfxStack
         gaming
+        intelGen9Graphics
       ];
 
       systemConstants.system.host = "xps";
@@ -77,19 +78,6 @@
       # nvidia-suspend/resume systemd services instead.
       hardware.nvidia.powerManagement.kernelSuspendNotifier = false;
 
-      # Intel UHD 630 (Coffee Lake-H): VA-API and HuC firmware. Same Gen9.5
-      # driver choices as nomad; nixos-hardware's defaults target newer GPUs.
-      hardware.intelgpu = {
-        vaapiDriver = "intel-media-driver";
-        computeRuntime = "legacy";
-      };
-      hardware.graphics.extraPackages = with pkgs; [ libvdpau-va-gl ];
-      environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
-      boot.kernelParams = [
-        "i915.enable_guc=2"
-        "i915.fastboot=1"
-      ];
-
       # Steam's Vulkan probing opens the 1650 and keeps it awake for as long
       # as the client runs. Show it only the Intel ICDs; games that want the
       # 1650 use the launch option `nvidia-offload %command%`.
@@ -121,7 +109,7 @@
       home-manager.users.erik = {
         imports = with inputs.self.modules.homeManager; [
           gh
-          intelVideoDecode
+          dellU2722d
           chromium
           emacsYoutube
         ];
@@ -142,13 +130,6 @@
             export WLR_DRM_DEVICES=/dev/dri/igpu
             export __EGL_VENDOR_LIBRARY_FILENAMES=/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json
           '';
-          config.output = {
-            "Dell Inc. DELL U2722D 3JYTCH3" = {
-              mode = "2560x1440";
-              position = "0,0";
-            };
-            "eDP-1".position = "2560,0";
-          };
         };
       };
     };
