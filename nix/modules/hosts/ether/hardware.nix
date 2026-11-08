@@ -3,9 +3,7 @@
   den.aspects.ether = {
     nixos =
       {
-        config,
         lib,
-        pkgs,
         modulesPath,
         ...
       }:
