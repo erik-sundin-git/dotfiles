@@ -19,8 +19,7 @@
         generic.systemConstants
         generic.theme # UI modules read config.theme but don't import it themselves
         homeManager.emacs
-        homeManager.mozillaShared # provides the mozillaShared arg to librewolf + firefox
-        homeManager.librewolf
+        homeManager.mozillaShared # provides the mozillaShared arg to firefox
         homeManager.firefox
         homeManager.bash
         homeManager.nh
@@ -32,11 +31,6 @@
       home.homeDirectory = "/home/${config.home.username}";
       home.stateVersion = lib.mkDefault "25.11";
       home.username = "erik";
-
-      home.sessionVariables = {
-        LANG = "en_US.UTF-8";
-        LC_ALL = "en_US.UTF-8";
-      };
 
       services.poweralertd.enable = lib.mkDefault isLaptop;
 

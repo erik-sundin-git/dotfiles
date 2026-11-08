@@ -29,7 +29,7 @@
           { id = "mdjildafknihdffpkfmmpnpoiajfjnjd"; } # Consent-O-Matic
           { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
           { id = "aleakchihdccplidncghkekgioiakgal"; } # h264ify
-          # No CWS equivalent found for librewolf's lockedin-yt or besttimetracker.
+          # No CWS equivalent found for Firefox's lockedin-yt or besttimetracker.
         ];
       };
     };

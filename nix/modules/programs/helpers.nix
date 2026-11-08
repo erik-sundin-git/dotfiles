@@ -86,11 +86,10 @@
         in
         [
           { sway.app_id = "firefox"; i3.class = "(?i)firefox"; command = border; }
-          { sway.app_id = "librewolf"; i3.class = "(?i)librewolf"; command = border; }
           {
-            sway = { app_id = "^(firefox|librewolf)$"; title = "^Picture-in-Picture$"; };
-            i3 = { class = "(?i)^(firefox|librewolf)$"; title = "^Picture-in-Picture$"; };
-            exwm = { class = "^\\(firefox\\|librewolf\\)$"; title = "^Picture-in-Picture$"; };
+            sway = { app_id = "^firefox$"; title = "^Picture-in-Picture$"; };
+            i3 = { class = "(?i)^firefox$"; title = "^Picture-in-Picture$"; };
+            exwm = { class = "^firefox$"; title = "^Picture-in-Picture$"; };
             command = "floating enable";
           }
           { sway.app_id = "chromium"; i3.class = "(?i)chromium"; command = border; }
@@ -105,11 +104,6 @@
             i3.class = "Proton Mail";
             exwm.class = "^Proton Mail$";
             command = "move --no-auto-back-and-forth to workspace mail";
-          }
-          {
-            sway.app_id = "^[Ee]macs$";
-            i3.class = "^[Ee]macs$";
-            command = "move --no-auto-back-and-forth to workspace emacs";
           }
         ];
 
@@ -246,8 +240,6 @@
         };
         Install.WantedBy = [ target ];
       };
-
-      _module.args.hexToHyprRgb = hex: "rgb(${lib.removePrefix "#" hex})";
 
       _module.args.hexToRgba =
         hex: alpha:

@@ -1,7 +1,8 @@
 { ... }:
 {
-  # Shared Firefox/LibreWolf profile pieces, exposed as the `mozillaShared`
-  # module arg and merged into each browser's "default" profile.
+  # Firefox profile pieces, exposed as the `mozillaShared` module arg and
+  # merged into the "default" profile (also kept apart so a second Mozilla
+  # browser could reuse them).
   flake.modules.homeManager.mozillaShared =
     { config, pkgs, ... }:
     let

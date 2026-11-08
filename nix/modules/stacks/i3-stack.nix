@@ -28,7 +28,7 @@
         polybar
         picom
         gtk
-        redshift
+        gammastep
         dunst
         starship
       ];

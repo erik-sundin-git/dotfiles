@@ -31,7 +31,7 @@
         # Session plumbing frees almost nothing when killed but takes the
         # desktop with it: dbus-broker-lau is the user-bus launcher, and
         # wrapped binaries show up as .<name>-wrapped. The browsers are avoided
-        # too: the main process is .firefox-wrappe/.librewolf-wrap, its
+        # too: the main process is .firefox-wrappe, its
         # children "Isolated Web Co", "Web Content", "Privileged Cont" and
         # "WebExtensions".
         memory.earlyoomAvoid = [
@@ -48,9 +48,7 @@
           "\\.swayosd-server"
           "\\.xdg-desktop-po"
           "firefox"
-          "librewolf"
           "\\.firefox-wrappe"
-          "\\.librewolf-wrap"
           "Isolated.Web.Co"
           "Web.Content"
           "Privileged.Cont"

@@ -6,11 +6,12 @@
   # keybindings.nix replaces HM's default binds rather than extending them, so
   # every bind sway has is listed here.
   #
-  # homeManager.exwm translates the same data into EXWM binds
-  # (programs/exwm/keybindings.nix), so a new action needs a mapping there too;
-  # the exwm-eval check fails until it has one. Its own module (imported by
-  # swayfx and exwm) so EXWM can use it without sway; like uiHelpers it sets
-  # _module.args and can't be imported twice in one host.
+  # homeManager.exwm and homeManager.i3 translate the same data into EXWM and
+  # i3 binds (programs/exwm/keybindings.nix, programs/i3/keybindings.nix), so
+  # a new action needs a mapping there too; the installer-exwmStack and
+  # installer-i3Stack checks fail until it has one. Its own module (imported
+  # by swayfx, exwm and i3) so the others can use it without sway; like
+  # uiHelpers it sets _module.args and can't be imported twice in one host.
   #
   # Bind shape: { key; action; desc; mod ? true; }
   #   mod = true  → key is prefixed with the sway modifier (Mod4)
@@ -96,15 +97,12 @@
                 { key = "Shift+0"; action = "move container to workspace number 10"; desc = "Move window to workspace 10"; }
                 { key = "m";       action = "workspace mail";                       desc = "Workspace: mail"; }
                 { key = "Shift+m"; action = "move container to workspace mail";     desc = "Move window to mail workspace"; }
-                { key = "e";       action = "workspace emacs";                      desc = "Workspace: emacs"; }
-                { key = "Shift+e"; action = "move container to workspace emacs";    desc = "Move window to emacs workspace"; }
               ];
             # Compact summary shown in help instead of 18 numbered rows.
             helpSummary = [
               "mod+1..9, 0         Switch to workspace N (0 = 10)"
               "mod+Shift+1..9, 0   Move window to workspace N"
               "mod+m / Shift+m     Workspace mail / move to mail"
-              "mod+e / Shift+e     Workspace emacs / move to emacs"
             ];
           }
           {
@@ -145,7 +143,6 @@
             title = "Launch";
             bindings = [
               { key = "e"; desc = "emacs";     action = "exec emacs"; }
-              { key = "l"; desc = "librewolf"; action = "exec librewolf"; }
             ];
           };
           power = {

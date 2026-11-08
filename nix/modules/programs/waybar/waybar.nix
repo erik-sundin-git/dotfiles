@@ -14,7 +14,6 @@
     let
       c = config.theme;
       thermalPath = config.systemConstants.thermalZonePath;
-      isHyprland = config.wayland.windowManager.hyprland.enable;
       # claude-code is installed system-wide (profiles, live ISO)
       hasClaude = lib.any (p: lib.getName p == "claude-code") (
         osConfig.environment.systemPackages or [ ]
@@ -43,20 +42,11 @@
               height = 24;
               spacing = 4;
 
-              modules-left =
-                (
-                  if isHyprland then
-                    [
-                      "hyprland/workspaces"
-                      "hyprland/submap"
-                    ]
-                  else
-                    [
-                      "sway/workspaces"
-                      "sway/mode"
-                    ]
-                )
-                ++ [ "tray" ];
+              modules-left = [
+                "sway/workspaces"
+                "sway/mode"
+                "tray"
+              ];
               modules-right = [
                 "mpris"
                 "network"
@@ -93,21 +83,11 @@
                 spacing = 4;
               };
 
-              "hyprland/workspaces" = lib.mkIf isHyprland {
-                format = "{id}";
-                on-click = "activate";
-              };
-
-              "hyprland/submap" = lib.mkIf isHyprland {
-                format = "{}";
-                default-submap = "";
-              };
-
-              "sway/workspaces" = lib.mkIf (!isHyprland) {
+              "sway/workspaces" = {
                 format = "{name}";
               };
 
-              "sway/mode" = lib.mkIf (!isHyprland) {
+              "sway/mode" = {
                 format = "{}";
               };
 

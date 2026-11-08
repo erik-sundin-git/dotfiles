@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 {
   flake.modules.homeManager.firefox =
     { mozillaShared, ... }:
@@ -16,7 +16,7 @@
         };
 
         profiles."default" = {
-          # DDG's Swedish results are poor; LibreWolf keeps it.
+          # DDG's Swedish results are poor.
           search = mozillaShared.search // {
             default = "Startpage";
             privateDefault = "Startpage";
@@ -29,4 +29,16 @@
         };
       };
     };
+
+  # Firefox as the default browser, in /etc/xdg/mimeapps.list. Not HM's
+  # xdg.mimeApps: that would take over ~/.config/mimeapps.list, where apps
+  # (claude-code, Proton Mail, Discord, ...) register their own URL handlers.
+  flake.modules.nixos.commonDesktop.xdg.mime.defaultApplications = lib.genAttrs [
+    "text/html"
+    "application/xhtml+xml"
+    "x-scheme-handler/http"
+    "x-scheme-handler/https"
+    "x-scheme-handler/about"
+    "x-scheme-handler/unknown"
+  ] (_: "firefox.desktop");
 }

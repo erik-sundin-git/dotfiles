@@ -28,18 +28,6 @@ in
           description = "Full name of the admin user.";
         };
 
-        # location for use with services like redshift
-        latitude = lib.mkOption {
-          type = lib.types.float;
-          default = 59.33; # Stockholm
-          description = "Geographic latitude of the host, used by redshift.";
-        };
-        longitude = lib.mkOption {
-          type = lib.types.float;
-          default = 18.07; # Stockholm
-          description = "Geographic longitude of the host, used by redshift.";
-        };
-
         thermalZonePath = lib.mkOption {
           type = lib.types.nullOr lib.types.str;
           default = null;
@@ -49,7 +37,7 @@ in
         wallpaper = lib.mkOption {
           type = lib.types.path;
           default = "${inputs.self}/nix/assets/wallpapers/mountain_landscape_1.jpg";
-          description = "Path to the desktop wallpaper used by sway, Hyprland and the LightDM greeter.";
+          description = "Path to the desktop wallpaper used by sway, i3 and the LightDM greeter.";
         };
 
         keyboard = {
