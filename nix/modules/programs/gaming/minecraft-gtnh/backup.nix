@@ -8,7 +8,12 @@
   # VPS to read-only rsync of that one folder:
   #   restrict,command="/usr/bin/rrsync -ro /var/lib/gtnh/backups/" ssh-ed25519 …
   flake.modules.homeManager.gtnhBackup =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       dest = "${config.home.homeDirectory}/backups/gtnh";
       # Counted back from the newest backup, not from today, so a server
@@ -38,9 +43,12 @@
           # Zips are immutable once written, so existing ones are skipped.
           # -d + "./" copies the folder's contents; without them rsync just
           # prints "skipping directory ." and pulls nothing
-          rsync -d -t --ignore-existing --partial-dir=.partial \
+          # Timeouts: a stalled link must fail (and notify), not hang. No
+          # ControlPath: never ride a shared root connection to vps, only
+          # this restricted key.
+          rsync -d -t --ignore-existing --partial-dir=.partial --timeout=300 \
             --include='*.zip' --exclude='*' \
-            -e "ssh -i $HOME/.ssh/gtnh_backup -o IdentitiesOnly=yes -o BatchMode=yes" \
+            -e "ssh -i $HOME/.ssh/gtnh_backup -o IdentitiesOnly=yes -o BatchMode=yes -o ControlPath=none -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=3" \
             vps:./ "$dest/"
 
           # A zip pulled while the server was still writing it would be kept
@@ -86,6 +94,8 @@
         Service = {
           Type = "oneshot";
           ExecStart = "${gtnh-backup}/bin/gtnh-backup";
+          # oneshot has no start timeout: a hang would block every later run
+          TimeoutStartSec = "30min";
           Nice = 10;
           IOSchedulingClass = "idle";
         };

@@ -6,7 +6,13 @@
   };
 
   flake.modules.nixos.gaming =
-    { config, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      pkgsUnstable,
+      ...
+    }:
     let
       isLaptop = config.systemConstants.system.type == "laptop";
     in
@@ -29,7 +35,15 @@
         openssl
       ];
 
-      boot.kernelPackages = pkgs.linuxPackages_latest;
+      # mkDefault: a host whose drivers lag behind (xps, nvidia) picks its own
+      boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
+
+      # Stable umu-launcher (1.4.0) can fail the SteamRT4 bootstrap's digest
+      # validation, which breaks Battle.net. mkBefore: host overlays (xps's
+      # nvidia-offload wrapper) then wrap this one via prev.
+      nixpkgs.overlays = lib.mkBefore [
+        (_final: _prev: { umu-launcher = pkgsUnstable.umu-launcher; })
+      ];
 
       boot.kernel.sysctl."vm.max_map_count" = 2147483642;
 

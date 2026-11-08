@@ -1,20 +1,13 @@
 { inputs, ... }:
 {
-  den.aspects."xps".nixos =
-    {
-      lib,
-      config,
-      pkgs,
-      pkgsUnstable,
-      ...
-    }:
+  den.aspects.xps.nixos =
+    { lib, pkgs, ... }:
     {
       imports = with inputs.self.modules.nixos; [
         inputs.nixos-hardware.nixosModules.dell-xps-15-7590-nvidia
         laptopBaseProfile
         swayfxStack
         gaming
-        ./_hardware-configuration.nix
       ];
 
       systemConstants.system.host = "xps";
@@ -23,7 +16,7 @@
       services.hardware.bolt.enable = true;
 
       # Reachable over ssh, unlike the other laptops (commonConfig closes 22)
-      services.openssh.openFirewall = lib.mkForce true;
+      services.openssh.openFirewall = true;
 
       # Stable name for the iGPU: cardN changes between boots, and the by-path
       # names contain ':', the WLR_DRM_DEVICES separator
@@ -45,15 +38,15 @@
             exec "$@"
           '';
 
-          # nvidia offload bor battle-net
+          # Battle.net on the 1650. prev is gaming's unstable umu-launcher.
           umu-launcher = final.symlinkJoin {
             name = "umu-launcher-nvidia-offload";
-            paths = [ pkgsUnstable.umu-launcher ];
+            paths = [ prev.umu-launcher ];
             postBuild = ''
               rm $out/bin/umu-run
               cat >$out/bin/umu-run <<EOF
               #!${final.runtimeShell}
-              exec ${final.nvidia-offload}/bin/nvidia-offload ${pkgsUnstable.umu-launcher}/bin/umu-run "\$@"
+              exec ${final.nvidia-offload}/bin/nvidia-offload ${prev.umu-launcher}/bin/umu-run "\$@"
               EOF
               chmod +x $out/bin/umu-run
             '';
@@ -77,7 +70,7 @@
 
       # gaming sets linuxPackages_latest (7.3), which nvidia 595 doesn't
       # build against yet; stay on the default kernel until it does
-      boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+      boot.kernelPackages = pkgs.linuxPackages;
 
       # nixpkgs defaults to nvidia's new kernel suspend notifiers with 595 +
       # open modules; the first suspend with them never came back. Use the
@@ -128,7 +121,6 @@
       home-manager.users.erik = {
         imports = with inputs.self.modules.homeManager; [
           gh
-          geforcenow
           intelVideoDecode
           chromium
           emacsYoutube
