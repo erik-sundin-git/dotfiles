@@ -54,7 +54,7 @@
         services.openssh = {
           enable = true;
           # Laptops roam onto untrusted networks and nothing ssh's into them
-          openFirewall = !isLaptop;
+          openFirewall = lib.mkDefault (!isLaptop);
           settings = {
             PasswordAuthentication = false;
             KbdInteractiveAuthentication = false;
@@ -75,6 +75,11 @@
           };
         };
         boot.loader.systemd-boot.enable = lib.mkIf config.commonConfig.bootEFI true;
+        # The menu editor lets anyone at the keyboard boot with init=/bin/sh
+        boot.loader.systemd-boot.editor = false;
+        # The ESP is 512M (disk-layout.nix): _latest kernels plus systemd
+        # initrds fill it long before nh clean prunes generations
+        boot.loader.systemd-boot.configurationLimit = lib.mkDefault 10;
         boot.loader.efi.canTouchEfiVariables = lib.mkIf config.commonConfig.bootEFI true;
         # Hold Space at boot to get the menu
         boot.loader.timeout = lib.mkIf config.commonConfig.bootEFI (lib.mkDefault 1);

@@ -2,7 +2,12 @@
 {
   den.aspects.nomad = {
     nixos =
-      { config, pkgs, ... }:
+      {
+        config,
+        lib,
+        pkgs,
+        ...
+      }:
       {
         imports = with inputs.self.modules.nixos; [
           inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
@@ -49,9 +54,21 @@
           pkgs.stress-ng
         ];
 
+        # Home Assistant for the home LAN only. A forwarded connection never
+        # passes the INPUT firewall, so without the RETURN below 8123 would be
+        # open on every network nomad joins. The home /24 comes from nomad's
+        # own address in hosts.nix.
         networking.nat = {
           enable = true;
           externalInterface = "wlp61s0";
+          extraCommands =
+            let
+              octets = lib.splitString "." config.systemConstants.network.hosts.nomad.ip;
+              homeNet = lib.concatStringsSep "." (lib.take 3 octets) + ".0/24";
+            in
+            ''
+              iptables -w -t nat -I nixos-nat-pre -i wlp61s0 ! -s ${homeNet} -p tcp --dport 8123 -j RETURN
+            '';
           forwardPorts = [
             {
               destination = "${config.systemConstants.network.hosts.hass-vm.ip}:8123";
