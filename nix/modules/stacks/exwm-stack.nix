@@ -28,7 +28,6 @@
         i3Lock
         gtk
         dunst
-        starship
         gammastep
       ];
     };

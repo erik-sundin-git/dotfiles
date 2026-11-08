@@ -10,10 +10,8 @@
         pkgsUnstable.multiviewer-for-f1
         beeper
         vlc
-        zip
         ffmpeg
         yt-dlp
-        htop
         local.irealpro
       ];
     };

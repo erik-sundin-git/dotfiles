@@ -30,7 +30,6 @@
         wofi
         gtk
         dunst
-        starship
         gammastep
       ];
     };

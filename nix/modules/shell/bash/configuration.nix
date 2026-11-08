@@ -1,22 +1,29 @@
 { ... }:
 {
   flake.modules.homeManager.bash =
-    {
-      pkgs,
-      lib,
-      config,
-      ...
-    }:
+    { ... }:
     {
       home.sessionPath = [ "$HOME/.local/bin" ];
+      home.sessionVariables.HISTTIMEFORMAT = "%F %T ";
+
+      # Per-project dev shells (`use flake` in .envrc), cached by nix-direnv
+      programs.direnv = {
+        enable = true;
+        nix-direnv.enable = true;
+      };
+      # Ctrl-R history search, Ctrl-T file picker, Alt-C cd
+      programs.fzf.enable = true;
 
       programs.bash = {
         enable = true;
         enableCompletion = true;
 
-        historySize = 1000;
-        historyFileSize = 2000;
-        historyControl = [ "ignoreboth" ];
+        historySize = 100000;
+        historyFileSize = 200000;
+        historyControl = [
+          "ignoreboth"
+          "erasedups"
+        ];
         shellOptions = [
           "histappend"
           "checkwinsize"
