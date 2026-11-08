@@ -119,6 +119,8 @@ def main(argv: list[str] | None = None) -> int:
             errors = validate(spec, opts, repo.hosts(), repo.host_dirs())
             if errors:
                 sys.exit("The answers don't validate:\n  " + "\n  ".join(errors))
+            if args.yes_wipe is not None and not (args.yes_wipe and spec.disk_serial):
+                sys.exit("--yes-wipe needs the disk's serial, and this disk has none: confirm by typing instead.")
             confirm = not args.dry_run and args.yes_wipe != spec.disk_serial
             spec = flow.run(ctx, spec, changes, confirm=confirm)
         else:

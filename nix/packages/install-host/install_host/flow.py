@@ -12,7 +12,7 @@ from pathlib import Path
 
 from . import nixgen, system, ui, util
 from .install import unmount
-from .repo import Changes, Repo, find_keys
+from .repo import DEFAULT_DIR, Changes, Repo, find_keys
 from .spec import (
     HostSpec,
     Options,
@@ -451,8 +451,12 @@ def run(ctx: Context, spec: HostSpec | None, changes: Changes, *, confirm: bool 
 
 
 def resume_choice(repo: Repo) -> HostSpec | None:
-    """Offer the answers of an earlier run, after a failed install or a crash."""
-    dirty = repo.dirty_hosts()
+    """Offer the answers of an earlier run, after a failed install or a crash.
+
+    Host changes are only discarded in the installer's own clone: in a checkout
+    passed with --repo they may be the user's uncommitted work."""
+    own_clone = repo.root.resolve() == DEFAULT_DIR.resolve()
+    dirty = repo.dirty_hosts() if own_clone else []
     mounted = os.path.ismount("/mnt")
     previous = None
     if util.ANSWERS_FILE.is_file():

@@ -97,3 +97,31 @@ def test_teardown_order():
         ["mdadm", "--zero-superblock", "/dev/sdd"],
     ]
     assert system.teardown_commands(tree, "/dev/other") == []
+
+
+def test_teardown_refuses_shared_vg(monkeypatch):
+    tree = {"blockdevices": [{
+        "name": "/dev/sdd", "type": "disk", "fstype": None, "mountpoints": [None],
+        "children": [
+            {"name": "/dev/sdd1", "type": "part", "fstype": "LVM2_member", "mountpoints": [None],
+             "children": [{"name": "/dev/mapper/vg-root", "type": "lvm", "fstype": "ext4", "mountpoints": [None]}]},
+        ],
+    }]}
+
+    def capture(cmd, check=True):
+        if cmd[0] == "lvs":
+            return "  vg\n"
+        if cmd[0] == "pvs":
+            return pvs
+        raise AssertionError(cmd)
+
+    monkeypatch.setattr(system.util, "capture", capture)
+    pvs = "  /dev/sdd1\n"
+    assert system.teardown_commands(tree, "/dev/sdd") == [["vgchange", "-an", "vg"]]
+    pvs = "  /dev/sdd1\n  /dev/sde1\n"
+    try:
+        system.teardown_commands(tree, "/dev/sdd")
+    except system.SharedVolumeGroup as e:
+        assert "/dev/sde1" in str(e)
+    else:
+        raise AssertionError("expected SharedVolumeGroup")

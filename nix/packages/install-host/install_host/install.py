@@ -35,7 +35,11 @@ def revalidate(spec: HostSpec) -> None:
 
 def wipe_and_mount(spec: HostSpec, repo: Repo, uses_disko: bool) -> None:
     disk_path = system.resolve(spec.disk).path  # type: ignore[union-attr]
-    for cmd in system.teardown_commands(system.lsblk_tree(), disk_path):
+    try:
+        teardown = system.teardown_commands(system.lsblk_tree(), disk_path)
+    except system.SharedVolumeGroup as e:
+        raise Aborted(f"{disk_path}: {e}. Free it by hand first.") from e
+    for cmd in teardown:
         util.run(cmd, check=False)
 
     disko = ["disko", "--mode", "destroy,format,mount", "--yes-wipe-all-disks"]

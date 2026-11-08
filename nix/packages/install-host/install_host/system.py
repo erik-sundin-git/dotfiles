@@ -304,12 +304,26 @@ def resolve(path: str) -> Disk | None:
     return next((d for d in disks() if d.path == real), None)
 
 
+class SharedVolumeGroup(Exception):
+    """An LVM volume group on the target disk also lives on another disk."""
+
+
+def _names(node: dict) -> set[str]:
+    out = {node["name"]}
+    for child in node.get("children") or []:
+        out |= _names(child)
+    return out
+
+
 def teardown_commands(tree: dict, disk_path: str) -> list[list[str]]:
     """Release what sits on the disk (LVM on LUKS, md/RST arrays, swap) so
-    disko can wipe it, innermost layers first. Only this disk's holders."""
+    disko can wipe it, innermost layers first. Only this disk's holders: a
+    volume group with physical volumes on another disk raises
+    SharedVolumeGroup instead of being deactivated there too."""
     disk = next((d for d in tree.get("blockdevices", []) if d["name"] == disk_path), None)
     if disk is None:
         return []
+    on_disk = _names(disk)
     cmds: list[list[str]] = []
     vgs_done: set[str] = set()
 
@@ -323,6 +337,10 @@ def teardown_commands(tree: dict, disk_path: str) -> list[list[str]]:
             vg = util.capture(["lvs", "--noheadings", "-o", "vg_name", name], check=False).strip()
             if vg and vg not in vgs_done:
                 vgs_done.add(vg)
+                pvs = util.capture(["pvs", "--noheadings", "-o", "pv_name", "-S", f"vg_name={vg}"], check=False).split()
+                elsewhere = [pv for pv in pvs if os.path.realpath(pv) not in on_disk and pv not in on_disk]
+                if elsewhere:
+                    raise SharedVolumeGroup(f"volume group {vg} also uses {', '.join(elsewhere)}")
                 cmds.append(["vgchange", "-an", vg])
         elif kind == "crypt":
             cmds.append(["cryptsetup", "close", name])

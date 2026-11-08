@@ -125,7 +125,7 @@ def is_nvidia_module(name: str | None) -> bool:
 
 
 def wayland_conflict(opts: Options, stack: str | None, hardware: str | None) -> bool:
-    """sway/Hyprland on the proprietary driver; the stacks assert against it too."""
+    """sway on the proprietary driver; the stack asserts against it too."""
     return bool(stack) and opts.stack(stack)["session"] == "wayland" and is_nvidia_module(hardware)
 
 
