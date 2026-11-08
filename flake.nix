@@ -9,12 +9,17 @@
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-stable.follows = "nixpkgs";
     };
     emacs-yt = {
       url = "github:erik-sundin-git/emacs-yt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    battlenet-umu.url = "github:jacobjdowning/battlenet-umu";
+    battlenet-umu = {
+      url = "github:jacobjdowning/battlenet-umu";
+      # It tracks nixos-unstable; share ours instead of locking a second one
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
