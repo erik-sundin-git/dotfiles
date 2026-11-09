@@ -20,8 +20,10 @@
     };
 
   flake.modules.homeManager.swayfxStack =
-    { ... }:
+    { pkgs, ... }:
     {
+      home.packages = [ pkgs.swayimg ];
+
       imports = with inputs.self.modules.homeManager; [
         swayfx
         alacritty
