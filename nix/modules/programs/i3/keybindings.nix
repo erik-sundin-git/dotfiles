@@ -17,9 +17,11 @@
       exec = "exec --no-startup-id";
 
       # Sway actions with an X11 replacement; null = no i3 equivalent (sway-help
-      # and the claude launchers ask through wofi, which is Wayland-only).
+      # and the claude launchers ask through fuzzel, which is Wayland-only).
       exact = {
-        "exec wofi --show drun" = "${exec} dmenu_run";
+        "exec fuzzel" = "${exec} dmenu_run";
+        # foot is Wayland-only; the i3 stack installs alacritty
+        "exec footclient" = "${exec} alacritty";
         "exec swaymsg exit" = "${exec} i3-msg exit";
         "exec swayosd-client --output-volume raise" = "${exec} pactl set-sink-volume @DEFAULT_SINK@ +5%";
         "exec swayosd-client --output-volume lower" = "${exec} pactl set-sink-volume @DEFAULT_SINK@ -5%";

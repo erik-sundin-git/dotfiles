@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  # Installer session: the sway desktop (catppuccin, waybar, wofi, alacritty)
+  # Installer session: the sway desktop (catppuccin, waybar, fuzzel, foot)
   # without the day-to-day apps. The installer's getty autologin of `nixos` on
   # tty1 starts sway from bash, so there is no display manager.
   flake.modules.nixos.liveIsoConfig =
@@ -55,11 +55,11 @@
           generic.theme
           homeManager.swayfx
           homeManager.waybar
-          homeManager.wofi
+          homeManager.fuzzel
           homeManager.gtk
           homeManager.dunst
           homeManager.starship
-          homeManager.alacritty
+          homeManager.foot
           homeManager.nmtui
           homeManager.bash
           homeManager.emacs
@@ -76,7 +76,7 @@
         selectedTheme = "catppuccin";
         emacs.texlive = false;
 
-        wayland.windowManager.sway.config.startup = lib.mkForce [ { command = "alacritty"; } ];
+        wayland.windowManager.sway.config.startup = lib.mkForce [ { command = "foot"; } ];
 
         # No `exec`: if sway fails to start, drop to a shell instead of
         # looping through getty autologin

@@ -54,15 +54,15 @@
 
       sway-help = pkgs.writeShellApplication {
         name = "sway-help";
-        runtimeInputs = [ pkgs.wofi ];
+        runtimeInputs = [ pkgs.fuzzel ];
         text = ''
           # Read-only shortcut cheatsheet. Selecting a row is a no-op — this is
           # just a viewer. All rows are generated from swayBindingsData, so
           # adding a bind in bindings-data.nix updates this list automatically.
-          wofi --dmenu \
-              --prompt "Sway shortcuts" \
-              --width 700 --height 600 \
-              --insensitive > /dev/null <<'EOF' || true
+          fuzzel --dmenu \
+              --prompt "Sway shortcuts: " \
+              --width 80 --lines 30 \
+              > /dev/null <<'EOF' || true
           ${helpBody}
           EOF
         '';

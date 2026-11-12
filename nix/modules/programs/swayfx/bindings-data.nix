@@ -72,9 +72,9 @@
           {
             title = "General";
             binds = [
-              { key = "Return";     action = "exec alacritty";        desc = "Terminal (alacritty)"; }
+              { key = "Return";     action = "exec footclient";       desc = "Terminal (foot)"; }
               { key = "Shift+Return"; action = "exec firefox";        desc = "Browser (firefox)"; }
-              { key = "d";          action = "exec wofi --show drun"; desc = "App launcher (wofi drun)"; }
+              { key = "d";          action = "exec fuzzel";           desc = "App launcher (fuzzel)"; }
               { key = "Shift+q";    action = "kill";                  desc = "Kill focused window"; }
               { key = "Shift+a";    action = "exec nix-add-package";  desc = "Add nix package (claude flow)"; }
               { key = "c";          action = "exec claude-prompt";    desc = "Ask claude (quick prompt)"; }

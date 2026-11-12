@@ -101,9 +101,9 @@
           ];
 
       exact = {
-        # No alacritty under EXWM: terminals are vterm buffers
-        "exec alacritty" = [ (sym "vterm") ];
-        "exec wofi --show drun" = [ (sym "launch-app") ];
+        # No foot under EXWM: terminals are vterm buffers
+        "exec footclient" = [ (sym "vterm") ];
+        "exec fuzzel" = [ (sym "launch-app") ];
         "exec nix-add-package" = [ (sym "nix-add-package") ];
         "exec claude-prompt" = [ (sym "claude-prompt") ];
         "exec swayosd-client --output-volume raise" = [ (sym "volume") (sym "up") ];
@@ -155,7 +155,9 @@
       # silently do nothing under X
       waylandTools = [
         "swaymsg"
-        "wofi"
+        "fuzzel"
+        "foot"
+        "footclient"
         "swayosd-client"
         "grim"
         "slurp"

@@ -18,7 +18,7 @@
       ];
     };
 
-  # No waybar, wofi or swayosd (Emacs draws the bar and menus), no picom (no
+  # No waybar, fuzzel or swayosd (Emacs draws the bar and menus), no picom (no
   # theming yet), no borders or gaps.
   flake.modules.homeManager.exwmStack =
     { ... }:

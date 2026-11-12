@@ -119,7 +119,7 @@
         };
 
         extraConfig = ''
-          ${lib.optionalString t.blur "blur enable\nblur_passes 2\nblur_radius 6\nlayer_effects \"waybar\" blur enable\nlayer_effects \"wofi\" blur enable"}
+          ${lib.optionalString t.blur "blur enable\nblur_passes 2\nblur_radius 6\nlayer_effects \"waybar\" blur enable\nlayer_effects \"launcher\" blur enable"}
           corner_radius ${toString t.rounding}
           default_dim_inactive ${toString t.dimInactive}
           shadows disable
