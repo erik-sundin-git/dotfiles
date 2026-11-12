@@ -97,8 +97,16 @@
             outer = t.gaps;
           };
 
-          window.border = 2;
-          floating.border = 2;
+          # pixel borders: no title bar on a window, but tabbed and stacked
+          # containers still draw theirs (they are the tabs)
+          window = {
+            border = 2;
+            titlebar = false;
+          };
+          floating = {
+            border = 2;
+            titlebar = false;
+          };
 
           input = {
             "*" = {
