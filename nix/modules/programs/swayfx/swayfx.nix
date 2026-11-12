@@ -58,7 +58,7 @@
       # NixOS's session wrapper starts nixos-fake-graphical-session.target for
       # sway (not on its systemd-aware list) and never stops it, so
       # graphical-session.target is up before sway has exported WAYLAND_DISPLAY
-      # and stays up after it exits. Bind waybar, swayosd and swayidle to
+      # and stays up after it exits. Bind waybar, wob and swayidle to
       # sway-session.target instead: HM's default extraCommands start it after
       # the env import and stop it when sway exits.
       wayland.systemd.target = "sway-session.target";
@@ -127,7 +127,7 @@
         };
 
         extraConfig = ''
-          ${lib.optionalString t.blur "blur enable\nblur_passes 2\nblur_radius 6\nlayer_effects \"waybar\" blur enable\nlayer_effects \"launcher\" blur enable"}
+          ${lib.optionalString t.blur "blur enable\nblur_passes 2\nblur_radius 6\nlayer_effects \"waybar\" blur enable\nlayer_effects \"launcher\" blur enable\nlayer_effects \"wob\" \"blur enable; corner_radius ${toString t.rounding}\""}
           corner_radius ${toString t.rounding}
           default_dim_inactive ${toString t.dimInactive}
           shadows disable

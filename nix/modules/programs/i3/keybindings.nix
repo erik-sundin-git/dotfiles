@@ -23,14 +23,14 @@
         # foot is Wayland-only; the i3 stack installs alacritty
         "exec footclient" = "${exec} alacritty";
         "exec swaymsg exit" = "${exec} i3-msg exit";
-        "exec swayosd-client --output-volume raise" = "${exec} pactl set-sink-volume @DEFAULT_SINK@ +5%";
-        "exec swayosd-client --output-volume lower" = "${exec} pactl set-sink-volume @DEFAULT_SINK@ -5%";
-        "exec swayosd-client --output-volume mute-toggle" =
+        "exec osd volume up" = "${exec} pactl set-sink-volume @DEFAULT_SINK@ +5%";
+        "exec osd volume down" = "${exec} pactl set-sink-volume @DEFAULT_SINK@ -5%";
+        "exec osd volume mute" =
           "${exec} pactl set-sink-mute @DEFAULT_SINK@ toggle";
-        "exec swayosd-client --input-volume mute-toggle" =
+        "exec osd mic mute" =
           "${exec} pactl set-source-mute @DEFAULT_SOURCE@ toggle";
-        "exec swayosd-client --brightness raise" = "${exec} brightnessctl set +5%";
-        "exec swayosd-client --brightness lower" = "${exec} brightnessctl set 5%-";
+        "exec osd brightness up" = "${exec} brightnessctl set +5%";
+        "exec osd brightness down" = "${exec} brightnessctl set 5%-";
         "exec sway-help" = null;
         "exec nix-add-package" = null;
         "exec claude-prompt" = null;
@@ -57,7 +57,7 @@
         action:
         if exact ? ${action} then
           exact.${action}
-        else if lib.hasPrefix "exec swayosd" action || lib.hasPrefix "exec swaymsg" action then
+        else if lib.hasPrefix "exec osd " action || lib.hasPrefix "exec swaymsg" action then
           throw "i3 keybindings: no X11 mapping for sway action '${action}'"
         else if lib.hasPrefix "exec " action then
           "${exec} ${lib.removePrefix "exec " action}"

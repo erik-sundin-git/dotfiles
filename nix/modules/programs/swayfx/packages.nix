@@ -5,7 +5,6 @@
       config,
       lib,
       pkgs,
-      hexToRgba,
       isLaptop,
       swayBindingsData,
       ...
@@ -52,6 +51,41 @@
         ]
       );
 
+      hex = lib.removePrefix "#";
+
+      osd = pkgs.writeShellApplication {
+        name = "osd";
+        runtimeInputs = [
+          pkgs.pamixer
+          pkgs.brightnessctl
+        ];
+        text = ''
+          # osd volume up|down|mute, osd mic mute, osd brightness up|down
+          # "<value>" or "<value> <style>"; wob.sock only exists under sway
+          show() {
+            local sock="''${XDG_RUNTIME_DIR:?}/wob.sock"
+            if [ -p "$sock" ]; then echo "$1''${2:+ $2}" > "$sock"; fi
+          }
+          muted() { [ "$("$@" --get-mute || true)" = true ] && echo muted || true; }
+
+          case "''${1:-} ''${2:-}" in
+            "volume up") pamixer -i 5 ;;
+            "volume down") pamixer -d 5 ;;
+            "volume mute") pamixer -t ;;
+            "mic mute") pamixer --default-source -t ;;
+            "brightness up") brightnessctl -q set 5%+ ;;
+            "brightness down") brightnessctl -q --min-value=1 set 5%- ;;
+            *) echo "usage: osd volume up|down|mute | mic mute | brightness up|down" >&2; exit 2 ;;
+          esac
+
+          case "$1" in
+            volume) show "$(pamixer --get-volume)" "$(muted pamixer)" ;;
+            mic) show "$(pamixer --default-source --get-volume)" "$(muted pamixer --default-source)" ;;
+            brightness) show "$(brightnessctl -m | cut -d, -f4 | tr -d %)" ;;
+          esac
+        '';
+      };
+
       sway-help = pkgs.writeShellApplication {
         name = "sway-help";
         runtimeInputs = [ pkgs.fuzzel ];
@@ -69,58 +103,33 @@
       };
     in
     {
-      home.packages = [ sway-help ];
+      home.packages = [
+        sway-help
+        osd
+      ];
 
-      # User service with Restart=always: swayosd-server panics in GTK
-      # (gtk_widget_map) now and then, which killed the OSD for the session
-      services.swayosd = {
+      # Volume/brightness OSD: wob reads "<percent> [style]" lines from a
+      # socket-activated FIFO (%t/wob.sock, HM's wob units on
+      # sway-session.target). The media keys run `osd`, which changes the
+      # level and writes it there.
+      services.wob = {
         enable = true;
-        # swayosd's stock CSS, recolored from the theme
-        stylePath = pkgs.writeText "swayosd.css" ''
-          window#osd {
-            border-radius: 999px;
-            border: 1px solid ${c.accent};
-            background: ${hexToRgba c.background "0.9"};
-          }
-          window#osd #container {
-            margin: 16px;
-          }
-          window#osd image,
-          window#osd label {
-            color: ${c.foreground};
-          }
-          window#osd progressbar:disabled,
-          window#osd image:disabled {
-            opacity: 0.5;
-          }
-          window#osd progressbar,
-          window#osd segmentedprogress {
-            min-height: 6px;
-            border-radius: 999px;
-            background: transparent;
-            border: none;
-          }
-          window#osd trough,
-          window#osd segment {
-            min-height: inherit;
-            border-radius: inherit;
-            border: none;
-            background: ${c.black};
-          }
-          window#osd progress,
-          window#osd segment.active {
-            min-height: inherit;
-            border-radius: inherit;
-            border: none;
-            background: ${c.accent};
-          }
-          window#osd segment {
-            margin-left: 8px;
-          }
-          window#osd segment:first-child {
-            margin-left: 0;
-          }
-        '';
+        settings = {
+          "" = {
+            anchor = "bottom";
+            margin = 120;
+            width = 360;
+            height = 28;
+            border_size = 1;
+            border_offset = 0;
+            bar_padding = 4;
+            max = 100;
+            border_color = hex c.accent;
+            background_color = hex c.background + "e6";
+            bar_color = hex c.accent;
+          };
+          "style.muted".bar_color = hex c.black;
+        };
       };
     };
 }

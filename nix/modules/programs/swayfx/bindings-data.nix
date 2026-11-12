@@ -160,10 +160,10 @@
           {
             title = "Media";
             binds = [
-              { key = "XF86AudioRaiseVolume"; mod = false; action = "exec swayosd-client --output-volume raise";        desc = "Volume up"; }
-              { key = "XF86AudioLowerVolume"; mod = false; action = "exec swayosd-client --output-volume lower";        desc = "Volume down"; }
-              { key = "XF86AudioMute";        mod = false; action = "exec swayosd-client --output-volume mute-toggle";  desc = "Mute toggle"; }
-              { key = "XF86AudioMicMute";     mod = false; action = "exec swayosd-client --input-volume mute-toggle";   desc = "Mic mute toggle"; }
+              { key = "XF86AudioRaiseVolume"; mod = false; action = "exec osd volume up";                               desc = "Volume up"; }
+              { key = "XF86AudioLowerVolume"; mod = false; action = "exec osd volume down";                             desc = "Volume down"; }
+              { key = "XF86AudioMute";        mod = false; action = "exec osd volume mute";                             desc = "Mute toggle"; }
+              { key = "XF86AudioMicMute";     mod = false; action = "exec osd mic mute";                                desc = "Mic mute toggle"; }
               { key = "XF86AudioPlay";        mod = false; action = "exec playerctl play-pause"; desc = "Play/pause"; }
               { key = "XF86AudioNext";        mod = false; action = "exec playerctl next";       desc = "Next track"; }
               { key = "XF86AudioPrev";        mod = false; action = "exec playerctl previous";   desc = "Previous track"; }
@@ -176,8 +176,8 @@
         laptopSection = {
           title = "Laptop";
           binds = [
-            { key = "XF86MonBrightnessUp";   mod = false; action = "exec swayosd-client --brightness raise";     desc = "Screen brightness up"; }
-            { key = "XF86MonBrightnessDown"; mod = false; action = "exec swayosd-client --brightness lower";     desc = "Screen brightness down"; }
+            { key = "XF86MonBrightnessUp";   mod = false; action = "exec osd brightness up";                     desc = "Screen brightness up"; }
+            { key = "XF86MonBrightnessDown"; mod = false; action = "exec osd brightness down";                   desc = "Screen brightness down"; }
             { key = "XF86MonBrightnessUp";                action = "exec brightnessctl --device='*kbd*' set +1"; desc = "Keyboard backlight up"; }
             { key = "XF86MonBrightnessDown";              action = "exec brightnessctl --device='*kbd*' set 1-"; desc = "Keyboard backlight down"; }
           ];

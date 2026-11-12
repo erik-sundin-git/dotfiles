@@ -234,7 +234,7 @@ The Emacs variant saves the window layout and restores it on the next press."
       ('shorter (shrink-window 1)))))
 
 (defun my-exwm--osd (label percent)
-  "Show LABEL with PERCENT as a bar in the echo area (sway's swayosd)."
+  "Show LABEL with PERCENT as a bar in the echo area (sway's wob)."
   (let ((filled (/ (+ (max 0 (min 100 percent)) 5) 10)))
     (message "%s %s%s %d%%" label
              (make-string filled ?█) (make-string (- 10 filled) ?░) percent)))
