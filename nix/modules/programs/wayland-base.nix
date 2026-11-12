@@ -42,7 +42,6 @@
 
       home.packages = [
         pkgs.jq
-        pkgs.pavucontrol
         pkgs.grim
         pkgs.slurp
         pkgs.wl-clipboard

@@ -208,6 +208,8 @@
             bindings = [
               { key = "v"; desc = "toggle vpn"; action = "exec vpn-toggle"; }
               { key = "g"; desc = "toggle gammastep"; action = "exec gammastep-toggle"; }
+              { key = "a"; desc = "audio output"; action = "exec audio-device output"; }
+              { key = "m"; desc = "microphone"; action = "exec audio-device input"; }
             ];
           };
           resize = {
