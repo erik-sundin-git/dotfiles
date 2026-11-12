@@ -77,7 +77,6 @@
           imports = with inputs.self.modules.homeManager; [
             gh
             chromium
-            gtnhBackup
             mail
             emacsYoutube
             dellU2722d

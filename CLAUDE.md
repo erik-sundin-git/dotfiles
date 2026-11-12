@@ -25,7 +25,7 @@ Personal dotfiles for Erik Sundin: a single Nix flake producing NixOS configurat
 | `wisp` | Headless server | none | `serverProfile` (`commonConfig`, not `commonDesktop`); lid/suspend disabled |
 | `live-iso` | ISO | sway (no DM) | Plain `nixosSystem`, not a den host; built with `nix build .#iso`. Installer session, see below |
 
-**The GTNH Minecraft server runs on `vps`** (Contabo, Debian 13), reached with `ssh vps` (as root). It is **not** managed by this flake (there is no server module here any more), so check its status on the VPS itself. nomad pulls its world backups hourly into `~/backups/gtnh` (`homeManager.gtnhBackup`, `programs/gaming/minecraft-gtnh/backup.nix`), using `~/.ssh/gtnh_backup`, a key the VPS restricts to read-only rsync of `/var/lib/gtnh/backups`.
+**The GTNH Minecraft server runs on `vps`** (Contabo, Debian 13), reached with `ssh vps` (as root). It is **not** managed by this flake (there is no server module here any more), so check its status on the VPS itself. Its world backups stay on the VPS (`/var/lib/gtnh/backups`); nothing here pulls them.
 
 Each host sets `systemConstants.system = { host; type; }` (`type` ∈ laptop/desktop/server; `host` is a free string). Every host imports a profile, which sets `type` and forwards the HM copy, so a host sets only `host` (and its own `system.stateVersion`). Downstream modules branch on it (e.g. `isLaptop`, the per-host `rebuild` script, TLP enabled only on laptops).
 
