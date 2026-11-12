@@ -1,6 +1,6 @@
 { ... }:
 {
-  # Qt apps (qbittorrent, vlc, protonup-qt): Fusion with a palette built from
+  # Qt apps (qbittorrent, protonup-qt): Fusion with a palette built from
   # the theme, via qt5ct/qt6ct. Part of `gtk` so every stack that themes GTK
   # themes Qt too.
   flake.modules.homeManager.gtk =

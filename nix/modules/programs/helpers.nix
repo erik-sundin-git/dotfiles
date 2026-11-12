@@ -94,17 +94,6 @@
           }
           { sway.app_id = "chromium"; i3.class = "(?i)chromium"; command = border; }
           { sway.app_id = "ungoogled-chromium"; command = border; }
-          {
-            sway = { app_id = "electron"; title = ".*FreeTube.*"; };
-            i3.class = "FreeTube";
-            command = border;
-          }
-          {
-            sway = { app_id = "electron"; title = "^Proton Mail.*"; };
-            i3.class = "Proton Mail";
-            exwm.class = "^Proton Mail$";
-            command = "move --no-auto-back-and-forth to workspace mail";
-          }
         ];
 
       # Modal bindings (launch, power, ...) for i3 and sway from a data attrset
