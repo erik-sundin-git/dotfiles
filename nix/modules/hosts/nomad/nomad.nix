@@ -23,6 +23,10 @@
 
         services.hardware.bolt.enable = true;
 
+        # gaming without Steam: Battle.net (umu), GeForce NOW and Prism only
+        programs.steam.enable = false;
+        gaming.boltLauncher = false;
+
         # Sleep, then hibernate to the disk swap after 2 h (lid and idle)
         commonConfig.suspendThenHibernate = true;
 
@@ -84,6 +88,9 @@
 
           # Proton sync rollout, see programs/mail/mail.nix (5 = full two-way sync incl. spam)
           mailSync.stage = 5;
+
+          # No LaTeX on nomad: texliveFull is several GB in the store
+          emacs.texlive = false;
 
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
           selectedTheme = "ef-bio";
