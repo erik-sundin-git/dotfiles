@@ -31,8 +31,8 @@ let
         ];
       };
 
+      # claude-code comes from HM (homeManager.claudeCode, below)
       environment.systemPackages = [
-        pkgsUnstable.claude-code
         pkgsUnstable.codex
       ]
       # A GUI app
@@ -45,6 +45,7 @@ let
       home-manager.users.erik = { };
       home-manager.sharedModules = [
         inputs.self.modules.homeManager.commonHome
+        inputs.self.modules.homeManager.claudeCode
         { systemConstants.system = config.systemConstants.system; }
       ];
     };

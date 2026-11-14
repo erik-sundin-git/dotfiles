@@ -17,12 +17,19 @@
     }:
     let
       host = config.systemConstants.system.host;
+      # The HM wrapper (MCP server, LSP) when homeManager.claudeCode is in
+      # use, as it is on every profile; a plain claude-code otherwise
+      claude =
+        if config.programs.claude-code.enable then
+          config.programs.claude-code.finalPackage
+        else
+          pkgsUnstable.claude-code;
 
       nix-add-package = pkgs.writeShellApplication {
         name = "nix-add-package";
         runtimeInputs = [
           pkgs.fuzzel
-          pkgsUnstable.claude-code
+          claude
         ];
         text = ''
           # Pick a nixpkgs package name and a target file, then hand off to
@@ -100,7 +107,7 @@
         name = "claude-prompt";
         runtimeInputs = [
           pkgs.fuzzel
-          pkgsUnstable.claude-code
+          claude
         ];
         text = ''
           # Quick prompt: answer a question in a floating claude session (you
