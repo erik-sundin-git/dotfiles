@@ -91,7 +91,17 @@
           ++ [
             inputs.battlenet-umu.homeModules.default
             ({ ... }: {
-              programs.battlenet-umu.enable = true;
+              programs.battlenet-umu = {
+                enable = true;
+                # Stable's GE-Proton11-1: the client (2.53) segfaults in
+                # battle.net.dll right after the login page loads
+                games = [
+                  {
+                    name = "Battle.net";
+                    proton = pkgsUnstable.proton-ge-bin;
+                  }
+                ];
+              };
             })
           ];
       };
