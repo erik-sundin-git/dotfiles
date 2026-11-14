@@ -23,11 +23,8 @@
 
         services.hardware.bolt.enable = true;
 
-        # gaming without Steam: Battle.net (umu), GeForce NOW and Prism only
-        programs.steam.enable = false;
         gaming.boltLauncher = false;
 
-        # Sleep, then hibernate to the disk swap after 2 h (lid and idle)
         commonConfig.suspendThenHibernate = true;
 
         # Intel UHD 620 (Kaby Lake-R): drivers from intelGen9Graphics, plus
