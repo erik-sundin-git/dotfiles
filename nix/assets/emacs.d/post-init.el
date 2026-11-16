@@ -537,6 +537,54 @@
         '("~/notes/roam/20240912165402-agenda.org"
           "~/notes/todo")))
 
+(with-eval-after-load 'org-capture
+  (add-to-list 'org-capture-templates
+               '("s" "Sak att sälja" entry
+                 (file+headline "~/Documents/forsaljning.org" "Saker att sälja")
+                 "* FÖRBERED %^{Sak}
+:PROPERTIES:
+:KATEGORI: %^{Kategori|Elektronik|Kläder|Böcker|Möbler|Hem|Hobby|Övrigt}
+:KANAL:    %^{Kanal|Tradera|Marketplace|Tradera+Marketplace}
+:SÅLT_VIA:
+:FORMAT:
+:LEVERANS:
+:SKICK:
+:UTROP:
+:FB_PRIS:
+:MINPRIS:
+:REFPRIS:
+:SLUTPRIS:
+:FRAKT_IN:
+:FRAKT_UT:
+:AVGIFT:
+:VIKT:
+:MÅTT:
+:PLATS:    %^{Var ligger den?}
+:SLUTDATUM:
+:KÖPARE:
+:KOLLI_ID:
+:TRADERA_ANNONS:
+:FB_ANNONS:
+:END:
+** Förberedelser
+- [ ] Rengör / testa
+- [ ] Samla tillbehör
+- [ ] Kolla prisnivå (Tradera + Marketplace)
+- [ ] Fota
+- [ ] Väg och mät
+** Annonstext
+Rubrik:
+
+Beskrivning:
+- Skick:
+- Medföljer:
+- Fel/brister:
+- Frakt / avhämtning:
+** Logg
+- %U Lagt till i listan
+%?"
+                 :empty-lines 1)))
+
 (use-package org-tempo
   :after org
   :ensure nil)
@@ -981,6 +1029,12 @@
   "e r" 'eval-region
 
   "f" '("Feeds" . elfeed))
+
+;; Org-only: these shadow nothing global under C-ö (d/p are free there).
+(my-leader-def
+  :keymaps 'org-mode-map
+  "d" 'org-do-demote
+  "p" 'org-do-promote)
 
 ;; Only where notmuch is installed (homeManager.mail).
 (when (fboundp 'notmuch)
