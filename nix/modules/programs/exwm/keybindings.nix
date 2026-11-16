@@ -101,20 +101,20 @@
           ];
 
       exact = {
-        # No alacritty under EXWM: terminals are vterm buffers
-        "exec alacritty" = [ (sym "vterm") ];
-        "exec wofi --show drun" = [ (sym "launch-app") ];
+        # No foot under EXWM: terminals are vterm buffers
+        "exec footclient" = [ (sym "vterm") ];
+        "exec fuzzel" = [ (sym "launch-app") ];
         "exec nix-add-package" = [ (sym "nix-add-package") ];
         "exec claude-prompt" = [ (sym "claude-prompt") ];
-        "exec swayosd-client --output-volume raise" = [ (sym "volume") (sym "up") ];
-        "exec swayosd-client --output-volume lower" = [ (sym "volume") (sym "down") ];
-        "exec swayosd-client --output-volume mute-toggle" = [ (sym "volume") (sym "mute") ];
-        "exec swayosd-client --input-volume mute-toggle" = [
+        "exec osd volume up" = [ (sym "volume") (sym "up") ];
+        "exec osd volume down" = [ (sym "volume") (sym "down") ];
+        "exec osd volume mute" = [ (sym "volume") (sym "mute") ];
+        "exec osd mic mute" = [
           (sym "exec")
           "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
         ];
-        "exec swayosd-client --brightness raise" = [ (sym "brightness") (sym "up") ];
-        "exec swayosd-client --brightness lower" = [ (sym "brightness") (sym "down") ];
+        "exec osd brightness up" = [ (sym "brightness") (sym "up") ];
+        "exec osd brightness down" = [ (sym "brightness") (sym "down") ];
         # Emacs is already running: launching it means going to its workspace
         "exec emacs" = [ (sym "workspace") (workspaceIndex "emacs") ];
         "exec systemctl hibernate" = [ (sym "power") "hibernate" ];
@@ -155,8 +155,10 @@
       # silently do nothing under X
       waylandTools = [
         "swaymsg"
-        "wofi"
-        "swayosd-client"
+        "fuzzel"
+        "foot"
+        "footclient"
+        "osd"
         "grim"
         "slurp"
         "wl-copy"

@@ -45,7 +45,7 @@
           "dbus-broker-lau"
           "\\.waybar-wrapped"
           "\\.dunst-wrapped"
-          "\\.swayosd-server"
+          "wob"
           "\\.xdg-desktop-po"
           "firefox"
           "\\.firefox-wrappe"

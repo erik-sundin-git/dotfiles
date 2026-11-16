@@ -23,7 +23,8 @@
 
         services.hardware.bolt.enable = true;
 
-        # Sleep, then hibernate to the disk swap after 2 h (lid and idle)
+        gaming.boltLauncher = false;
+
         commonConfig.suspendThenHibernate = true;
 
         # Intel UHD 620 (Kaby Lake-R): drivers from intelGen9Graphics, plus
@@ -77,7 +78,6 @@
           imports = with inputs.self.modules.homeManager; [
             gh
             chromium
-            gtnhBackup
             mail
             emacsYoutube
             dellU2722d
@@ -85,6 +85,9 @@
 
           # Proton sync rollout, see programs/mail/mail.nix (5 = full two-way sync incl. spam)
           mailSync.stage = 5;
+
+          # No LaTeX on nomad: texliveFull is several GB in the store
+          emacs.texlive = false;
 
           systemConstants.thermalZonePath = "/sys/class/thermal/thermal_zone5/temp";
           selectedTheme = "ef-bio";

@@ -234,7 +234,7 @@ The Emacs variant saves the window layout and restores it on the next press."
       ('shorter (shrink-window 1)))))
 
 (defun my-exwm--osd (label percent)
-  "Show LABEL with PERCENT as a bar in the echo area (sway's swayosd)."
+  "Show LABEL with PERCENT as a bar in the echo area (sway's wob)."
   (let ((filled (/ (+ (max 0 (min 100 percent)) 5) 10)))
     (message "%s %s%s %d%%" label
              (make-string filled ?█) (make-string (- 10 filled) ?░) percent)))
@@ -290,7 +290,7 @@ Keys removed from the binds stay grabbed until the next login."
   (message "EXWM config reloaded"))
 
 
-;;;; App launcher (sway's wofi --show drun)
+;;;; App launcher (sway's fuzzel)
 
 (defvar my-exwm--apps-cache nil
   "(STAMP . APPS) for `my-exwm-launch-app', STAMP being the dirs and mtimes.")
@@ -376,7 +376,7 @@ override (even one with Hidden=true) shadows the system copy."
 (defun my-exwm-nix-add-package ()
   "Ask for a nixpkgs package and a target file, then hand off to claude.
 The targets and the prompt come from the nix-add-package script
-(homeManager.claudeLaunchers), which sway's bind runs with wofi."
+(homeManager.claudeLaunchers), which sway's bind runs with fuzzel."
   (my-exwm--leave-fullscreen)
   (let ((pkg (string-trim (read-string "nixpkgs package (e.g. htop): "))))
     (unless (string-empty-p pkg)

@@ -14,10 +14,11 @@
     let
       c = config.theme;
       thermalPath = config.systemConstants.thermalZonePath;
-      # claude-code is installed system-wide (profiles, live ISO)
-      hasClaude = lib.any (p: lib.getName p == "claude-code") (
-        osConfig.environment.systemPackages or [ ]
-      );
+      # claude-code comes from HM on the profiles (homeManager.claudeCode) and
+      # is installed system-wide on the live ISO
+      hasClaude =
+        config.programs.claude-code.enable
+        || lib.any (p: lib.getName p == "claude-code") (osConfig.environment.systemPackages or [ ]);
       # Codex is installed system-wide by the host profiles.
       hasCodex = lib.any (p: lib.getName p == "codex") (osConfig.environment.systemPackages or [ ]);
 

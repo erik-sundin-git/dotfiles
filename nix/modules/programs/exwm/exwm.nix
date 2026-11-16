@@ -238,7 +238,6 @@
         exwm-session
         pkgs.xclip
         pkgs.xrandr
-        pkgs.pavucontrol
         (mkScreenshot {
           name = "screenshot-area";
           args = "-s";
