@@ -16,6 +16,15 @@
       # commonConfig.suspendThenHibernate (NixOS side) decides the idle sleep
       sleep =
         if osConfig.commonConfig.suspendThenHibernate or false then "suspend-then-hibernate" else "suspend";
+      xpsOnAc = pkgs.writeShellScript "xps-on-ac" ''
+        for supply in /sys/class/power_supply/*; do
+          [ -r "$supply/type" ] && [ -r "$supply/online" ] || continue
+          [ "$(cat "$supply/type")" = Mains ] && [ "$(cat "$supply/online")" = 1 ] && exit 0
+        done
+        exit 1
+      '';
+      onAcGuard = command: "if ${xpsOnAc}; then exit 0; else exec ${command}; fi";
+      isXps = (osConfig.networking.hostName or "") == "xps";
       c = config.theme;
       hex = lib.removePrefix "#";
       swaylock = lib.getExe config.programs.swaylock.package;
@@ -58,13 +67,18 @@
           # Blank the screens a minute after locking (desktops never suspend)
           {
             timeout = 1260;
-            command = "${swaymsg} 'output * power off'";
+            command =
+              if isXps then onAcGuard "${swaymsg} 'output * power off'" else "${swaymsg} 'output * power off'";
             resumeCommand = "${swaymsg} 'output * power on'";
           }
         ]
         ++ lib.optional isLaptop {
           timeout = 1800;
-          command = "${pkgs.systemd}/bin/systemctl ${sleep}";
+          command =
+            if isXps then
+              onAcGuard "${pkgs.systemd}/bin/systemctl ${sleep}"
+            else
+              "${pkgs.systemd}/bin/systemctl ${sleep}";
         };
       };
     };
@@ -83,6 +97,15 @@
     let
       sleep =
         if osConfig.commonConfig.suspendThenHibernate or false then "suspend-then-hibernate" else "suspend";
+      xpsOnAc = pkgs.writeShellScript "xps-on-ac" ''
+        for supply in /sys/class/power_supply/*; do
+          [ -r "$supply/type" ] && [ -r "$supply/online" ] || continue
+          [ "$(cat "$supply/type")" = Mains ] && [ "$(cat "$supply/online")" = 1 ] && exit 0
+        done
+        exit 1
+      '';
+      onAcGuard = command: "if ${xpsOnAc}; then exit 0; else exec ${command}; fi";
+      isXps = (osConfig.networking.hostName or "") == "xps";
       c = config.theme;
       hex = lib.removePrefix "#";
       lockCmd = "${pkgs.i3lock-color}/bin/i3lock-color --color=${hex c.background} --clock --inside-color=${hex c.background}ff --ring-color=${hex c.accent}ff --keyhl-color=${hex c.green}ff --bshl-color=${hex c.red}ff --time-color=${hex c.foreground}ff --date-color=${hex c.foreground}ff --nofork";
@@ -99,7 +122,12 @@
         # xautolock's killer runs 10 min later (i3 and EXWM)
         xautolock.extraOptions = lib.mkIf isLaptop [
           "-killtime 10"
-          "-killer '${pkgs.systemd}/bin/systemctl ${sleep}'"
+          "-killer '${
+            if isXps then
+              onAcGuard "${pkgs.systemd}/bin/systemctl ${sleep}"
+            else
+              "${pkgs.systemd}/bin/systemctl ${sleep}"
+          }'"
         ];
       };
     };

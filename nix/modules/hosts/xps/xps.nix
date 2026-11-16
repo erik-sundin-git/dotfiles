@@ -14,10 +14,15 @@
       systemConstants.system.host = "xps";
       system.stateVersion = "26.05";
 
+      # Keep the display and session awake while docked or charging. The
+      # session idle commands also check AC state before blanking or sleeping.
+      services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+
       services.hardware.bolt.enable = true;
 
       # Reachable over ssh, unlike the other laptops (commonConfig closes 22)
       services.openssh.openFirewall = true;
+      services.openssh.settings.PasswordAuthentication = lib.mkForce true;
 
       # Stable name for the iGPU: cardN changes between boots, and the by-path
       # names contain ':', the WLR_DRM_DEVICES separator
