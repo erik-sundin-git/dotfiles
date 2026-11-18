@@ -44,6 +44,19 @@
           CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_performance";
         };
 
+        # Keyboard backlight on at the lowest level (1 of 2) at boot. Runs
+        # after systemd-backlight, which would otherwise restore the level
+        # saved at shutdown.
+        systemd.services.kbd-backlight = {
+          description = "Keyboard backlight on at lowest level";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "systemd-backlight@leds:tpacpi::kbd_backlight.service" ];
+          serviceConfig.Type = "oneshot";
+          script = ''
+            echo 1 > /sys/class/leds/tpacpi::kbd_backlight/brightness
+          '';
+        };
+
         # For benchmarking throttled's power limits
         environment.systemPackages = [
           config.boot.kernelPackages.turbostat
