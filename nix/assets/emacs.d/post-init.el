@@ -649,8 +649,14 @@ Beskrivning:
   ;; Leave packages Nix installs (read-only store paths, e.g. yt, notmuch)
   ;; alone: "updating" one ends in deleting its store directory, which fails
   ;; and aborts the rest of post-init.el.
+  ;; Same for :vc packages (git checkouts): the updater replaces them with an
+  ;; archive copy or deletes them outright (buffer-to-pdf vanished that way),
+  ;; and the failed require then aborts post-init.el, global keys included.
+  ;; use-package's `:rev :newest' already tracks them.
   (dolist (p package-alist)
-    (unless (file-in-directory-p (package-desc-dir (cadr p)) package-user-dir)
+    (when (or (eq (package-desc-kind (cadr p)) 'vc)
+              (not (file-in-directory-p (package-desc-dir (cadr p))
+                                        package-user-dir)))
       (add-to-list 'auto-package-update-excluded-packages (car p))))
 
   ;; Not in the EXWM Emacs (exwm-session exports EXWM_SESSION; its --eval
