@@ -1,7 +1,12 @@
 { inputs, ... }:
 {
   den.aspects.xps.nixos =
-    { lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       imports = with inputs.self.modules.nixos; [
         inputs.nixos-hardware.nixosModules.dell-xps-15-7590-nvidia
@@ -25,9 +30,11 @@
       services.openssh.settings.PasswordAuthentication = lib.mkForce true;
 
       # Stable name for the iGPU: cardN changes between boots, and the by-path
-      # names contain ':', the WLR_DRM_DEVICES separator
+      # names contain ':', the WLR_DRM_DEVICES separator.
+      # ntsync: see boot.kernelModules below.
       services.udev.extraRules = ''
         SUBSYSTEM=="drm", KERNEL=="card*", KERNELS=="0000:00:02.0", SYMLINK+="dri/igpu"
+        KERNEL=="ntsync", TAG+="uaccess"
       '';
 
       hardware.nvidia.prime.offload.enableOffloadCmd = lib.mkForce false;
@@ -74,14 +81,42 @@
         })
       ];
 
-      # gaming sets linuxPackages_latest (7.3), which nvidia 595 doesn't
-      # build against yet; stay on the default kernel until it does
-      boot.kernelPackages = pkgs.linuxPackages;
+      # NVIDIA 615 (nixpkgs-unstable's `latest`; stable tops out at 595.71.05,
+      # which doesn't build on gaming's linuxPackages_latest). mkDriver is
+      # stable's builder, so the module is built against this host's kernel;
+      # hashes copied from unstable's pkgs/os-specific/linux/nvidia-x11/default.nix.
+      # Drop this once stable's `latest` reaches 615.
+      hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+        version = "615.78.08";
+        sha256_64bit = "sha256-Pj9t3cLudnoIGFMAr3vjyyhuznZpjS3eNSRZl4LQf/4=";
+        sha256_aarch64 = "sha256-UHYBE1AYHoGgMfD9AS/jX+S+N8eCDWUft6qolK9Eejc=";
+        openSha256 = "sha256-HBINiOjL0ZJLIAJeNIBYHBnwgUXtNwPPtnFpAI1YwF4=";
+        settingsSha256 = "sha256-inDRpG02sdDgHmlqgu/DsgK8OFdOt1fZIYyXdhlGC/c=";
+        persistencedSha256 = "sha256-RzeR6Ldct6MUxjnXRyThdh5Y3jjMehTVg85MtwuWNX4=";
+      };
+
+      # 615's GLX module segfaults Xorg on load, and LightDM's greeter is an
+      # Xorg server, so with LightDM the machine boots to no login screen.
+      # greetd + tuigreet log in on the console and start sway with no X.
+      # Switching display managers kills the running session: apply with
+      # `rebuild boot` (nh os boot) and reboot, not switch.
+      services.xserver.displayManager.lightdm.enable = lib.mkForce false;
+      services.greetd = {
+        enable = true;
+        settings.default_session.command = "${lib.getExe pkgs.tuigreet} --time --remember --asterisks --cmd sway";
+      };
+      security.pam.services.greetd.enableGnomeKeyring = true;
 
       # nixpkgs defaults to nvidia's new kernel suspend notifiers with 595 +
       # open modules; the first suspend with them never came back. Use the
       # nvidia-suspend/resume systemd services instead.
       hardware.nvidia.powerManagement.kernelSuspendNotifier = false;
+
+      # GE-Proton sets WINENTSYNC=1 but falls back to fsync (wineserver
+      # burning CPU) when /dev/ntsync is missing. The module isn't autoloaded,
+      # and the node is root-only without a rule; the uaccess rule in
+      # services.udev.extraRules above gives it to the seat user.
+      boot.kernelModules = [ "ntsync" ];
 
       # Steam's Vulkan probing opens the 1650 and keeps it awake for as long
       # as the client runs. Show it only the Intel ICDs; games that want the
