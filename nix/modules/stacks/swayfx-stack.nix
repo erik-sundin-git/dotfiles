@@ -12,6 +12,7 @@
     {
       imports = with inputs.self.modules.nixos; [
         bluetooth
+        greetd
         swayfx
       ];
 
