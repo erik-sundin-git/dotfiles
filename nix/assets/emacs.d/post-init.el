@@ -600,9 +600,14 @@
   :config
   ;; Leave packages Nix installs (read-only store paths, e.g. yt, notmuch)
   ;; alone: "updating" one ends in deleting its store directory, which fails
-  ;; and aborts the rest of post-init.el.
+  ;; and aborts the rest of post-init.el. Also leave :vc packages alone: they
+  ;; aren't in any archive, so apu counts them as out of date, queues their
+  ;; directory for deletion, fails to "upgrade" them and deletes them anyway
+  ;; (which breaks the rest of init, e.g. the C-ö leader).
   (dolist (p package-alist)
-    (unless (file-in-directory-p (package-desc-dir (cadr p)) package-user-dir)
+    (when (or (not (file-in-directory-p (package-desc-dir (cadr p))
+                                        package-user-dir))
+              (package-vc-p (cadr p)))
       (add-to-list 'auto-package-update-excluded-packages (car p))))
 
   ;; Not in the EXWM Emacs (exwm-session exports EXWM_SESSION; its --eval
