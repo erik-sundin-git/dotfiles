@@ -131,6 +131,8 @@
           corner_radius ${toString t.rounding}
           default_dim_inactive ${toString t.dimInactive}
           shadows disable
+          # a lone window on a workspace gets no border (no focus highlight)
+          smart_borders on
 
           ${lib.optionalString isLaptop ''
             # Docked with the lid shut: turn the panel off so workspaces move

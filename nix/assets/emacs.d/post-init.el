@@ -537,6 +537,54 @@
         '("~/notes/roam/20240912165402-agenda.org"
           "~/notes/todo")))
 
+(with-eval-after-load 'org-capture
+  (add-to-list 'org-capture-templates
+               '("s" "Sak att sälja" entry
+                 (file+headline "~/Documents/forsaljning.org" "Saker att sälja")
+                 "* FÖRBERED %^{Sak}
+:PROPERTIES:
+:KATEGORI: %^{Kategori|Elektronik|Kläder|Böcker|Möbler|Hem|Hobby|Övrigt}
+:KANAL:    %^{Kanal|Tradera|Marketplace|Tradera+Marketplace}
+:SÅLT_VIA:
+:FORMAT:
+:LEVERANS:
+:SKICK:
+:UTROP:
+:FB_PRIS:
+:MINPRIS:
+:REFPRIS:
+:SLUTPRIS:
+:FRAKT_IN:
+:FRAKT_UT:
+:AVGIFT:
+:VIKT:
+:MÅTT:
+:PLATS:    %^{Var ligger den?}
+:SLUTDATUM:
+:KÖPARE:
+:KOLLI_ID:
+:TRADERA_ANNONS:
+:FB_ANNONS:
+:END:
+** Förberedelser
+- [ ] Rengör / testa
+- [ ] Samla tillbehör
+- [ ] Kolla prisnivå (Tradera + Marketplace)
+- [ ] Fota
+- [ ] Väg och mät
+** Annonstext
+Rubrik:
+
+Beskrivning:
+- Skick:
+- Medföljer:
+- Fel/brister:
+- Frakt / avhämtning:
+** Logg
+- %U Lagt till i listan
+%?"
+                 :empty-lines 1)))
+
 (use-package org-tempo
   :after org
   :ensure nil)
@@ -600,14 +648,15 @@
   :config
   ;; Leave packages Nix installs (read-only store paths, e.g. yt, notmuch)
   ;; alone: "updating" one ends in deleting its store directory, which fails
-  ;; and aborts the rest of post-init.el. Also leave :vc packages alone: they
-  ;; aren't in any archive, so apu counts them as out of date, queues their
-  ;; directory for deletion, fails to "upgrade" them and deletes them anyway
-  ;; (which breaks the rest of init, e.g. the C-ö leader).
+  ;; and aborts the rest of post-init.el.
+  ;; Same for :vc packages (git checkouts): the updater replaces them with an
+  ;; archive copy or deletes them outright (buffer-to-pdf vanished that way),
+  ;; and the failed require then aborts post-init.el, global keys included.
+  ;; use-package's `:rev :newest' already tracks them.
   (dolist (p package-alist)
-    (when (or (not (file-in-directory-p (package-desc-dir (cadr p))
-                                        package-user-dir))
-              (package-vc-p (cadr p)))
+    (when (or (eq (package-desc-kind (cadr p)) 'vc)
+              (not (file-in-directory-p (package-desc-dir (cadr p))
+                                        package-user-dir)))
       (add-to-list 'auto-package-update-excluded-packages (car p))))
 
   ;; Not in the EXWM Emacs (exwm-session exports EXWM_SESSION; its --eval
@@ -986,6 +1035,12 @@
   "e r" 'eval-region
 
   "f" '("Feeds" . elfeed))
+
+;; Org-only: these shadow nothing global under C-ö (d/p are free there).
+(my-leader-def
+  :keymaps 'org-mode-map
+  "d" 'org-do-demote
+  "p" 'org-do-promote)
 
 ;; Only where notmuch is installed (homeManager.mail).
 (when (fboundp 'notmuch)

@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   flake.installer.features.gaming = {
-    label = "Gaming: Steam, latest kernel, GeForce NOW, Prism";
+    label = "Gaming: Steam, latest kernel, GeForce NOW, Prism, CurseForge";
     order = 10;
   };
 
@@ -73,6 +73,7 @@
         environment.systemPackages =
           with pkgs;
           [
+            local.curseforge
             mangohud
             prismlauncher
             wineWow64Packages.stable
